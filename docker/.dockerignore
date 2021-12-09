@@ -1,0 +1,7 @@
+.dockerignore
+**/Dockerfile
+**/*.Dockerfile
+
+**/target
+**/Cargo.lock
+**/*.out

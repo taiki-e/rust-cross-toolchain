@@ -1,0 +1,11 @@
+target
+Cargo.lock
+node_modules
+package-lock.json
+package.json
+tmp
+*.out
+
+# For platform and editor specific settings, it is recommended to add to
+# a global .gitignore file.
+# Refs: https://docs.github.com/en/github/using-git/ignoring-files#configuring-ignored-files-for-all-repositories-on-your-computer

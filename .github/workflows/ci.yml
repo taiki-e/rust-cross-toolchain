@@ -1,0 +1,89 @@
+name: CI
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  docker:
+    strategy:
+      matrix:
+        include:
+          # Linux (glibc)
+          - target: linux-gnu
+
+          # Linux (musl)
+          - target: aarch64-unknown-linux-musl
+          - target: arm-unknown-linux-musleabi
+          - target: arm-unknown-linux-musleabihf
+          - target: armv5te-unknown-linux-musleabi
+          - target: armv7-unknown-linux-musleabi
+          - target: armv7-unknown-linux-musleabihf
+          # - target: hexagon-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
+          - target: i586-unknown-linux-musl
+          - target: i686-unknown-linux-musl
+          - target: mips-unknown-linux-musl
+          - target: mips64-unknown-linux-muslabi64
+          - target: mips64el-unknown-linux-muslabi64
+          - target: mipsel-unknown-linux-musl
+          - target: powerpc-unknown-linux-musl # tier3
+          # - target: powerpc64-unknown-linux-musl # tier3, ABI version 1 is not compatible with ABI version 2 output
+          - target: powerpc64le-unknown-linux-musl # tier3
+          # - target: riscv32gc-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
+          # - target: riscv64gc-unknown-linux-musl # tier3, "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
+          - target: s390x-unknown-linux-musl # tier3
+          - target: thumbv7neon-unknown-linux-musleabihf # tier3
+          - target: x86_64-unknown-linux-musl
+
+          # Linux (uClibc)
+          - target: linux-uclibc
+          # FreeBSD
+          - target: freebsd
+          # NetBSD
+          - target: netbsd
+          # OpenBSD
+          - target: openbsd
+          # DragonFly BSD
+          - target: dragonfly
+
+          # Solaris
+          - target: sparcv9-sun-solaris
+          - target: x86_64-pc-solaris
+          - target: x86_64-sun-solaris
+
+          # illumos
+          - target: x86_64-unknown-illumos
+
+          # Redox
+          # - target: aarch64-unknown-redox # tier3
+          - target: x86_64-unknown-redox
+
+          # WASI
+          - target: wasi
+
+          # Windows (GNU)
+          - target: i686-pc-windows-gnu
+          - target: x86_64-pc-windows-gnu
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"
+        if: github.repository_owner == 'taiki-e' && (github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+      - run: tools/build-docker.sh "${{ matrix.target }}"
