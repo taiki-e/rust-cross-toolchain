@@ -75,7 +75,28 @@ mkdir -p "${test_dir}"
 cd "${test_dir}"
 cp -r /test/fixtures/. ./
 
-toolchain_dir="$(dirname "$(dirname "$(type -P "${RUST_TARGET}-${cc}")")")"
+case "${cc}" in
+    gcc) cxx=g++ ;;
+    clang) cxx=clang++ ;;
+    *) cxx="${cc}" ;;
+esac
+if type -P "${RUST_TARGET}-${cc}"; then
+    target_cc="${RUST_TARGET}-${cc}"
+    target_cxx="${RUST_TARGET}-${cxx}"
+    toolchain_dir="$(dirname "$(dirname "$(type -P "${target_cc}")")")"
+else
+    target_cc="${cc}"
+    target_cxx="${cxx}"
+    # TODO
+    if [[ -d "/${RUST_TARGET}" ]]; then
+        toolchain_dir="/${RUST_TARGET}"
+    else
+        case "${RUST_TARGET}" in
+            *-emscripten*) toolchain_dir="/usr/local/${RUST_TARGET}" ;;
+            *) bail "unrecognized target '${RUST_TARGET}'" ;;
+        esac
+    fi
+fi
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
         sysroot_dir="${toolchain_dir}/${RUST_TARGET}/libc"
@@ -97,13 +118,11 @@ rust_target_lower="${rust_target_lower//./_}"
 rust_target_upper="$(tr '[:lower:]' '[:upper:]' <<<"${rust_target_lower}")"
 case "${cc}" in
     gcc)
-        cxx=g++
         tee >"${dev_tools_dir}/${cc}.env" <<EOF
 export AR_${rust_target_lower}=${RUST_TARGET}-ar
 EOF
         ;;
     clang)
-        cxx=clang++
         # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
         tee >"${dev_tools_dir}/${cc}.env" <<EOF
 export AR=llvm-ar
@@ -114,18 +133,26 @@ export OBJDUMP=llvm-objdump
 export READELF=llvm-readelf
 EOF
         ;;
+    *)
+        touch "${dev_tools_dir}/${cc}.env"
+        ;;
 esac
-tee >>"${dev_tools_dir}/${cc}.env" <<EOF
-export CC_${rust_target_lower}=${RUST_TARGET}-${cc}
-export CXX_${rust_target_lower}=${RUST_TARGET}-${cxx}
-export CARGO_TARGET_${rust_target_upper}_LINKER=${RUST_TARGET}-${cc}
+case "${RUST_TARGET}" in
+    *-emscripten*) ;;
+    *)
+        tee >>"${dev_tools_dir}/${cc}.env" <<EOF
+export CC_${rust_target_lower}=${target_cc}
+export CXX_${rust_target_lower}=${target_cxx}
+export CARGO_TARGET_${rust_target_upper}_LINKER=${target_cc}
 EOF
+        ;;
+esac
 case "${RUST_TARGET}" in
     *-linux-musl* | *-redox*)
         # disable static linking to check interpreter
         export RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=-crt-static"
         ;;
-    *-wasi*)
+    *-wasi* | *-emscripten*)
         # cc-rs will try to link to libstdc++ by default.
         tee >>"${dev_tools_dir}/${cc}.env" <<EOF
 export CXXSTDLIB=c++
@@ -137,19 +164,24 @@ case "${RUST_TARGET}" in
         # TODO: -L* are needed to build std
         export RUSTFLAGS="${RUSTFLAGS:-} -L${toolchain_dir}/${RUST_TARGET}/lib -L${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"
         ;;
+    asmjs-unknown-emscripten)
+        # emcc: error: wasm2js does not support source maps yet (debug in wasm for now)
+        export RUSTFLAGS="-C debuginfo=0"
+        ;;
 esac
 # shellcheck disable=SC1090
 . "${dev_tools_dir}/${cc}.env"
 case "${RUST_TARGET}" in
     wasm*) exe=".wasm" ;;
+    asmjs-*) exe=".js" ;;
     *-windows-*) exe=".exe" ;;
     *) exe="" ;;
 esac
 
 # Build C/C++.
 pushd cpp >/dev/null
-"${RUST_TARGET}-${cc}" -v
-"${RUST_TARGET}-${cc}" -o c.out hello.c
+"${target_cc}" -v
+"${target_cc}" -o c.out hello.c
 case "${RUST_TARGET}" in
     arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu*) ;;
     *) out+=("$(pwd)"/c.out) ;;
@@ -158,8 +190,8 @@ case "${RUST_TARGET}" in
     # TODO(aarch64-unknown-openbsd): clang segfault
     aarch64-unknown-openbsd) ;;
     *)
-        "${RUST_TARGET}-${cxx}" -v
-        "${RUST_TARGET}-${cxx}" -o cpp.out hello.cpp
+        "${target_cxx}" -v
+        "${target_cxx}" -o cpp.out hello.cpp
         case "${RUST_TARGET}" in
             arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu*) ;;
             *) out+=("$(pwd)"/cpp.out) ;;
@@ -175,15 +207,18 @@ if [[ -f /BUILD_STD ]]; then
 else
     cargo build --offline --target "${RUST_TARGET}"
 fi
-out+=(
-    "$(pwd)/target/${RUST_TARGET}/debug/rust-test${exe}"
-    "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_c.o
-)
+case "${RUST_TARGET}" in
+    *-emscripten*) out+=("$(pwd)/target/${RUST_TARGET}/debug/rust_test${exe}") ;;
+    *) out+=("$(pwd)/target/${RUST_TARGET}/debug/rust-test${exe}") ;;
+esac
+out+=("$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_c.o)
 case "${RUST_TARGET}" in
     # TODO: See docker/test/fixtures/rust/build.rs
     aarch64-unknown-openbsd | wasm32-wasi) ;;
     *) out+=("$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_cpp.o) ;;
 esac
+ls "$(pwd)/target/${RUST_TARGET}"/debug
+ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out
 popd >/dev/null
 
 # Build Rust with C using CMake
@@ -193,18 +228,22 @@ if [[ -f /BUILD_STD ]]; then
 else
     cargo build --offline --target "${RUST_TARGET}"
 fi
-out+=("$(pwd)/target/${RUST_TARGET}/debug/rust-cmake-test${exe}")
+case "${RUST_TARGET}" in
+    *-emscripten*) out+=("$(pwd)/target/${RUST_TARGET}/debug/rust_cmake_test${exe}") ;;
+    *) out+=("$(pwd)/target/${RUST_TARGET}/debug/rust-cmake-test${exe}") ;;
+esac
 case "${RUST_TARGET}" in
     *-redox* | *-windows-*) out+=("$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir/double.obj) ;;
     *) out+=("$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir/double.o) ;;
 esac
+ls "$(pwd)/target/${RUST_TARGET}"/debug
 ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir
 popd >/dev/null
 
 # Check the compiled binaries.
 file "${out[@]}"
 case "${RUST_TARGET}" in
-    *-wasi* | *-windows-*) ;;
+    *-wasi* | *-emscripten* | *-windows-*) ;;
     *)
         readelf --file-header "${out[@]}"
         readelf --arch-specific "${out[@]}"
@@ -484,9 +523,10 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         ;;
-    *-wasi*)
+    wasm*)
         file_info_pat+=('WebAssembly \(wasm\) binary module version 0x1 \(MVP\)')
         ;;
+    asmjs-*) ;;
     *-windows-gnu*)
         for bin in "${out[@]}"; do
             if [[ -x "${bin}" ]]; then
@@ -604,6 +644,9 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         ;;
+    *-emscripten*)
+        runner=node
+        ;;
     *-windows-gnu*)
         runner=wine
         # Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
@@ -659,7 +702,7 @@ if [[ -n "${runner:-}" ]]; then
     if [[ -d "${dev_tools_dir}/bin" ]]; then
         if [[ ! -f "${dev_tools_dir}/bin/${runner}" ]]; then
             case "${RUST_TARGET}" in
-                *-windows-gnu*) ;;
+                *-windows-gnu* | *-emscripten*) ;;
                 *) cp "$(type -P "${runner}")" "${dev_tools_dir}/bin/${runner}" ;;
             esac
         fi

@@ -38,8 +38,7 @@ case "${SYSROOT:-}" in
 esac
 common_flags="${common_flags}${COMMON_FLAGS:+" ${COMMON_FLAGS}"}"
 case "${RUST_TARGET}" in
-    *-unknown-linux-* | *-solaris* | *-illumos* | *-redox* | *-wasi* | *-windows-gnu*) ;;
-    *)
+    *-freebsd* | *-netbsd* | *-openbsd* | *-dragonfly*)
         case "${common_flags}" in
             *" -fuse-ld"* | *" --ld-path"*) ;;
             *) common_flags="${common_flags} -fuse-ld=lld" ;;
@@ -88,11 +87,13 @@ mkdir -p "${TOOLCHAIN_DIR}/bin"
 tee >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" <<EOF
 #!/bin/sh
 set -eu
-${get_toolchain_dir:-}exec clang${cflags} "\$@"${cflags_last}
+${get_toolchain_dir:-}exec ${CLANG:-clang}${cflags} "\$@"${cflags_last}
 EOF
 tee >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++" <<EOF
 #!/bin/sh
 set -eu
-${get_toolchain_dir:-}exec clang++${cxxflags} "\$@"${cxxflags_last}
+${get_toolchain_dir:-}exec ${CLANG:-clang}++${cxxflags} "\$@"${cxxflags_last}
 EOF
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"
+# tee doesn't display properly on docker's log
+cat "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"

@@ -42,9 +42,9 @@ find "${toolchain_dir}" -name "${RUST_TARGET}*" | LC_ALL=C sort
 find "${toolchain_dir}" -name 'libstdc++*'
 find "${toolchain_dir}" -name 'libc++*'
 
-for cc in gcc clang; do
-    if type -P "${RUST_TARGET}-${cc}"; then
-        "${RUST_TARGET}-${cc}" --version
-        file "$(type -P "${RUST_TARGET}-${cc}")"
+for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-clang" emcc; do
+    if type -P "${cc}"; then
+        "${cc}" --version
+        file "$(type -P "${cc}")"
     fi
 done

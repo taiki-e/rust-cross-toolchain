@@ -70,6 +70,8 @@ jobs:
 
           # WASI
           - target: wasi
+          # Emscripten
+          - target: emscripten
 
           # Windows (GNU)
           - target: i686-pc-windows-gnu

@@ -223,8 +223,8 @@ wasi_targets=(
 # rustup target list | grep -e '-emscripten'
 # rustc --print target-list | grep -e '-emscripten'
 emscripten_targets=(
-    # asmjs-unknown-emscripten
-    # wasm32-unknown-emscripten
+    asmjs-unknown-emscripten
+    wasm32-unknown-emscripten
 )
 # WebAssembly (unknown)
 # rustup target list | grep -e '-unknown-unknown'

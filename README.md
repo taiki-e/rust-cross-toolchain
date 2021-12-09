@@ -12,6 +12,7 @@
   - [illumos](#illumos)
   - [Redox](#redox)
   - [WASI](#wasi)
+  - [Emscripten](#emscripten)
   - [Windows (GNU)](#windows-gnu)
 
 ## Platform Support
@@ -226,6 +227,19 @@ wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/w
 **Supported targets**:
 
 - `wasm32-wasi`
+
+### Emscripten
+
+| libc | GCC | clang | C++ | test |
+| ---- | --- | ----- | --- | ---- |
+| emscripten 1.39.20 | N/A |  | ? (libc++) | ✓ (node) |
+
+([Dockerfile](docker/emscripten.Dockerfile))
+
+**Supported targets**:
+
+- `asmjs-unknown-emscripten`
+- `wasm32-unknown-emscripten`
 
 ### Windows (GNU)
 
