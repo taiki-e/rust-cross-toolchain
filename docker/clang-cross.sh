@@ -46,12 +46,6 @@ case "${RUST_TARGET}" in
         esac
         ;;
 esac
-# Get the directory of the toolchain dynamically so that it does not depend on
-# the installation location of the toolchain.
-if [[ "${common_flags}" == *"{toolchain_dir}"* ]]; then
-    get_toolchain_dir="toolchain_dir=\"\$(cd \"\$(dirname \"\$0\")\"/.. && pwd)\"
-"
-fi
 
 cflags="${common_flags}${CFLAGS:+" ${CFLAGS}"}"
 cflags_last="${CFLAGS_LAST:+" ${CFLAGS_LAST}"}"
@@ -82,6 +76,13 @@ case "${cxxflags}${cxxflags_last}" in
         cxxflags=" -Wno-unused-command-line-argument${cxxflags}"
         ;;
 esac
+
+# Get the directory of the toolchain dynamically so that it does not depend on
+# the installation location of the toolchain.
+if [[ "${cflags}${cflags_last}" == *"{toolchain_dir}"* ]] || [[ "${cxxflags}${cxxflags_last}" == *"{toolchain_dir}"* ]]; then
+    get_toolchain_dir="toolchain_dir=\"\$(cd \"\$(dirname \"\$0\")\"/.. && pwd)\"
+"
+fi
 
 mkdir -p "${TOOLCHAIN_DIR}/bin"
 tee >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" <<EOF

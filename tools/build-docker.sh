@@ -58,6 +58,7 @@ fi
 export DOCKER_BUILDKIT=1
 
 owner="${OWNER:-taiki-e}"
+tag_base="ghcr.io/${owner}/rust-cross-toolchain:"
 arch="${HOST_ARCH:-amd64}"
 case "${arch}" in
     amd64)
@@ -70,10 +71,14 @@ case "${arch}" in
         ;;
     *) echo >&2 "unsupported architecture '${arch}'" && exit 1 ;;
 esac
-if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-    registry="ghcr.io/${owner}/"
+time="$(date --utc '+%Y-%m-%d-%H-%M-%S')"
+
+github_tag="dev"
+is_release=""
+if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+    github_tag="${GITHUB_REF_NAME}"
+    is_release=1
 fi
-tag_base="${registry:-}rust-cross-toolchain:"
 
 __build() {
     local tag="$1"
@@ -108,22 +113,28 @@ build() {
         shift
         shift
         if [[ "${sys_version}" == "${default_sys_version}" ]]; then
+            if [[ -n "${is_release}" ]]; then
+                build_args+=(--tag "${tag}")
+            fi
+            local tag="${tag}-${github_tag}"
             build_args+=(--tag "${tag}")
         fi
         local tag="${tag}${sys_version}"
         local log_dir="tmp/log/${base}/${target}${sys_version}"
-        build_args+=(--tag "${tag}")
     else
         local log_dir="tmp/log/${base}/${target}"
+    fi
+    if [[ -n "${is_release}" ]]; then
         build_args+=(--tag "${tag}")
     fi
+    local tag="${tag}-${github_tag}"
+    build_args+=(--tag "${tag}")
 
     mkdir -p "${log_dir}"
     __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee "${log_dir}/build-docker-${time}.log"
     echo "build log saved at ${log_dir}/build-docker-${time}.log"
 }
 
-time="$(date --utc '+%Y-%m-%d-%H-%M-%S')"
 for target in "${targets[@]}"; do
     case "${target}" in
         *-linux-gnu*)

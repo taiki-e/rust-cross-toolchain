@@ -21,11 +21,11 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
 done
 set -x
 file "${toolchain_dir}/bin"/*
+set +x
 if file "${toolchain_dir}/bin"/* | grep -E 'not stripped' >/dev/null; then
     echo >&2 "binaries must be stripped"
     exit 1
 fi
-
 case "${RUST_TARGET}" in
     *-musl*)
         if file "${toolchain_dir}/bin"/* | grep -E 'dynamically linked' >/dev/null; then
@@ -34,12 +34,14 @@ case "${RUST_TARGET}" in
         fi
         ;;
 esac
+set -x
 
 du -h "${toolchain_dir}"
 
 find "${toolchain_dir}" -name "${RUST_TARGET}*" | LC_ALL=C sort
 find "${toolchain_dir}" -name 'libstdc++*'
 find "${toolchain_dir}" -name 'libc++*'
+
 for cc in gcc clang; do
     if type -P "${RUST_TARGET}-${cc}"; then
         "${RUST_TARGET}-${cc}" --version
