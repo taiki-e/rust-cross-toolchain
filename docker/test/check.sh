@@ -27,7 +27,7 @@ if file "${toolchain_dir}/bin"/* | grep -E 'not stripped' >/dev/null; then
     exit 1
 fi
 case "${RUST_TARGET}" in
-    *-musl*)
+    *-linux-musl*)
         if file "${toolchain_dir}/bin"/* | grep -E 'dynamically linked' >/dev/null; then
             echo >&2 "binaries must be statically linked"
             exit 1

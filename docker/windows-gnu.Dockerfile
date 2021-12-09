@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3-labs
 
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=20.04
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -56,8 +56,30 @@ EOF
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
+ENV HOME=/tmp/home
 COPY /test-base.sh /
 RUN /test-base.sh
+# Install the latest wine from winehq: https://wiki.winehq.org/Ubuntu
+# To install Ubuntu's default wine, run the following:
+#   RUN dpkg --add-architecture i386 && apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+#       wine-stable \
+#       wine32 \
+#       wine64
+RUN dpkg --add-architecture i386
+RUN apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+    software-properties-common
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
+RUN <<EOF
+codename="$(grep </etc/os-release '^VERSION_CODENAME=' | sed 's/^VERSION_CODENAME=//')"
+add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ ${codename} main"
+EOF
+# Use winehq-devel instead of winehq-stable (6.0.2), because mio needs wine 6.11+.
+# https://dl.winehq.org/wine-builds/ubuntu/dists/focal/main/binary-amd64
+# https://wiki.winehq.org/Wine_User%27s_Guide#Wine_from_WineHQ
+# https://github.com/tokio-rs/mio/issues/1444
+RUN apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+    winehq-devel
+RUN wine --version
 ARG RUST_TARGET
 COPY /test-base-target.sh /
 RUN /test-base-target.sh

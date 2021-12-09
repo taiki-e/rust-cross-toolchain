@@ -231,11 +231,11 @@ wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/w
 
 | libc | GCC | clang | C++ | test |
 | ---- | --- | ----- | --- | ---- |
-| Mingw-w64 5.0.3 | 7.3.0 | host | ✓ (libstdc++) |  |
+| Mingw-w64 7.0.0 | 9.3.0 | host | ✓ (libstdc++) | ✓ (wine) |
 
 <!--
-Mingw-w64 version: https://packages.ubuntu.com/en/bionic/mingw-w64-common
-GCC version: https://packages.ubuntu.com/en/bionic/gcc-mingw-w64-base
+Mingw-w64 version: https://packages.ubuntu.com/en/focal/mingw-w64-common
+GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 -->
 
 ([Dockerfile](docker/windows-gnu.Dockerfile))

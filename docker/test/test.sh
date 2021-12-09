@@ -121,7 +121,7 @@ export CXX_${rust_target_lower}=${RUST_TARGET}-${cxx}
 export CARGO_TARGET_${rust_target_upper}_LINKER=${RUST_TARGET}-${cc}
 EOF
 case "${RUST_TARGET}" in
-    *-musl* | *-redox*)
+    *-linux-musl* | *-redox*)
         # disable static linking to check interpreter
         export RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=-crt-static"
         ;;
@@ -526,7 +526,6 @@ for bin in "${out[@]}"; do
 done
 
 # Run the compiled binaries.
-# For now, this will only run on linux and wasi.
 # TODO(freebsd): can we use vm or ci images for testing? https://download.freebsd.org/ftp/releases/VM-IMAGES https://download.freebsd.org/ftp/releases/CI-IMAGES
 case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
@@ -595,25 +594,7 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         runner="qemu-${qemu_arch}"
-        export "CARGO_TARGET_${rust_target_upper}_RUNNER"="${runner}"
         export QEMU_LD_PREFIX="${sysroot_dir}"
-        for bin in "${out[@]}"; do
-            if [[ ! -x "${bin}" ]]; then
-                continue
-            fi
-            case "${RUST_TARGET}" in
-                armv5te-unknown-linux-uclibceabi | armv7-unknown-linux-uclibceabihf)
-                    # TODO: qemu: uncaught target signal 11 (Segmentation fault) - core dumped
-                    if [[ "${cc}" == "clang" ]] && [[ "${bin}" == *"cpp.out" ]]; then
-                        continue
-                    fi
-                    ;;
-            esac
-            "${runner}" "${bin}" | tee run.log
-            if ! grep <run.log -E '^Hello (C|C\+\+|Rust|C from Rust|C\+\+ from Rust|Cmake from Rust)!' >/dev/null; then
-                bail
-            fi
-        done
         ;;
     *-wasi*)
         runner=wasmtime
@@ -622,19 +603,45 @@ case "${RUST_TARGET}" in
             wasm64-*) runner_flags=(--enable-simd --enable-memory64 --) ;;
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
-        export "CARGO_TARGET_${rust_target_upper}_RUNNER"="${runner} ${runner_flags[*]}"
-        for bin in "${out[@]}"; do
-            if [[ ! -x "${bin}" ]]; then
-                continue
-            fi
-            "${runner}" "${runner_flags[@]}" "${bin}" | tee run.log
-            if ! grep <run.log -E '^Hello (C|C\+\+|Rust|C from Rust|C\+\+ from Rust|Cmake from Rust)!' >/dev/null; then
-                bail
-            fi
-        done
+        ;;
+    *-windows-gnu*)
+        runner=wine
+        # Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
+        export HOME=/tmp/home
+        mkdir -p "${HOME}"
+        # Initialize the wine prefix (virtual windows installation)
+        export WINEPREFIX=/tmp/wine
+        mkdir -p "${WINEPREFIX}"
+        if [[ ! -e /WINEBOOT ]]; then
+            wineboot &>/dev/null
+            touch /WINEBOOT
+        fi
+        # Put libstdc++ and some other mingw dlls in WINEPATH
+        WINEPATH="$(ls -d "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix);${toolchain_dir}/${RUST_TARGET}/lib"
+        export WINEPATH
         ;;
 esac
 if [[ -n "${runner:-}" ]]; then
+    IFS=" "
+    export "CARGO_TARGET_${rust_target_upper}_RUNNER"="${runner}${runner_flags[*]+" ${runner_flags[*]}"}"
+    IFS=$'\n\t'
+    for bin in "${out[@]}"; do
+        if [[ ! -x "${bin}" ]]; then
+            continue
+        fi
+        case "${RUST_TARGET}" in
+            armv5te-unknown-linux-uclibceabi | armv7-unknown-linux-uclibceabihf)
+                # TODO: qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+                if [[ "${cc}" == "clang" ]] && [[ "${bin}" == *"cpp.out" ]]; then
+                    continue
+                fi
+                ;;
+        esac
+        "${runner}" ${runner_flags[@]+"${runner_flags[@]}"} "${bin}" | tee run.log
+        if ! grep <run.log -E '^Hello (C|C\+\+|Rust|C from Rust|C\+\+ from Rust|Cmake from Rust)!' >/dev/null; then
+            bail
+        fi
+    done
     case "${RUST_TARGET}" in
         # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
         powerpc-unknown-linux-gnuspe) ;;
@@ -651,7 +658,10 @@ if [[ -n "${runner:-}" ]]; then
 
     if [[ -d "${dev_tools_dir}/bin" ]]; then
         if [[ ! -f "${dev_tools_dir}/bin/${runner}" ]]; then
-            cp "$(type -P "${runner}")" "${dev_tools_dir}/bin/${runner}"
+            case "${RUST_TARGET}" in
+                *-windows-gnu*) ;;
+                *) cp "$(type -P "${runner}")" "${dev_tools_dir}/bin/${runner}" ;;
+            esac
         fi
     fi
 fi

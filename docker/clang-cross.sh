@@ -23,7 +23,7 @@ case "${RUST_TARGET}" in
             mips-* | mipsel-*)
                 common_flags="${common_flags} -march=mips32r2"
                 case "${RUST_TARGET}" in
-                    *-musl*) common_flags="${common_flags} -mfloat-abi=soft" ;;
+                    *-linux-musl*) common_flags="${common_flags} -mfloat-abi=soft" ;;
                 esac
                 ;;
             thumbv7neon-*) common_flags="${common_flags} -march=armv7-a -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard" ;;

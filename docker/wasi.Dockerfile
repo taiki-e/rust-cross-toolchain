@@ -35,7 +35,6 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
-# Install Wasmtime to test WASI.
 ARG WASMTIME_VERSION
 RUN <<EOF
 dpkg_arch="$(dpkg --print-architecture)"

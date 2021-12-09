@@ -9,7 +9,7 @@ export RUSTUP_MAX_RETRIES=10
 
 rust_toolchain_version=nightly-2021-12-08
 
-# Install Rust to build.
+# Install Rust.
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path --profile minimal --default-toolchain "${rust_toolchain_version}" --component rust-src
 # shellcheck disable=SC1091
