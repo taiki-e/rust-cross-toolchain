@@ -4,7 +4,9 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
-[workspace]
+[features]
+default = ["cpp"]
+cpp = []
 
 [build-dependencies]
 cc = "1"

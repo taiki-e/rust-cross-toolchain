@@ -7,7 +7,7 @@ IFS=$'\n\t'
 export CARGO_NET_RETRY=10
 export RUSTUP_MAX_RETRIES=10
 
-rust_toolchain_version=nightly-2021-12-08
+rust_toolchain_version=nightly-2021-12-09
 
 # Install Rust.
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://sh.rustup.rs \
@@ -20,7 +20,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://sh.rustup.rs \
 mkdir -p /tmp/deps/src
 pushd /tmp/deps >/dev/null
 touch src/lib.rs
-tee >Cargo.toml <<EOF
+cat >Cargo.toml <<EOF
 [package]
 name = "deps"
 version = "0.0.0"
@@ -33,7 +33,7 @@ cargo fetch
 rm Cargo.lock
 # For build-std
 # TODO: remove this once https://github.com/rust-lang/cargo/pull/10129 merged.
-tee >Cargo.toml <<EOF
+cat >Cargo.toml <<EOF
 [package]
 name = "deps"
 version = "0.0.0"

@@ -33,7 +33,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.gnu.org/gnu/gc
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     libgmp-dev \
     libmpc-dev \
     libmpfr-dev
@@ -172,5 +172,4 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
-COPY --from=test /"${RUST_TARGET}-dev" /"${RUST_TARGET}-dev"
-ENV PATH="/${RUST_TARGET}/bin:/${RUST_TARGET}-dev/bin:$PATH"
+ENV PATH="/${RUST_TARGET}/bin:$PATH"

@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = [
+    "docker/build-libunwind",
+    "docker/test/fixtures/rust",
+    "docker/test/fixtures/rust-cmake",
+]

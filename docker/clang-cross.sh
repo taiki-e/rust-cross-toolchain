@@ -84,16 +84,15 @@ if [[ "${cflags}${cflags_last}" == *"{toolchain_dir}"* ]] || [[ "${cxxflags}${cx
 fi
 
 mkdir -p "${TOOLCHAIN_DIR}/bin"
-tee >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" <<EOF
+cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" <<EOF
 #!/bin/sh
 set -eu
 ${get_toolchain_dir:-}exec ${CLANG:-clang}${cflags} "\$@"${cflags_last}
 EOF
-tee >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++" <<EOF
+cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++" <<EOF
 #!/bin/sh
 set -eu
 ${get_toolchain_dir:-}exec ${CLANG:-clang}++${cxxflags} "\$@"${cxxflags_last}
 EOF
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"
-# tee doesn't display properly on docker's log
-cat "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"
+tail -n +1 "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"

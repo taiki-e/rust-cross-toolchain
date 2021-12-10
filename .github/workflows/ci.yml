@@ -17,9 +17,10 @@ on:
 jobs:
   docker:
     strategy:
+      fail-fast: false
       matrix:
         include:
-          # Linux (glibc)
+          # Linux (GNU)
           - target: linux-gnu
 
           # Linux (musl)
@@ -40,7 +41,7 @@ jobs:
           # - target: powerpc64-unknown-linux-musl # tier3, ABI version 1 is not compatible with ABI version 2 output
           - target: powerpc64le-unknown-linux-musl # tier3
           # - target: riscv32gc-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
-          # - target: riscv64gc-unknown-linux-musl # tier3, "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
+          - target: riscv64gc-unknown-linux-musl # tier3
           - target: s390x-unknown-linux-musl # tier3
           - target: thumbv7neon-unknown-linux-musleabihf # tier3
           - target: x86_64-unknown-linux-musl
@@ -65,9 +66,7 @@ jobs:
           - target: x86_64-unknown-illumos
 
           # Redox
-          # - target: aarch64-unknown-redox # tier3
-          - target: x86_64-unknown-redox
-
+          - target: redox
           # WASI
           - target: wasi
           # Emscripten
@@ -84,6 +83,8 @@ jobs:
           persist-credentials: false
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
       - run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"
@@ -96,10 +97,17 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
-      - name: Install prettier
+      - name: Install Prettier
         run: npm install prettier
       - name: Install shfmt
         run: |
           "${GOROOT_1_17_X64}"/bin/go install mvdan.cc/sh/v3/cmd/shfmt@latest
           echo "${HOME}/go/bin" >>"${GITHUB_PATH}"
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get remove -y shellcheck
+          tag="$(curl -fsSL --retry 3 https://api.github.com/repos/koalaman/shellcheck/releases/latest | jq -r '.tag_name')"
+          curl -fsSL --retry 3 "https://github.com/koalaman/shellcheck/releases/download/${tag}/shellcheck-${tag}.linux.x86_64.tar.xz" \
+            | tar xJf - --strip-components 1 -C /usr/local/bin "shellcheck-${tag}/shellcheck"
+          shellcheck --version
       - run: tools/tidy.sh

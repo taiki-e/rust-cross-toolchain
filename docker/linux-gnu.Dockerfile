@@ -28,16 +28,12 @@ case "${RUST_TARGET}" in
             "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
         ;;
     *)
-        rm -rf \
-            "${TOOLCHAIN_DIR}"/share/{doc,lintian,man} \
+        rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,man} \
         ;;
 esac
-EOF
-
-RUN <<EOF
 case "${RUST_TARGET}" in
-    # There are {include,lib,libexec} for both gcc 9.3.0 and 8.3.0
-    arm-*hf) rm -rf $(find /arm-unknown-linux-gnueabihf -name '8.3.0') ;;
+    # There are {include,lib,libexec} for both gcc 9.4.0 and 6.3.0
+    arm-*hf) rm -rf $(find "${TOOLCHAIN_DIR}" -name '6.3.0') $(find "${TOOLCHAIN_DIR}" -name '*gcc-6.3.0') ;;
     # libc6-dev-armhf-cross (g++-arm-linux-gnueabihf) contains /usr/arm-linux-gnueabi/{lib/hf,libhf}
     arm*hf | thumbv7neon-*) rm -rf "${TOOLCHAIN_DIR}/arm-linux-gnueabi" ;;
     # libc6-dev-armel-cross (g++-arm-linux-gnueabi) contains /usr/arm-linux-gnueabihf/{lib/sf,libsf}
@@ -69,7 +65,7 @@ case "${RUST_TARGET}" in
             /clang-cross.sh
         ;;
     riscv32gc-unknown-linux-gnu)
-        COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld  -I\"\${toolchain_dir}\"/sysroot/usr/include" \
+        COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -I\"\${toolchain_dir}\"/sysroot/usr/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
             /clang-cross.sh
@@ -113,8 +109,8 @@ COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
 # TODO
-# RUN /test/test.sh gcc
-# RUN /test/test.sh clang
+RUN NO_RUN=1 /test/test.sh gcc
+RUN NO_RUN=1 /test/test.sh clang
 COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
@@ -122,5 +118,4 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
-COPY --from=test /"${RUST_TARGET}-dev" /"${RUST_TARGET}-dev"
-ENV PATH="/${RUST_TARGET}/bin:/${RUST_TARGET}-dev/bin:$PATH"
+ENV PATH="/${RUST_TARGET}/bin:$PATH"

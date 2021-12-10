@@ -75,9 +75,9 @@ echo "${gcc_version}" >/GCC_VERSION
 mkdir -p /tmp/toolchain
 cd /tmp/toolchain
 if [[ -n "${lib_arch}" ]]; then
-    apt-get update -qq
+    apt-get -o Acquire::Retries=10 update -qq
     # shellcheck disable=SC2046
-    apt-get -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
+    apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
         "g++-${gcc_version%%.*}-${apt_target/_/-}" \
         | grep '^\w' \
         | grep -E "${apt_target/_/-}|${lib_arch}-cross")

@@ -11,8 +11,29 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${TOOLCHAIN_DIR}"
 
+RUN sed -i 's/# deb-src/deb-src/g' /etc/apt/sources.list
+RUN apt-get -o Acquire::Retries=10 update -qq
+RUN apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+    dpkg-dev
+RUN mkdir -p /tmp/toolchain
+RUN <<EOF
+cd /tmp/toolchain
+arch="${RUST_TARGET%%-*}"
+apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
+    "g++-mingw-w64-${arch/_/-}" \
+    | grep '^\w' \
+    | grep 'mingw')
+EOF
 COPY /windows-gnu.sh /
 RUN /windows-gnu.sh
+RUN <<EOF
+cd /tmp/toolchain
+for deb in *.deb; do
+    dpkg -x "${deb}" .
+    rm "${deb}"
+done
+mv usr/* "${TOOLCHAIN_DIR}"
+EOF
 RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,man}
 
 RUN <<EOF
@@ -61,12 +82,12 @@ COPY /test-base.sh /
 RUN /test-base.sh
 # Install the latest wine from winehq: https://wiki.winehq.org/Ubuntu
 # To install Ubuntu's default wine, run the following:
-#   RUN dpkg --add-architecture i386 && apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+#   RUN dpkg --add-architecture i386 && apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
 #       wine-stable \
 #       wine32 \
 #       wine64
 RUN dpkg --add-architecture i386
-RUN apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     software-properties-common
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
 RUN <<EOF
@@ -77,7 +98,7 @@ EOF
 # https://dl.winehq.org/wine-builds/ubuntu/dists/focal/main/binary-amd64
 # https://wiki.winehq.org/Wine_User%27s_Guide#Wine_from_WineHQ
 # https://github.com/tokio-rs/mio/issues/1444
-RUN apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     winehq-devel
 RUN wine --version
 ARG RUST_TARGET
@@ -111,5 +132,4 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
-COPY --from=test /"${RUST_TARGET}-dev" /"${RUST_TARGET}-dev"
-ENV PATH="/${RUST_TARGET}/bin:/${RUST_TARGET}-dev/bin:$PATH"
+ENV PATH="/${RUST_TARGET}/bin:$PATH"

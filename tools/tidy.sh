@@ -3,6 +3,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# USAGE:
+#    ./tools/tidy.sh
+#
 # NOTE: This script requires the following tools:
 # - shfmt
 # - prettier

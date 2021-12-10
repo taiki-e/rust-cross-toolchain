@@ -2,31 +2,17 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
-arch="${RUST_TARGET%%-*}"
-
-mkdir -p /tmp/toolchain
-cd /tmp/toolchain
-
-# Enable deb-src for i686
-sed -i 's/# deb-src/deb-src/g' /etc/apt/sources.list
-apt-get update -qq
-# shellcheck disable=SC2046
-apt-get -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
-    "g++-mingw-w64-${arch/_/-}" \
-    | grep '^\w' \
-    | grep 'mingw')
-
-case "${arch}" in
-    x86_64) ;;
-    i686)
+case "${RUST_TARGET}" in
+    x86_64-*) ;;
+    i686-*)
         # Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/mingw.sh
         # Ubuntu mingw packages for i686 uses sjlj exceptions, but rust target
         # i686-pc-windows-gnu uses dwarf exceptions. So we build mingw packages
         # that are compatible with rust.
         mkdir -p /tmp/gcc-mingw-src
         cd /tmp/gcc-mingw-src
-        apt-get -o Dpkg::Use-Pty=0 source gcc-mingw-w64-i686
-        apt-get -o Dpkg::Use-Pty=0 build-dep -y gcc-mingw-w64-i686
+        apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 source gcc-mingw-w64-i686
+        apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 build-dep -y gcc-mingw-w64-i686
         cd gcc-mingw-w64-*
         # We are using dwarf exceptions instead of sjlj
         sed -i -e 's/libgcc_s_sjlj-1/libgcc_s_dw2-1/g' debian/gcc-mingw-w64-i686.install
@@ -102,7 +88,7 @@ index 63718b8..742e35c 100755
 +CONFFLAGS += \
 +	--disable-sjlj-exceptions \
 +	--with-dwarf2
- # Enable experimental::filesystem
+ # Enable experimental::filesystem and std::filesystem
  CONFFLAGS += \
  	--enable-libstdcxx-filesystem-ts=yes
 EOF
@@ -114,10 +100,3 @@ EOF
         ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-
-cd /tmp/toolchain
-for deb in *.deb; do
-    dpkg -x "${deb}" .
-    rm "${deb}"
-done
-mv usr/* "${TOOLCHAIN_DIR}"

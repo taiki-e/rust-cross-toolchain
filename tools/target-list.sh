@@ -3,7 +3,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2034
 
-# Linux (glibc)
+# Linux (GNU)
 # rustup target list | grep -e '-linux-gnu'
 # rustc --print target-list | grep -e '-linux-gnu'
 linux_gnu_targets=(
@@ -62,7 +62,7 @@ linux_musl_targets=(
     # powerpc64-unknown-linux-musl # tier3, ABI version 1 is not compatible with ABI version 2 output
     powerpc64le-unknown-linux-musl # tier3
     # riscv32gc-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
-    # riscv64gc-unknown-linux-musl # tier3, "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
+    riscv64gc-unknown-linux-musl         # tier3
     s390x-unknown-linux-musl             # tier3
     thumbv7neon-unknown-linux-musleabihf # tier3
     x86_64-unknown-linux-musl

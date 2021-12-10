@@ -4,7 +4,10 @@ version = "0.0.0"
 edition = "2021"
 publish = false
 
-[workspace]
+[features]
+default = ["cpp"]
+# TODO
+cpp = []
 
 [build-dependencies]
 cmake = "0.1"

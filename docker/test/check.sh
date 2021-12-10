@@ -6,8 +6,6 @@ IFS=$'\n\t'
 # This does not include building the source code and checking its output.
 
 toolchain_dir="/${RUST_TARGET}"
-dev_tools_dir="/${RUST_TARGET}-dev"
-mkdir -p "${dev_tools_dir}/bin"
 
 set +x
 for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
@@ -42,7 +40,7 @@ find "${toolchain_dir}" -name "${RUST_TARGET}*" | LC_ALL=C sort
 find "${toolchain_dir}" -name 'libstdc++*'
 find "${toolchain_dir}" -name 'libc++*'
 
-for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-clang" emcc; do
+for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-g++" "${RUST_TARGET}-clang" "${RUST_TARGET}-clang++" emcc; do
     if type -P "${cc}"; then
         "${cc}" --version
         file "$(type -P "${cc}")"

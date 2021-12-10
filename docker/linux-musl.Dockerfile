@@ -20,6 +20,15 @@ ARG MUSL_VERSION_64BIT=1.2.2
 ARG MUSL_VERSION_32BIT=1.1.24
 ARG LINUX_VERSION=headers-4.19.88-1
 
+FROM rust:alpine as build-libunwind
+SHELL ["/bin/sh", "-eux", "-c"]
+COPY /build-libunwind /build-libunwind
+WORKDIR /build-libunwind
+RUN RUSTFLAGS="-C target-feature=+crt-static -C link-self-contained=yes" \
+        cargo build --release --target "$(rustc -Vv | grep host | sed 's/host: //')"
+RUN mv target/x86_64-unknown-linux-musl/release/build-libunwind /usr/local/bin/
+RUN strip /usr/local/bin/build-libunwind
+
 FROM ghcr.io/taiki-e/build-base:alpine-"${ALPINE_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
@@ -78,7 +87,7 @@ RUN <<EOF
 cc_target="$(</CC_TARGET)"
 musl_version="$(</MUSL_VERSION)"
 cd musl-cross-make
-tee >./config.mak <<EOF2
+cat >./config.mak <<EOF2
 OUTPUT = ${TOOLCHAIN_DIR}
 TARGET = ${cc_target}
 BINUTILS_VER = ${BINUTILS_VERSION}
@@ -117,6 +126,7 @@ case "${RUST_TARGET}" in
     thumbv7neon-*) common_config="--with-arch=armv7-a --with-fpu=neon-vfpv4 --with-float=hard --with-mode=thumb" ;;
 esac
 echo "${common_config:+"COMMON_CONFIG += ${common_config}"}" >>./config.mak
+cat ./config.mak
 make install -j"$(nproc)" &>build.log || (cat build.log && exit 1)
 EOF
 RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,man}
@@ -178,9 +188,19 @@ COPY /clang-cross.sh /
 RUN <<EOF
 musl_version="$(</MUSL_VERSION)"
 if [[ "${musl_version}" == "${MUSL_VERSION_64BIT}" ]]; then
-    CC_TARGET="$(</CC_TARGET)" \
-        COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
-        /clang-cross.sh
+    case "${RUST_TARGET}" in
+        riscv64gc-unknown-linux-musl)
+            CC_TARGET="$(</CC_TARGET)" \
+                COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
+                CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
+                /clang-cross.sh
+            ;;
+        *)
+            CC_TARGET="$(</CC_TARGET)" \
+                COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
+                /clang-cross.sh
+            ;;
+    esac
 else
     CC_TARGET="$(</CC_TARGET)" \
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
@@ -199,6 +219,7 @@ COPY /test-base-target.sh /
 RUN /test-base-target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
+COPY --from=build-libunwind /usr/local/bin/build-libunwind /usr/local/bin/
 
 FROM test-base as test-relocated
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -229,5 +250,4 @@ SHELL ["/bin/sh", "-eux", "-c"]
 RUN apk --no-cache add bash
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
-COPY --from=test /"${RUST_TARGET}-dev" /"${RUST_TARGET}-dev"
-ENV PATH="/${RUST_TARGET}/bin:/${RUST_TARGET}-dev/bin:$PATH"
+ENV PATH="/${RUST_TARGET}/bin:$PATH"

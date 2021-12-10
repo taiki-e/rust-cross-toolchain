@@ -56,6 +56,7 @@ if [[ ${#targets[@]} -eq 0 ]]; then
 fi
 
 export DOCKER_BUILDKIT=1
+export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
 
 owner="${OWNER:-taiki-e}"
 tag_base="ghcr.io/${owner}/rust-cross-toolchain:"
@@ -85,11 +86,11 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        docker buildx build --push "$@"
+        docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         docker pull "${tag}"
         docker history "${tag}"
     else
-        docker buildx build --load "$@"
+        docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         docker history "${tag}"
     fi
 }
@@ -107,6 +108,7 @@ build() {
         --build-arg "RUST_TARGET=${target}"
     )
     local tag="${tag_base}${target}"
+    log_dir="tmp/log/${base}/${target}"
     if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
         local sys_version="$1"
         local default_sys_version="$2"
@@ -120,9 +122,7 @@ build() {
             build_args+=(--tag "${tag}")
         fi
         local tag="${tag}${sys_version}"
-        local log_dir="tmp/log/${base}/${target}${sys_version}"
-    else
-        local log_dir="tmp/log/${base}/${target}"
+        log_dir="${log_dir}${sys_version}"
     fi
     if [[ -n "${is_release}" ]]; then
         build_args+=(--tag "${tag}")
@@ -147,7 +147,6 @@ for target in "${targets[@]}"; do
             build_args=(--build-arg "UBUNTU_VERSION=${ubuntu_version}")
             build "linux-gnu" "${target}" "${build_args[@]}"
             ;;
-        hexagon-unknown-linux-musl) build "linux-musl-hexagon" "${target}" ;;
         *-linux-musl*) build "linux-musl" "${target}" ;;
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
         *-android*) build "android" "${target}" ;;

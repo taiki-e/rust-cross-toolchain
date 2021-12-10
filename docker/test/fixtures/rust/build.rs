@@ -5,19 +5,7 @@ fn main() {
 
     cc::Build::new().file("hello_c.c").compile("hello_c");
 
-    let mut cpp = true;
-    if matches!(target, "aarch64-unknown-openbsd" | "wasm32-wasi") {
-        /*
-        TODO(aarch64-unknown-openbsd): clang segfault
-        TODO(wasm32-wasi):
-            Error: failed to run main module `/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm`
-            Caused by:
-                0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
-                1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
-        */
-        cpp = false;
-    }
-    if cpp {
+    if cfg!(feature = "cpp") {
         cc::Build::new()
             .cpp(true)
             .file("hello_cpp.cpp")

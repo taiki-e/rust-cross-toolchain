@@ -21,7 +21,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
-RUN apt-get update -qq && apt-get -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     libxml2 \
     python3
 ARG RUST_TARGET
@@ -63,10 +63,9 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
-COPY --from=test /"${RUST_TARGET}-dev" /"${RUST_TARGET}-dev"
 ARG NODE_VERSION
 ENV EMSDK="/${RUST_TARGET}"
 ENV EM_CACHE="${EMSDK}/upstream/emscripten/cache"
 ENV EMSDK_NODE="${EMSDK}/node/${NODE_VERSION}_64bit/bin/node"
 ENV PATH="${EMSDK}:${EMSDK}/upstream/emscripten:${EMSDK}/node/${NODE_VERSION}_64bit/bin:$PATH"
-ENV PATH="/${RUST_TARGET}-dev/bin:$PATH"
+ENV PATH="$PATH"
