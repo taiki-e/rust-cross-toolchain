@@ -4,7 +4,6 @@
 # - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
 
 ARG UBUNTU_VERSION=18.04
-ARG ALPINE_VERSION=3.15
 
 # https://www.netbsd.org/releases
 ARG NETBSD_VERSION=9.2
@@ -82,9 +81,9 @@ RUN /test/check.sh
 RUN /test/test.sh clang
 COPY --from=test-relocated /DONE /
 
-FROM alpine:"${ALPINE_VERSION}" as final
-SHELL ["/bin/sh", "-eux", "-c"]
-RUN apk --no-cache add bash
+FROM ubuntu:"${UBUNTU_VERSION}" as final
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

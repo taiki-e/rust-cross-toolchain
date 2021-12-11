@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1.3-labs
 
 ARG UBUNTU_VERSION=18.04
-ARG ALPINE_VERSION=3.15
 
 # OpenBSD does not have binary compatibility with previous releases.
 # For now, we select the latest version of OpenBSD.
@@ -17,9 +16,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${SYSROOT_DIR}"
+RUN mkdir -p "${TOOLCHAIN_DIR}"
 
 ARG OPENBSD_VERSION
+RUN <<EOF
+cc_target="${RUST_TARGET}${OPENBSD_VERSION}"
+echo "${cc_target}" >/CC_TARGET
+cd "${TOOLCHAIN_DIR}"
+mkdir -p "${cc_target}"
+ln -s "${cc_target}" "${RUST_TARGET}"
+EOF
+
+# Download OpenBSD libraries and header files.
 # https://cdn.openbsd.org/pub/OpenBSD
 RUN <<EOF
 case "${RUST_TARGET}" in
@@ -82,9 +90,9 @@ RUN /test/check.sh
 RUN /test/test.sh clang
 COPY --from=test-relocated /DONE /
 
-FROM alpine:"${ALPINE_VERSION}" as final
-SHELL ["/bin/sh", "-eux", "-c"]
-RUN apk --no-cache add bash
+FROM ubuntu:"${UBUNTU_VERSION}" as final
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

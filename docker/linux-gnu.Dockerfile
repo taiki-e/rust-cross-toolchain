@@ -16,19 +16,13 @@ RUN /linux-gnu.sh
 # fd -t d '\b(doc|lintian|locale|i18n|man)\b'
 RUN <<EOF
 cc_target="$(</CC_TARGET)"
+rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
-        rm -rf \
-            "${TOOLCHAIN_DIR}"/share/{doc,locale,man} \
-            "${TOOLCHAIN_DIR}/${cc_target}"/libc/usr/share/{i18n,locale}
+        rm -rf "${TOOLCHAIN_DIR}/${cc_target}"/libc/usr/share/{i18n,locale}
         ;;
     riscv32gc-unknown-linux-gnu)
-        rm -rf \
-            "${TOOLCHAIN_DIR}"/share/man \
-            "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
-        ;;
-    *)
-        rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,man} \
+        rm -rf "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
         ;;
 esac
 case "${RUST_TARGET}" in

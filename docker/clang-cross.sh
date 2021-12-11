@@ -6,11 +6,20 @@ IFS=$'\n\t'
 # - https://mcilloni.ovh/2021/02/09/cxx-cross-clang
 
 case "${RUST_TARGET}" in
+    *-linux-musl* | *-freebsd* | *-openbsd*) cc_target="$(</CC_TARGET)" ;;
     riscv32gc-*) cc_target="${CC_TARGET:-"${RUST_TARGET/riscv32gc/riscv32}"}" ;;
     riscv64gc-*) cc_target="${CC_TARGET:-"${RUST_TARGET/riscv64gc/riscv64}"}" ;;
     *) cc_target="${CC_TARGET:-"${RUST_TARGET}"}" ;;
 esac
-common_flags=" --target=${cc_target}"
+common_flags=""
+common_flags_last=""
+case "${RUST_TARGET}" in
+    # The --target option is last because the cross-build of LLVM uses
+    # --target without an OS version.
+    # https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/scripts/freebsd-toolchain.sh#L70-L75
+    *-freebsd* | *-openbsd*) common_flags_last=" --target=${cc_target}" ;;
+    *) common_flags=" --target=${cc_target}" ;;
+esac
 
 case "${RUST_TARGET}" in
     *-unknown-linux-*)
@@ -37,6 +46,7 @@ case "${SYSROOT:-}" in
     *) common_flags="${common_flags} --sysroot=${SYSROOT}" ;;
 esac
 common_flags="${common_flags}${COMMON_FLAGS:+" ${COMMON_FLAGS}"}"
+common_flags_last="${common_flags_last}${COMMON_FLAGS_LAST:+" ${COMMON_FLAGS_LAST}"}"
 case "${RUST_TARGET}" in
     *-freebsd* | *-netbsd* | *-openbsd* | *-dragonfly*)
         case "${common_flags}" in
@@ -47,9 +57,9 @@ case "${RUST_TARGET}" in
 esac
 
 cflags="${common_flags}${CFLAGS:+" ${CFLAGS}"}"
-cflags_last="${CFLAGS_LAST:+" ${CFLAGS_LAST}"}"
+cflags_last="${common_flags_last}${CFLAGS_LAST:+" ${CFLAGS_LAST}"}"
 cxxflags="${common_flags}${CXXFLAGS:+" ${CXXFLAGS}"}"
-cxxflags_last="${CXXFLAGS_LAST:+" ${CXXFLAGS_LAST}"}"
+cxxflags_last="${common_flags_last}${CXXFLAGS_LAST:+" ${CXXFLAGS_LAST}"}"
 case "${RUST_TARGET}" in
     *-linux-gnu* | *-netbsd* | *-dragonfly* | *-redox* | *-windows-gnu*)
         # Ideally, cxxstdlib should be placed before "$@" to allow for user customization.
@@ -95,4 +105,3 @@ set -eu
 ${get_toolchain_dir:-}exec ${CLANG:-clang}++${cxxflags} "\$@"${cxxflags_last}
 EOF
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"
-tail -n +1 "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang++"

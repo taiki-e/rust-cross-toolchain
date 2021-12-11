@@ -16,6 +16,26 @@ else
 fi
 
 case "${RUST_TARGET}" in
+    hexagon-unknown-linux-musl)
+        pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-0.2.108 >/dev/null
+        # "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
+        # TODO: send patch to upstream
+        patch -p1 <<'EOF'
+diff --git a/src/unix/linux_like/linux/musl/b32/hexagon.rs b/src/unix/linux_like/linux/musl/b32/hexagon.rs
+index fbb7720e5..1377ae5e5 100644
+--- a/src/unix/linux_like/linux/musl/b32/hexagon.rs
++++ b/src/unix/linux_like/linux/musl/b32/hexagon.rs
+@@ -655,6 +655,7 @@ pub struct statvfs64 {
+ pub const SYS_write: ::c_int = 64;
+ pub const SYS_writev: ::c_int = 66;
+ pub const SYS_statx: ::c_int = 291;
++pub const SYS_clone3: ::c_long = 435;
+ pub const TCFLSH: ::c_int = 21515;
+ pub const TCGETA: ::c_int = 21509;
+ pub const TCGETS: ::c_int = 21505;
+EOF
+        popd >/dev/null
+        ;;
     riscv64gc-unknown-linux-musl)
         pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-0.2.108 >/dev/null
         # "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std

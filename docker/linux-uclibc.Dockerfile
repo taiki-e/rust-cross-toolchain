@@ -38,8 +38,7 @@ esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://toolchains.bootlin.com/downloads/releases/toolchains/${arch}/tarballs/${arch}--uclibc--bleeding-edge-${TOOLCHAIN_VERSION}.tar.bz2" \
     | tar xjf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
 EOF
-# fd -t d '\b(doc|locale|i18n|man)\b'
-RUN rm -rf /"${RUST_TARGET}"/share/{doc,locale,man}
+RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 
 RUN <<EOF
 cd "${TOOLCHAIN_DIR}"

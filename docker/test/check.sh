@@ -12,7 +12,7 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
     if [[ -d "${bin_dir}" ]]; then
         for path in "${bin_dir}"/*; do
             if file "${path}" | grep -E 'not stripped' >/dev/null; then
-                llvm-strip "${path}"
+                strip "${path}"
             fi
         done
     fi
@@ -25,6 +25,7 @@ if file "${toolchain_dir}/bin"/* | grep -E 'not stripped' >/dev/null; then
     exit 1
 fi
 case "${RUST_TARGET}" in
+    hexagon-unknown-linux-musl) ;;
     *-linux-musl*)
         if file "${toolchain_dir}/bin"/* | grep -E 'dynamically linked' >/dev/null; then
             echo >&2 "binaries must be statically linked"
@@ -46,3 +47,6 @@ for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-g++" "${RUST_TARGET}-clang" "${RU
         file "$(type -P "${cc}")"
     fi
 done
+if [[ -f "${toolchain_dir}/bin/${RUST_TARGET}-clang" ]]; then
+    tail -n +1 "${toolchain_dir}/bin/${RUST_TARGET}-clang" "${toolchain_dir}/bin/${RUST_TARGET}-clang++"
+fi

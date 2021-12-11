@@ -59,7 +59,8 @@ export DOCKER_BUILDKIT=1
 export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
 
 owner="${OWNER:-taiki-e}"
-tag_base="ghcr.io/${owner}/rust-cross-toolchain:"
+registry="ghcr.io/${owner}"
+tag_base="${registry}/rust-cross-toolchain:"
 arch="${HOST_ARCH:-amd64}"
 case "${arch}" in
     amd64)
@@ -157,8 +158,8 @@ for target in "${targets[@]}"; do
             # - powerpc/powerpc64: freebsd 12 uses gcc instead of clang.
             # - powerpc64le/riscv64: not available in freebsd 12.
             # See also: https://www.freebsd.org/releases/13.0R/announce
-            # https://www.freebsd.org/security/#sup
-            # https://www.freebsd.org/releases/12.3R/schedule
+            # Supported FreeBSD releases: https://www.freebsd.org/security/#sup
+            # TODO: update 12.2 to 12.3 on 2022-4: 12.2 will be EoL on 2022-3-31
             for freebsd_version in "12.2" "13.0"; do
                 build_args=(--build-arg "FREEBSD_VERSION=${freebsd_version}")
                 case "${target}" in

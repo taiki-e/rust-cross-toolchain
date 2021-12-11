@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1.3-labs
 
 ARG UBUNTU_VERSION=18.04
-ARG ALPINE_VERSION=3.15
 
 # https://mirror-master.dragonflybsd.org/iso-images
 ARG DRAGONFLY_VERSION=6.0.1
@@ -54,9 +53,9 @@ RUN /test/check.sh
 RUN /test/test.sh clang
 COPY --from=test-relocated /DONE /
 
-FROM alpine:"${ALPINE_VERSION}" as final
-SHELL ["/bin/sh", "-eux", "-c"]
-RUN apk --no-cache add bash
+FROM ubuntu:"${UBUNTU_VERSION}" as final
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

@@ -4,7 +4,6 @@
 # - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/scripts/freebsd-toolchain.sh.
 
 ARG UBUNTU_VERSION=18.04
-ARG ALPINE_VERSION=3.15
 
 # See tools/build-docker.sh
 ARG FREEBSD_VERSION
@@ -15,9 +14,17 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${SYSROOT_DIR}"
+RUN mkdir -p "${TOOLCHAIN_DIR}"
 
 ARG FREEBSD_VERSION
+RUN <<EOF
+cc_target="${RUST_TARGET/riscv64gc/riscv64}${FREEBSD_VERSION%%.*}"
+echo "${cc_target}" >/CC_TARGET
+cd "${TOOLCHAIN_DIR}"
+mkdir -p "${cc_target}"
+ln -s "${cc_target}" "${RUST_TARGET}"
+EOF
+
 # Download FreeBSD libraries and header files.
 # https://download.freebsd.org/ftp/releases
 # - As of 13.0, base.txz for arm* targets it is not distributed.
@@ -36,7 +43,12 @@ esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://download.freebsd.org/ftp/releases/${freebsd_arch}/${FREEBSD_VERSION}-RELEASE/base.txz" \
     | bsdtar xJf - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib ./bin/freebsd-version
 EOF
-# libc refers freebsd-version command: https://github.com/rust-lang/libc/pull/2581
+# libc refers freebsd-version command.
+# This is currently only enabled for their test, but may change in the future.
+# https://github.com/rust-lang/libc/blob/720652a95b9b5b9ee0f12563c55badf50bd0bdab/build.rs#L134
+# https://github.com/rust-lang/libc/issues/2061
+# https://github.com/rust-lang/libc/issues/570
+# https://github.com/rust-lang/libc/pull/2581
 RUN mv "${SYSROOT_DIR}/bin" "${TOOLCHAIN_DIR}/bin"
 
 COPY /clang-cross.sh /
@@ -73,9 +85,9 @@ RUN /test/test.sh clang
 RUN freebsd-version
 COPY --from=test-relocated /DONE /
 
-FROM alpine:"${ALPINE_VERSION}" as final
-SHELL ["/bin/sh", "-eux", "-c"]
-RUN apk --no-cache add bash
+FROM ubuntu:"${UBUNTU_VERSION}" as final
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

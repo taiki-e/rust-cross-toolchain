@@ -14,7 +14,7 @@ run_cargo() {
         cargo_flags+=(--no-default-features)
     fi
     if [[ -f /BUILD_STD ]]; then
-        if [[ "${RUSTFLAGS}" == *"panic=abort"* ]]; then
+        if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
             cargo_flags+=(-Z build-std="panic_abort,std")
         else
             cargo_flags+=(-Z build-std)
@@ -180,21 +180,19 @@ EOF
         ;;
 esac
 no_cpp=""
-no_rust_cpp=""
 case "${RUST_TARGET}" in
     # TODO(aarch64-unknown-openbsd): clang segfault
-    aarch64-unknown-openbsd)
-        no_cpp=1
-        no_rust_cpp=1
-        ;;
+    # TODO(hexagon-unknown-linux-musl): use gcc based toolchain or pass -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" in llvm build
+    aarch64-unknown-openbsd | hexagon-unknown-linux-musl) no_cpp=1 ;;
+esac
+no_rust_cpp="${no_cpp}"
+case "${RUST_TARGET}" in
     # TODO(wasm32-wasi):
     #    Error: failed to run main module `/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm`
     #    Caused by:
     #        0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
-    wasm32-wasi)
-        no_rust_cpp=1
-        ;;
+    wasm32-wasi) no_rust_cpp=1 ;;
 esac
 cat "${dev_tools_dir}/${cc}.env"
 # shellcheck disable=SC1090
@@ -208,10 +206,8 @@ esac
 
 case "${RUST_TARGET}" in
     *-linux-musl*)
-        rust_sysroot="$(rustc --print sysroot)"
-        rustlib="${rust_sysroot}/lib/rustlib/${RUST_TARGET}"
+        rustlib="$(rustc --print sysroot)/lib/rustlib/${RUST_TARGET}"
         self_contained="${rustlib}/lib/self-contained"
-        mkdir -p "${self_contained}"
         if [[ -f /BUILD_STD ]]; then
             case "${RUST_TARGET}" in
                 # llvm libunwind does not support s390x, powerpc
@@ -219,6 +215,8 @@ case "${RUST_TARGET}" in
                 powerpc-* | s390x-*) ;;
                 # TODO
                 riscv64gc-*) ;;
+                # TODO
+                hexagon-*) ;;
                 *)
                     rm /BUILD_STD
                     rm -rf "${rustlib}"
@@ -244,25 +242,21 @@ EOF
                     rm target/"${RUST_TARGET}"/release/deps/*build_std-*
                     cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
                     popd >/dev/null
+
+                    # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/src/bootstrap/compile.rs#L201-L231
+                    # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/compiler/rustc_target/src/spec/crt_objects.rs
+                    # Only recent nightly has libc.a in self-contained.
+                    # https://github.com/rust-lang/rust/pull/90527
+                    # Additionally, there is a vulnerability in the version of libc.a
+                    # distributed via rustup.
+                    # https://github.com/rust-lang/rust/issues/91178
+                    # And if I understand correctly, the code generation on the
+                    # 32bit arm targets looks wrong about FPU arch and thumb ISA.
+                    cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
+                    cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
                     ;;
             esac
         fi
-        case "${RUST_TARGET}" in
-            x86_64-*) ;;
-            *)
-                # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/src/bootstrap/compile.rs#L201-L231
-                # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/compiler/rustc_target/src/spec/crt_objects.rs
-                # Only recent nightly has libc.a in self-contained.
-                # https://github.com/rust-lang/rust/pull/90527
-                # Additionally, there is a vulnerability in the version of libc.a
-                # distributed via rustup.
-                # https://github.com/rust-lang/rust/issues/91178
-                # And if I understand correctly, the code generation on the
-                # 32bit arm targets looks wrong about FPU arch and thumb ISA.
-                cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
-                ;;
-        esac
         ;;
 esac
 
@@ -295,6 +289,8 @@ if [[ -z "${NO_RUN:-}" ]]; then
                 powerpc-* | s390x-*) ;;
                 # TODO
                 riscv64gc-*) ;;
+                # TODO
+                hexagon-*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
@@ -341,12 +337,12 @@ if [[ -z "${NO_RUN:-}" ]]; then
             readelf --arch-specific "${out_dir}"/*
             ;;
     esac
-    file_info_pat=()     # file
-    file_info_not=()     # file
-    file_header_pat=()   # readelf --file-header
-    file_header_not=()   # readelf --file-header
-    arch_specific_pat=() # readelf --arch-specific
-    arch_specific_not=() # readelf --arch-specific
+    file_info_pat=()         # file
+    file_info_pat_not=()     # file
+    file_header_pat=()       # readelf --file-header
+    file_header_pat_not=()   # readelf --file-header
+    arch_specific_pat=()     # readelf --arch-specific
+    arch_specific_pat_not=() # readelf --arch-specific
     case "${RUST_TARGET}" in
         *-linux-* | *-freebsd* | *-netbsd* | *-openbsd* | *-dragonfly* | *-solaris* | *-illumos* | *-redox*)
             case "${RUST_TARGET}" in
@@ -378,26 +374,70 @@ if [[ -z "${NO_RUN:-}" ]]; then
                     file_header_pat+=('Machine:\s+ARM' 'Flags:.*Version5 EABI')
                     case "${RUST_TARGET}" in
                         *hf)
-                            file_header_pat+=('(Flags:.*hard-float ABI)?')
-                            file_header_not+=('soft-float ABI')
+                            file_header_pat+=('(hard-float ABI)?')
+                            file_header_pat_not+=('soft-float')
                             arch_specific_pat+=('Tag_ABI_VFP_args: VFP registers')
                             ;;
                         *)
-                            file_header_pat+=('(Flags:.*soft-float ABI)?')
-                            file_header_not+=('hard-float ABI')
-                            arch_specific_not+=('VFP registers')
+                            file_header_pat+=('(soft-float ABI)?')
+                            file_header_pat_not+=('hard-float')
+                            arch_specific_pat_not+=('VFP registers')
                             ;;
                     esac
                     case "${RUST_TARGET}" in
-                        arm-*hf) arch_specific_pat+=('Tag_CPU_arch: v6' 'Tag_THUMB_ISA_use: Thumb-1' 'Tag_FP_arch: VFPv2') ;;
-                        arm-*) arch_specific_pat+=('Tag_CPU_arch: v6' 'Tag_THUMB_ISA_use: Thumb-1') ;;
-                        armv4t-*) arch_specific_pat+=('Tag_CPU_arch: v4T' 'Tag_THUMB_ISA_use: Thumb-1') ;;
-                        # TODO
-                        armv5te-*-uclibceabi) arch_specific_pat+=('Tag_CPU_arch: v5TE(J)?' 'Tag_THUMB_ISA_use: Thumb-1') ;;
-                        armv5te-*) arch_specific_pat+=('Tag_CPU_arch: v5TE' 'Tag_THUMB_ISA_use: Thumb-1') ;;
-                        armv7-*hf) arch_specific_pat+=('Tag_CPU_arch: v7' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2' 'Tag_FP_arch: VFPv3-D16') ;;
-                        armv7-*) arch_specific_pat+=('Tag_CPU_arch: v7' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
-                        thumbv7neon-*) arch_specific_pat+=('Tag_CPU_arch: v7' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2' 'Tag_FP_arch: VFPv4' 'Tag_Advanced_SIMD_arch: NEONv1 with Fused-MAC') ;;
+                        arm-*) arch_specific_pat+=('Tag_CPU_arch: v6') ;;
+                        armv4t-*) arch_specific_pat+=('Tag_CPU_arch: v4T') ;;
+                        armv5te-*) arch_specific_pat+=('Tag_CPU_arch: v5TE(J)?') ;;
+                        armv7-* | thumbv7neon-*) arch_specific_pat+=('Tag_CPU_arch: v7' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
+                        *) bail "unrecognized target '${RUST_TARGET}'" ;;
+                    esac
+                    case "${RUST_TARGET}" in
+                        arm-*hf)
+                            for bin in "${out_dir}"/*; do
+                                if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
+                                    assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
+                                    assert_arch_specific 'Tag_FP_arch: VFPv3' "${bin}"
+                                else
+                                    assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
+                                    assert_arch_specific 'Tag_FP_arch: VFPv2' "${bin}"
+                                fi
+                            done
+                            ;;
+                        arm-*)
+                            for bin in "${out_dir}"/*; do
+                                if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
+                                    assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
+                                else
+                                    assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
+                                fi
+                            done
+                            ;;
+                        armv4t-*) arch_specific_pat+=('Tag_THUMB_ISA_use: Thumb-1') ;;
+                        armv5te-*)
+                            for bin in "${out_dir}"/*; do
+                                if [[ "${RUST_TARGET}" == *"-linux-uclibc"* ]]; then
+                                    assert_arch_specific 'Tag_CPU_arch: v5TE(J)?' "${bin}"
+                                else
+                                    assert_arch_specific 'Tag_CPU_arch: v5TE' "${bin}"
+                                fi
+                                if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
+                                    assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
+                                else
+                                    assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
+                                fi
+                            done
+                            ;;
+                        armv7-*hf)
+                            for bin in "${out_dir}"/*; do
+                                if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
+                                    assert_arch_specific 'Tag_FP_arch: VFPv3' "${bin}"
+                                else
+                                    assert_arch_specific 'Tag_FP_arch: VFPv3-D16' "${bin}"
+                                fi
+                            done
+                            ;;
+                        armv7-*) ;;
+                        thumbv7neon-*) arch_specific_pat+=('Tag_FP_arch: VFPv4' 'Tag_Advanced_SIMD_arch: NEONv1 with Fused-MAC') ;;
                         *) bail "unrecognized target '${RUST_TARGET}'" ;;
                     esac
                     ;;
@@ -460,9 +500,9 @@ if [[ -z "${NO_RUN:-}" ]]; then
                             file_header_pat+=('Flags:.*abiv2')
                             ;;
                         *)
-                            file_info_not+=('OpenPOWER ELF V2 ABI')
+                            file_info_pat_not+=('OpenPOWER ELF V2 ABI')
                             file_header_pat+=('(Flags:.*abiv1)?')
-                            file_header_not+=('Flags:.*abiv2')
+                            file_header_pat_not+=('Flags:.*abiv2')
                             ;;
                     esac
                     ;;
@@ -654,19 +694,19 @@ if [[ -z "${NO_RUN:-}" ]]; then
             fi
             assert_file_info "${pat}" "${bin}"
         done
-        for pat in "${file_info_not[@]}"; do
+        for pat in "${file_info_pat_not[@]}"; do
             assert_not_file_info "${pat}" "${bin}"
         done
         for pat in "${file_header_pat[@]}"; do
             assert_file_header "${pat}" "${bin}"
         done
-        for pat in "${file_header_not[@]}"; do
+        for pat in "${file_header_pat_not[@]}"; do
             assert_not_file_header "${pat}" "${bin}"
         done
         for pat in "${arch_specific_pat[@]}"; do
             assert_arch_specific "${pat}" "${bin}"
         done
-        for pat in "${arch_specific_not[@]}"; do
+        for pat in "${arch_specific_pat_not[@]}"; do
             assert_not_arch_specific "${pat}" "${bin}"
         done
     done

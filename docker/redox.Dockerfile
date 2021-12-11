@@ -15,7 +15,7 @@ RUN mkdir -p "${TOOLCHAIN_DIR}"
 
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://static.redox-os.org/toolchain/${RUST_TARGET}/relibc-install.tar.gz" \
         | tar xzf - -C "${TOOLCHAIN_DIR}"
-RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,locale,man}
+RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 
 COPY /clang-cross.sh /
 ARG GCC_VERSION=8.2.0
