@@ -5,8 +5,8 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# https://www.netbsd.org/releases
-ARG NETBSD_VERSION=9.2
+# See tools/build-docker.sh
+ARG NETBSD_VERSION
 
 FROM ghcr.io/taiki-e/downloader as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -30,26 +30,31 @@ case "${RUST_TARGET}" in
     x86_64-*) netbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
+ext=.tgz
+cmd=xzf
 case "${RUST_TARGET}" in
     sparc64-* | x86_64-*)
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/base.tar.xz" \
-            | tar xJf - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/comp.tar.xz" \
-            | tar xJf - -C "${SYSROOT_DIR}" ./usr/include ./usr/lib
-        ;;
-    *)
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/base.tgz" \
-            | tar xzf - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/comp.tgz" \
-            | tar xzf - -C "${SYSROOT_DIR}" ./usr/include ./usr/lib
+        if [[ "${NETBSD_VERSION}" != "8"* ]]; then
+            ext=.tar.xz
+            cmd=xJf
+        fi
         ;;
 esac
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/base${ext}" \
+    | tar "${cmd}" - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/comp${ext}" \
+    | tar "${cmd}" - -C "${SYSROOT_DIR}" ./usr/include ./usr/lib
 EOF
 
 COPY /clang-cross.sh /
-RUN COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib" \
-    CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++" \
+RUN <<EOF
+export CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++"
+if [[ "${NETBSD_VERSION}" == "8"* ]]; then
+    export CXXFLAGS="-std=c++14 ${CXXFLAGS}"
+fi
+COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib" \
     /clang-cross.sh
+EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

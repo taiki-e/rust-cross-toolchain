@@ -9,9 +9,11 @@ ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04
 ARG TOOLCHAIN_TAG=dev
 
+# See tools/build-docker.sh
+ARG MUSL_VERSION
 ARG GCC_VERSION=9.4.0
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-amd64" as toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${MUSL_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-amd64" as toolchain
 
 FROM rust:alpine as build-libunwind
 SHELL ["/bin/sh", "-eux", "-c"]
@@ -30,6 +32,7 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 
+# When updating this, the reminder to update docker/linux-musl.Dockerfile.
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) cc_target=aarch64-linux-musl ;;
@@ -54,52 +57,15 @@ esac
 echo "${cc_target}" >/CC_TARGET
 EOF
 
-# Default ld-musl-*.so.1 is broken symbolic link to /lib/libc.so.
-RUN <<EOF
-case "${RUST_TARGET}" in
-    hexagon-*)
-        echo hexagon >/LDSO_ARCH
-        echo hexagon >/LDSO_ARCH_CLANG
-        exit 0
-        ;;
-esac
-cd "${SYSROOT_DIR}/lib"
-case "${RUST_TARGET}" in
-    aarch64-*) ldso_arch=aarch64 ;;
-    arm*hf | thumbv7neon-*) ldso_arch=armhf ;;
-    arm*) ldso_arch=arm ;;
-    hexagon-*) ldso_arch=hexagon ;;
-    i*86-*) ldso_arch=i386 ;;
-    mips-*) ldso_arch=mips-sf ;;
-    mips64-*) ldso_arch=mips64 ;;
-    mips64el-*) ldso_arch=mips64el ;;
-    mipsel-*) ldso_arch=mipsel-sf ;;
-    powerpc-*) ldso_arch=powerpc ;;
-    powerpc64-*) ldso_arch=powerpc64 ;;
-    powerpc64le-*) ldso_arch=powerpc64le ;;
-    riscv32gc-*) ldso_arch=riscv32 ;;
-    riscv64gc-*) ldso_arch=riscv64 ;;
-    s390x-*) ldso_arch=s390x ;;
-    x86_64-*) ldso_arch=x86_64 ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
-esac
-ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
-echo "${ldso_arch}" >/LDSO_ARCH
-EOF
 # TODO: needed for clang
 RUN <<EOF
 case "${RUST_TARGET}" in
-    hexagon-*) exit 0 ;;
+    mips-*) ldso_arch=mips ;;
+    mipsel-*) ldso_arch=mipsel ;;
+    *) exit 0 ;;
 esac
 cd "${SYSROOT_DIR}/lib"
-ldso_arch="$(</LDSO_ARCH)"
-case "${RUST_TARGET}" in
-    mips-*-musl | mipsel-*-musl) ldso_arch="${ldso_arch/-sf/}" ;;
-esac
-if [[ "${ldso_arch}" != "$(</LDSO_ARCH)" ]]; then
-    ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
-fi
-echo "${ldso_arch}" >/LDSO_ARCH_CLANG
+ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
 EOF
 
 COPY /clang-cross.sh /
@@ -141,7 +107,6 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
-COPY --from=builder /LDSO_ARCH /LDSO_ARCH_CLANG /
 ARG GCC_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
@@ -157,7 +122,6 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
-COPY --from=builder /LDSO_ARCH /LDSO_ARCH_CLANG /
 ARG GCC_VERSION
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh

@@ -14,17 +14,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p "${SYSROOT_DIR}"
 
 ARG FREEBSD_VERSION
-RUN <<EOF
-cc_target="${RUST_TARGET/riscv64gc/riscv64}${FREEBSD_VERSION%%.*}"
-echo "${cc_target}" >/CC_TARGET
-cd "${TOOLCHAIN_DIR}"
-mkdir -p "${cc_target}"
-ln -s "${cc_target}" "${RUST_TARGET}"
-EOF
-
 # Download FreeBSD libraries and header files.
 # https://download.freebsd.org/ftp/releases
 # - As of 13.0, base.txz for arm* targets it is not distributed.

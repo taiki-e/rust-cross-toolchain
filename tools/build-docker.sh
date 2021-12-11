@@ -2,12 +2,25 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# USAGE:
+#    ./tools/build-docker.sh [TARGET]...
+#    ./tools/build-docker.sh target-list
+
 cd "$(cd "$(dirname "$0")" && pwd)"/..
+
+x() {
+    local cmd="$1"
+    shift
+    (
+        set -x
+        "$cmd" "$@"
+    )
+}
 
 if [[ "${1:-}" == "-"* ]]; then
     cat <<EOF
 USAGE:
-    $0 [TARGET]..
+    $0 [TARGET]...
     $0 target-list
 EOF
     exit 1
@@ -20,7 +33,6 @@ if [[ "${1:-}" == "target-list" ]]; then
     done
     exit 0
 fi
-set -x
 if [[ $# -gt 0 ]]; then
     # shellcheck disable=SC1091
     . tools/target-list.sh
@@ -87,12 +99,12 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
-        docker pull "${tag}"
-        docker history "${tag}"
+        x docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker pull "${tag}"
+        x docker history "${tag}"
     else
-        docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
-        docker history "${tag}"
+        x docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker history "${tag}"
     fi
 }
 
@@ -119,8 +131,7 @@ build() {
             if [[ -n "${is_release}" ]]; then
                 build_args+=(--tag "${tag}")
             fi
-            local tag="${tag}-${github_tag}"
-            build_args+=(--tag "${tag}")
+            build_args+=(--tag "${tag}-${github_tag}")
         fi
         local tag="${tag}${sys_version}"
         log_dir="${log_dir}${sys_version}"
@@ -139,46 +150,121 @@ build() {
 for target in "${targets[@]}"; do
     case "${target}" in
         *-linux-gnu*)
+            # NOTE: g++-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
+            ubuntu_version=18.04
             case "${target}" in
                 # g++-mipsisa(32|64)r6(el)-linux-gnu(abi64) is not available in ubuntu 18.04.
                 mipsisa32r6* | mipsisa64r6*) ubuntu_version=20.04 ;;
-                # NOTE: g++-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
-                *) ubuntu_version=18.04 ;;
             esac
-            build_args=(--build-arg "UBUNTU_VERSION=${ubuntu_version}")
-            build "linux-gnu" "${target}" "${build_args[@]}"
+            build "linux-gnu" "${target}" \
+                --build-arg "UBUNTU_VERSION=${ubuntu_version}"
             ;;
-        *-linux-musl*) build "linux-musl" "${target}" ;;
-        *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
-        *-android*) build "android" "${target}" ;;
-        *-freebsd*)
-            # FreeBSD have binary compatibility with previous releases.
-            # Therefore, the default is FreeBSD 12 that is the minimum supported version.
-            # However, for powerpc* and riscv64 targets, we use freebsd 13, because:
-            # - powerpc/powerpc64: freebsd 12 uses gcc instead of clang.
-            # - powerpc64le/riscv64: not available in freebsd 12.
-            # See also: https://www.freebsd.org/releases/13.0R/announce
-            # Supported FreeBSD releases: https://www.freebsd.org/security/#sup
-            # TODO: update 12.2 to 12.3 on 2022-4: 12.2 will be EoL on 2022-3-31
-            for freebsd_version in "12.2" "13.0"; do
-                build_args=(--build-arg "FREEBSD_VERSION=${freebsd_version}")
+        *-linux-musl*)
+            if [[ -n "${MUSL_VERSION:-}" ]]; then
+                musl_versions=("${MUSL_VERSION}")
+            else
+                # https://musl.libc.org/releases.html
+                # https://github.com/rust-lang/libc/issues/1848
+                # When updating this, the reminder to update docker/base/build-docker.sh.
+                musl_versions=("1.1" "1.2")
+            fi
+            default_musl_version=1.1
+            for musl_version in "${musl_versions[@]}"; do
                 case "${target}" in
-                    aarch64-* | i686-* | x86_64-*)
-                        build "freebsd" "${target}" "${freebsd_version%%.*}" "12" "${build_args[@]}"
-                        ;;
-                    powerpc-* | powerpc64-* | powerpc64le-* | riscv64gc-*)
-                        if [[ "${freebsd_version}" == "12"* ]]; then
+                    hexagon-*)
+                        default_musl_version=1.2
+                        if [[ "${musl_version}" != "${default_musl_version}" ]]; then
                             continue
                         fi
-                        build "freebsd" "${target}" "${freebsd_version%%.*}" "13" "${build_args[@]}"
+                        build "linux-musl" "${target}" "${musl_version}" "${default_musl_version}"
                         ;;
-                    *) echo >&2 "unrecognized target '${target}'" && exit 1 ;;
+                    *)
+                        build "linux-musl" "${target}" "${musl_version}" "${default_musl_version}" \
+                            --build-arg "MUSL_VERSION=${musl_version}"
+                        ;;
                 esac
             done
             ;;
-        *-netbsd*) build "netbsd" "${target}" ;;
-        *-openbsd*) build "openbsd" "${target}" ;;
-        *-dragonfly*) build "dragonfly" "${target}" ;;
+        *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
+        *-android*) build "android" "${target}" ;;
+        *-freebsd*)
+            if [[ -n "${FREEBSD_VERSION:-}" ]]; then
+                freebsd_versions=("${FREEBSD_VERSION}")
+            else
+                # FreeBSD have binary compatibility with previous releases.
+                # Therefore, the default is FreeBSD 12 that is the minimum supported version.
+                # However, for powerpc* and riscv64, we don't support FreeBSD 12, because:
+                # - powerpc/powerpc64: FreeBSD 12 uses gcc instead of clang.
+                # - powerpc64le/riscv64: not available in FreeBSD 12.
+                # See also https://www.freebsd.org/releases/13.0R/announce.
+                # Supported releases: https://www.freebsd.org/security/#sup
+                # TODO: update 12.2 to 12.3 on 2022-4: 12.2 will be EoL on 2022-3-31
+                freebsd_versions=("12.2" "13.0")
+            fi
+            default_freebsd_version=12
+            for freebsd_version in "${freebsd_versions[@]}"; do
+                case "${target}" in
+                    powerpc-* | powerpc64-* | powerpc64le-* | riscv64gc-*)
+                        default_freebsd_version=13
+                        if [[ "${freebsd_version}" == "12"* ]]; then
+                            continue
+                        fi
+                        ;;
+                esac
+                build "freebsd" "${target}" "${freebsd_version%%.*}" "${default_freebsd_version}" \
+                    --build-arg "FREEBSD_VERSION=${freebsd_version}"
+            done
+            ;;
+        *-netbsd*)
+            if [[ -n "${NETBSD_VERSION:-}" ]]; then
+                netbsd_versions=("${NETBSD_VERSION}")
+            else
+                # The default is NetBSD 8 that is the minimum supported version.
+                # However, for aarch64, we don't support NetBSD 8, because:
+                # - aarch64: not available in NetBSD 8.
+                # See also https://www.netbsd.org/releases/formal-9/NetBSD-9.0.html.
+                # Supported releases: https://www.netbsd.org/releases
+                # See also https://www.netbsd.org/releases/formal.html.
+                netbsd_versions=("8.2" "9.2")
+            fi
+            default_netbsd_version=8
+            for netbsd_version in "${netbsd_versions[@]}"; do
+                case "${target}" in
+                    aarch64-*)
+                        default_netbsd_version=9
+                        if [[ "${netbsd_version}" == "8"* ]]; then
+                            continue
+                        fi
+                        ;;
+                esac
+                build "netbsd" "${target}" "${netbsd_version%%.*}" "${default_netbsd_version}" \
+                    --build-arg "NETBSD_VERSION=${netbsd_version}"
+            done
+            ;;
+        *-openbsd*)
+            # OpenBSD does not have binary compatibility with previous releases.
+            # For now, we select the oldest supported version as default version.
+            # However, we don't support OpenBSD 6.9, because there is no
+            # libexecinfo.* in binary distribution sets.
+            # https://github.com/rust-lang/libc/issues/570
+            # https://github.com/golang/go/issues/15227
+            # https://github.com/golang/go/wiki/OpenBSD
+            # https://github.com/golang/go/wiki/MinimumRequirements#openbsd
+            # The latest two releases are supported.
+            # https://www.openbsd.org/faq/faq5.html#Flavors
+            # https://en.wikipedia.org/wiki/OpenBSD#Releases
+            openbsd_version="${OPENBSD_VERSION:-"7.0"}"
+            default_openbsd_version="7.0"
+            build "openbsd" "${target}" "${openbsd_version}" "${default_openbsd_version}" \
+                --build-arg "OPENBSD_VERSION=${openbsd_version}"
+            ;;
+        *-dragonfly*)
+            # https://mirror-master.dragonflybsd.org/iso-images
+            dragonfly_version="${DRAGONFLY_VERSION:-"6.0.1"}"
+            default_dragonfly_version=6
+            build "dragonfly" "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}" \
+                --build-arg "DRAGONFLY_VERSION=${dragonfly_version}"
+            ;;
         *-solaris*) build "solaris" "${target}" ;;
         *-illumos*) build "illumos" "${target}" ;;
         *-redox*) build "redox" "${target}" ;;
@@ -189,3 +275,7 @@ for target in "${targets[@]}"; do
         *) echo >&2 "unrecognized target '${target}'" && exit 1 ;;
     esac
 done
+
+if [[ -n "${CI:-}" ]]; then
+    docker images
+fi

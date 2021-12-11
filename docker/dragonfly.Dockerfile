@@ -2,8 +2,8 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# https://mirror-master.dragonflybsd.org/iso-images
-ARG DRAGONFLY_VERSION=6.0.1
+# See tools/build-docker.sh
+ARG DRAGONFLY_VERSION
 
 FROM ghcr.io/taiki-e/downloader as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -14,6 +14,7 @@ ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${SYSROOT_DIR}"
 
 ARG DRAGONFLY_VERSION
+# https://mirror-master.dragonflybsd.org/iso-images
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://mirror-master.dragonflybsd.org/iso-images/dfly-x86_64-${DRAGONFLY_VERSION}_REL.iso.bz2" \
         | bsdtar xjf - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib
 

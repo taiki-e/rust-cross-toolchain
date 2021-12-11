@@ -5,77 +5,130 @@ IFS=$'\n\t'
 # Test the toolchain.
 
 bail() {
+    set +x
     echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
     exit 1
 }
 run_cargo() {
-    local cargo_flags=()
-    if [[ -n "${no_rust_cpp}" ]]; then
-        cargo_flags+=(--no-default-features)
-    fi
-    if [[ -f /BUILD_STD ]]; then
-        if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
-            cargo_flags+=(-Z build-std="panic_abort,std")
-        else
-            cargo_flags+=(-Z build-std)
+    (
+        set +x
+        local cargo_flags=()
+        if [[ -n "${no_rust_cpp}" ]]; then
+            cargo_flags+=(--no-default-features)
         fi
-    fi
-    subcmd="$1"
-    shift
-    cargo "${subcmd}" --offline --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
+        if [[ -f /BUILD_STD ]]; then
+            if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
+                cargo_flags+=(-Z build-std="panic_abort,std")
+            else
+                cargo_flags+=(-Z build-std)
+            fi
+        fi
+        subcmd="$1"
+        shift
+        set -x
+        cargo "${subcmd}" --offline --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
+    )
 }
 assert_file_info() {
     local pat="$1"
     shift
     for bin in "$@"; do
+        echo -n "info: checking file info pattern '${pat}' in ${bin} ..."
         if ! file "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
-            bail "expected '${pat}', actually: $(file "${bin}")"
+            echo "failed"
+            echo "error: expected '${pat}' in ${bin}, actually:"
+            (
+                set -x
+                file "${bin}"
+            )
+            exit 1
         fi
+        echo "ok"
     done
 }
 assert_not_file_info() {
     local pat="$1"
     shift
     for bin in "$@"; do
+        echo -n "info: checking file info pattern (not) '${pat}' in ${bin} ..."
         if ! file "${bin}" | grep -v "${pat}" >/dev/null; then
-            bail
+            echo "failed"
+            echo "error: unexpected '${pat}' in ${bin}:"
+            (
+                set -x
+                file "${bin}"
+            )
+            exit 1
         fi
+        echo "ok"
     done
 }
 assert_file_header() {
     local pat="$1"
     shift
     for bin in "$@"; do
+        echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
         if ! readelf --file-header "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
-            bail "expected '${pat}', actually: $(readelf --file-header "${bin}")"
+            echo "failed"
+            echo "error: expected '${pat}' in ${bin}, actually:"
+            (
+                set -x
+                readelf --file-header "${bin}"
+            )
+            exit 1
         fi
+        echo "ok"
     done
 }
 assert_not_file_header() {
     local pat="$1"
     shift
     for bin in "$@"; do
+        echo -n "info: checking file header pattern (not) '${pat}' in ${bin} ..."
         if ! readelf --file-header "${bin}" | grep -v "${pat}" >/dev/null; then
-            bail
+            echo "failed"
+            echo "error: unexpected '${pat}' in ${bin}:"
+            (
+                set -x
+                readelf --file-header "${bin}"
+            )
+            exit 1
         fi
+        echo "ok"
     done
 }
 assert_arch_specific() {
     local pat="$1"
     shift
     for bin in "$@"; do
+        echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
         if ! readelf --arch-specific "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
-            bail "expected '${pat}', actually: $(readelf --arch-specific "${bin}")"
+            echo "failed"
+            echo "error: expected '${pat}' in ${bin}, actually:"
+            (
+                set -x
+                readelf --arch-specific "${bin}"
+            )
+            exit 1
         fi
+        echo "ok"
     done
 }
 assert_not_arch_specific() {
     local pat="$1"
     shift
     for bin in "$@"; do
+        echo -n "info: checking file header pattern (not) '${pat}' in ${bin} ..."
         if ! readelf --arch-specific "${bin}" | grep -v "${pat}" >/dev/null; then
-            bail
+            echo "failed"
+            echo "error: unexpected '${pat}' in ${bin}:"
+            (
+                set -x
+                readelf --arch-specific "${bin}"
+            )
+            exit 1
         fi
+        echo "ok"
     done
 }
 
@@ -328,6 +381,11 @@ if [[ -z "${NO_RUN:-}" ]]; then
     esac
     popd >/dev/null
 
+    # Build Rust tests
+    pushd rust >/dev/null
+    run_cargo test --no-run
+    popd >/dev/null
+
     # Check the compiled binaries.
     file "${out_dir}"/*
     case "${RUST_TARGET}" in
@@ -337,6 +395,7 @@ if [[ -z "${NO_RUN:-}" ]]; then
             readelf --arch-specific "${out_dir}"/*
             ;;
     esac
+    set +x
     file_info_pat=()         # file
     file_info_pat_not=()     # file
     file_header_pat=()       # readelf --file-header
@@ -346,7 +405,7 @@ if [[ -z "${NO_RUN:-}" ]]; then
     case "${RUST_TARGET}" in
         *-linux-* | *-freebsd* | *-netbsd* | *-openbsd* | *-dragonfly* | *-solaris* | *-illumos* | *-redox*)
             case "${RUST_TARGET}" in
-                arm* | i*86-* | mipsel-* | mipsisa32r6el-* | riscv32gc-* | thumbv7neon-* | x86_64-*x32)
+                arm* | hexagon-* | i*86-* | mipsel-* | mipsisa32r6el-* | riscv32gc-* | thumbv7neon-* | x86_64-*x32)
                     file_info_pat+=('ELF 32-bit LSB')
                     file_header_pat+=('Class:\s+ELF32' 'little endian')
                     ;;
@@ -441,6 +500,10 @@ if [[ -z "${NO_RUN:-}" ]]; then
                         *) bail "unrecognized target '${RUST_TARGET}'" ;;
                     esac
                     ;;
+                hexagon-*)
+                    file_info_pat+=('QUALCOMM DSP6')
+                    file_header_pat+=('Machine:\s+QUALCOMM DSP6 Processor')
+                    ;;
                 i*86-*)
                     file_info_pat+=('Intel 80386')
                     file_header_pat+=('Machine:\s+Intel 80386')
@@ -502,7 +565,7 @@ if [[ -z "${NO_RUN:-}" ]]; then
                         *)
                             file_info_pat_not+=('OpenPOWER ELF V2 ABI')
                             file_header_pat+=('(Flags:.*abiv1)?')
-                            file_header_pat_not+=('Flags:.*abiv2')
+                            file_header_pat_not+=('abiv2')
                             ;;
                     esac
                     ;;
@@ -711,6 +774,7 @@ if [[ -z "${NO_RUN:-}" ]]; then
         done
     done
 fi
+set -x
 
 # Run the compiled binaries.
 # TODO(freebsd): can we use vm or ci images for testing? https://download.freebsd.org/ftp/releases/VM-IMAGES https://download.freebsd.org/ftp/releases/CI-IMAGES
@@ -851,6 +915,7 @@ EOF
             # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
             powerpc-unknown-linux-gnuspe) ;;
             *)
+                # Run Rust tests
                 pushd rust >/dev/null
                 run_cargo test
                 popd >/dev/null

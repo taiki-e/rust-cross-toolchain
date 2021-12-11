@@ -64,9 +64,10 @@
 
 | libc | GCC | clang | C++ | test |
 | ---- | --- | ----- | --- | ---- |
-| musl 1.2.2 / 1.1.24 (32-bit) [1] | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu-user) |
+| musl 1.1.24 [1] [2] / 1.2.2 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu-user) |
 
-[1] For 32-bit targets, we use musl 1.1 (with a patch that fixes CVE-2020-28928) for [compatibility with upstream][libc#1848]<br>
+[1] Default (see [libc#1848] for details)<br>
+[2] With a patch that fixes CVE-2020-28928<br>
 
 ([Dockerfile](docker/linux-musl.Dockerfile))
 
@@ -131,7 +132,10 @@
 
 | libc | GCC | clang | C++ | test |
 | ---- | --- | ----- | --- | ---- |
-| netbsd 9.2 | N/A | host | ✓ (libstdc++) |  |
+| netbsd 8.2 [1] / 9.2 [2] | N/A | host | ✓ (libstdc++) |  |
+
+[1] default, only i686 and x86_64<br>
+[2] default of aarch64<br>
 
 ([Dockerfile](docker/netbsd.Dockerfile))
 
@@ -139,7 +143,7 @@
 
 - `aarch64-unknown-netbsd` (tier3)
 - `i686-unknown-netbsd` (tier3)
-- `x86_64-unknown-netbsd` (tier3)
+- `x86_64-unknown-netbsd`
 
 ### OpenBSD
 

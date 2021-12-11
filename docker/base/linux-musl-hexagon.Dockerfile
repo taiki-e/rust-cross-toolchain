@@ -10,21 +10,23 @@ ARG UBUNTU_VERSION=18.04
 FROM ghcr.io/taiki-e/downloader as llvm-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 # https://github.com/llvm/llvm-project/releases/tag/llvmorg-13.0.0
-ARG LLVM_URL=https://github.com/llvm/llvm-project/archive/d7b669b3a30345cfcdb2fde2af6f48aa4b94845d.tar.gz
+ARG LLVM_REV=d7b669b3a30345cfcdb2fde2af6f48aa4b94845d
 RUN mkdir -p /llvm-project
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "${LLVM_URL}" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://github.com/llvm/llvm-project/archive/${LLVM_REV}.tar.gz" \
         | tar xzf - --strip-components 1 -C /llvm-project
 FROM ghcr.io/taiki-e/downloader as musl-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-ARG MUSL_URL=https://github.com/quic/musl/archive/aff74b395fbf59cd7e93b3691905aa1af6c0778c.tar.gz
+# https://github.com/quic/musl/commits/hexagon
+# musl 1.2.2: https://github.com/quic/musl/blob/570ed19dab64b413deae61ea895043093de1dddd/VERSION
+ARG MUSL_REV=570ed19dab64b413deae61ea895043093de1dddd
 RUN mkdir -p /musl
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "${MUSL_URL}" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://github.com/quic/musl/archive/${MUSL_REV}.tar.gz" \
         | tar xzf - --strip-components 1 -C /musl
 FROM ghcr.io/taiki-e/downloader as linux-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-ARG LINUX_URL=https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.6.18.tar.xz
+ARG LINUX_VERSION=5.6.18
 RUN mkdir -p /linux
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "${LINUX_URL}" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${LINUX_VERSION}.tar.xz" \
         | tar xJf - --strip-components 1 -C /linux
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
@@ -177,7 +179,11 @@ PATH="${TOOLCHAIN_DIR}/bin/:$PATH" make CROSS_COMPILE= install
 EOF
 RUN <<EOF
 cd "${HEX_TOOLS_TARGET_BASE}"/lib
+ls | grep '\.so'
 ln -sf libc.so ld-musl-hexagon.so.1
+mkdir -p "${SYSROOT_DIR}/lib"
+cd "${SYSROOT_DIR}/lib"
+ln -sf ../usr/lib/ld-musl-hexagon.so.1
 EOF
 
 COPY /common.sh /

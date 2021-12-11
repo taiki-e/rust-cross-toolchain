@@ -14,9 +14,22 @@ IFS=$'\n\t'
 
 cd "$(cd "$(dirname "$0")" && pwd)"/..
 
+x() {
+    local cmd="$1"
+    shift
+    if [[ -n "${verbose:-}" ]]; then
+        (
+            set -x
+            "$cmd" "$@"
+        )
+    else
+        "$cmd" "$@"
+    fi
+}
+
 if [[ "${1:-}" == "-v" ]]; then
     shift
-    set -x
+    verbose=1
 fi
 if [[ $# -gt 0 ]]; then
     cat <<EOF
@@ -33,38 +46,38 @@ fi
 
 if [[ -z "${CI:-}" ]]; then
     if type -P rustfmt &>/dev/null; then
-        rustfmt $(git ls-files '*.rs')
+        x rustfmt $(git ls-files '*.rs')
     fi
     if type -P shfmt &>/dev/null; then
-        shfmt -l -w $(git ls-files '*.sh')
+        x shfmt -l -w $(git ls-files '*.sh')
     else
         echo >&2 "WARNING: 'shfmt' is not installed"
     fi
     if type -P "${prettier}" &>/dev/null; then
-        "${prettier}" -l -w $(git ls-files '*.yml')
+        x "${prettier}" -l -w $(git ls-files '*.yml')
     else
         echo >&2 "WARNING: 'prettier' is not installed"
     fi
     if type -P clang-format &>/dev/null; then
-        clang-format -i $(git ls-files '*.c')
-        clang-format -i $(git ls-files '*.cpp')
+        x clang-format -i $(git ls-files '*.c')
+        x clang-format -i $(git ls-files '*.cpp')
     else
         echo >&2 "WARNING: 'clang-format' is not installed"
     fi
     if type -P shellcheck &>/dev/null; then
-        shellcheck $(git ls-files '*.sh')
+        x shellcheck $(git ls-files '*.sh')
         # SC2154 doesn't seem to work on dockerfile.
-        shellcheck -e SC2148,SC2154 $(git ls-files '*Dockerfile')
+        x shellcheck -e SC2148,SC2154 $(git ls-files '*Dockerfile')
     else
         echo >&2 "WARNING: 'shellcheck' is not installed"
     fi
 else
-    rustfmt --check $(git ls-files '*.rs')
-    shfmt -d $(git ls-files '*.sh')
-    "${prettier}" -c $(git ls-files '*.yml')
-    clang-format -i $(git ls-files '*.cpp')
-    git diff --exit-code
-    shellcheck $(git ls-files '*.sh')
+    x rustfmt --check $(git ls-files '*.rs')
+    x shfmt -d $(git ls-files '*.sh')
+    x "${prettier}" -c $(git ls-files '*.yml')
+    x clang-format -i $(git ls-files '*.cpp')
+    x git diff --exit-code
+    x shellcheck $(git ls-files '*.sh')
     # SC2154 doesn't seem to work on dockerfile.
-    shellcheck -e SC2148,SC2154 $(git ls-files '*Dockerfile')
+    x shellcheck -e SC2148,SC2154 $(git ls-files '*Dockerfile')
 fi

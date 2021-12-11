@@ -2,13 +2,8 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# OpenBSD does not have binary compatibility with previous releases.
-# For now, we select the latest version of OpenBSD.
-# https://github.com/rust-lang/libc/issues/570
-# https://github.com/golang/go/issues/15227
-# https://github.com/golang/go/wiki/OpenBSD
-# https://github.com/golang/go/wiki/MinimumRequirements#openbsd
-ARG OPENBSD_VERSION=7.0
+# See tools/build-docker.sh
+ARG OPENBSD_VERSION
 
 FROM ghcr.io/taiki-e/downloader as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -16,17 +11,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p "${SYSROOT_DIR}"
 
 ARG OPENBSD_VERSION
-RUN <<EOF
-cc_target="${RUST_TARGET}${OPENBSD_VERSION}"
-echo "${cc_target}" >/CC_TARGET
-cd "${TOOLCHAIN_DIR}"
-mkdir -p "${cc_target}"
-ln -s "${cc_target}" "${RUST_TARGET}"
-EOF
-
 # Download OpenBSD libraries and header files.
 # https://cdn.openbsd.org/pub/OpenBSD
 RUN <<EOF

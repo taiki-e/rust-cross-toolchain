@@ -6,10 +6,16 @@ IFS=$'\n\t'
 # - https://mcilloni.ovh/2021/02/09/cxx-cross-clang
 
 case "${RUST_TARGET}" in
-    *-linux-musl* | *-freebsd* | *-openbsd*) cc_target="$(</CC_TARGET)" ;;
-    riscv32gc-*) cc_target="${CC_TARGET:-"${RUST_TARGET/riscv32gc/riscv32}"}" ;;
-    riscv64gc-*) cc_target="${CC_TARGET:-"${RUST_TARGET/riscv64gc/riscv64}"}" ;;
+    *-linux-musl* | *-linux-gnu*) cc_target="$(</CC_TARGET)" ;;
+    *-freebsd*) cc_target="${RUST_TARGET}${FREEBSD_VERSION%%.*}" ;;
+    *-netbsd*) cc_target="${RUST_TARGET}${NETBSD_VERSION%%.*}" ;;
+    *-openbsd*) cc_target="${RUST_TARGET}${OPENBSD_VERSION}" ;;
+    *-dragonfly*) cc_target="${RUST_TARGET}${DRAGONFLY_VERSION%%.*}" ;;
     *) cc_target="${CC_TARGET:-"${RUST_TARGET}"}" ;;
+esac
+case "${cc_target}" in
+    riscv32gc-*) cc_target="${cc_target/riscv32gc/riscv32}" ;;
+    riscv64gc-*) cc_target="${cc_target/riscv64gc/riscv64}" ;;
 esac
 common_flags=""
 common_flags_last=""

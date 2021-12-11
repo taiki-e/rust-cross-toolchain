@@ -18,10 +18,10 @@ RUN <<EOF
 cc_target="$(</CC_TARGET)"
 rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
+    aarch64_be-* | arm-*hf)
         rm -rf "${TOOLCHAIN_DIR}/${cc_target}"/libc/usr/share/{i18n,locale}
         ;;
-    riscv32gc-unknown-linux-gnu)
+    riscv32gc-*)
         rm -rf "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
         ;;
 esac
@@ -52,13 +52,13 @@ COPY /clang-cross.sh /
 RUN <<EOF
 gcc_version="$(</GCC_VERSION)"
 case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
+    aarch64_be-* | arm-*hf)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \
             /clang-cross.sh
         ;;
-    riscv32gc-unknown-linux-gnu)
+    riscv32gc-*)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -I\"\${toolchain_dir}\"/sysroot/usr/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \

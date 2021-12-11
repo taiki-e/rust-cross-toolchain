@@ -7,14 +7,22 @@ IFS=$'\n\t'
 
 cd "$(cd "$(dirname "$0")" && pwd)"/../..
 
-if [[ $# -ne 1 ]]; then
+x() {
+    local cmd="$1"
+    shift
+    (
+        set -x
+        "$cmd" "$@"
+    )
+}
+
+if [[ "${1:-}" == "-"* ]] || [[ $# -ne 1 ]]; then
     cat <<EOF
 USAGE:
     $0 <TARGET>
 EOF
     exit 1
 fi
-set -x
 target="$1"
 
 export DOCKER_BUILDKIT=1
@@ -47,12 +55,12 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
-        docker pull "${tag}"
-        docker history "${tag}"
+        x docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker pull "${tag}"
+        x docker history "${tag}"
     else
-        docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
-        docker history "${tag}"
+        x docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker history "${tag}"
     fi
 }
 
@@ -86,9 +94,26 @@ build() {
 
 case "${target}" in
     hexagon-unknown-linux-musl) build "linux-musl-hexagon" "${target}" ;;
-    *-linux-musl*) build "linux-musl" "${target}" ;;
+    *-linux-musl*)
+        if [[ -n "${MUSL_VERSION:-}" ]]; then
+            musl_versions=("${MUSL_VERSION}")
+        else
+            # https://musl.libc.org/releases.html
+            # https://github.com/rust-lang/libc/issues/1848
+            # When updating this, the reminder to update tools/build-docker.sh.
+            musl_versions=("1.1.24" "1.2.2")
+        fi
+        for musl_version in "${musl_versions[@]}"; do
+            build "linux-musl" "${target}" "${musl_version%.*}" \
+                --build-arg "MUSL_VERSION=${musl_version}"
+        done
+        ;;
     *-solaris*) build "solaris" "${target}" ;;
     *-illumos*) build "illumos" "${target}" ;;
     *-windows-gnu*) build "windows-gnu" "${target}" ;;
     *) echo >&2 "unrecognized target '${target}'" && exit 1 ;;
 esac
+
+if [[ -n "${CI:-}" ]]; then
+    docker images
+fi
