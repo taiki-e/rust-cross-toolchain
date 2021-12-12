@@ -16,7 +16,6 @@ RUN /linux-gnu.sh
 # fd -t d '\b(doc|lintian|locale|i18n|man)\b'
 RUN <<EOF
 cc_target="$(</CC_TARGET)"
-rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 case "${RUST_TARGET}" in
     aarch64_be-* | arm-*hf)
         rm -rf "${TOOLCHAIN_DIR}/${cc_target}"/libc/usr/share/{i18n,locale}
@@ -35,18 +34,8 @@ case "${RUST_TARGET}" in
 esac
 EOF
 
-# Create symlinks with Rust's target name for convenience.
-RUN <<EOF
-set +x
-cc_target="$(</CC_TARGET)"
-while IFS= read -r -d '' path; do
-    pushd "$(dirname "${path}")" >/dev/null
-    original="$(basename "${path}")"
-    link="${original/"${cc_target}"/"${RUST_TARGET}"}"
-    [[ -e "${link}" ]] || ln -s "${original}" "${link}"
-    popd >/dev/null
-done < <(find "${TOOLCHAIN_DIR}" -name "${cc_target}*" -print0)
-EOF
+COPY /base/common.sh /
+RUN /common.sh
 
 COPY /clang-cross.sh /
 RUN <<EOF
@@ -102,7 +91,7 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
-# TODO
+# TODO(linux-gnu)
 RUN NO_RUN=1 /test/test.sh gcc
 RUN NO_RUN=1 /test/test.sh clang
 COPY --from=test-relocated /DONE /

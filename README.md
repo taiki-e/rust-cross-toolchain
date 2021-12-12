@@ -97,7 +97,9 @@
 
 | libc | GCC | clang | C++ | test |
 | ---- | --- | ----- | --- | ---- |
-| uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu-user) |
+| uClibc-ng 1.0.34 | 10.2.0 | host [1] | ✓ (libstdc++) | ✓ (qemu-user) |
+
+[1] It is not recommended to use clang for these targets at this time due to some bugs.
 
 ([Dockerfile](docker/linux-uclibc.Dockerfile))
 
@@ -132,9 +134,9 @@
 
 | libc | GCC | clang | C++ | test |
 | ---- | --- | ----- | --- | ---- |
-| netbsd 8.2 [1] / 9.2 [2] | N/A | host | ✓ (libstdc++) |  |
+| netbsd 8.2 [1] / 9.2 [2] | 7.5.0 | host | ✓ (libstdc++) |  |
 
-[1] default, only i686 and x86_64<br>
+[1] default, only armv6, armv7, i686, powerpc, sparc64, and x86_64<br>
 [2] default of aarch64<br>
 
 ([Dockerfile](docker/netbsd.Dockerfile))
@@ -142,7 +144,11 @@
 **Supported targets**:
 
 - `aarch64-unknown-netbsd` (tier3)
+- `armv6-unknown-netbsd-eabihf` (tier3)
+- `armv7-unknown-netbsd-eabihf` (tier3)
 - `i686-unknown-netbsd` (tier3)
+- `powerpc-unknown-netbsd` (tier3)
+- `sparc64-unknown-netbsd` (tier3)
 - `x86_64-unknown-netbsd`
 
 ### OpenBSD

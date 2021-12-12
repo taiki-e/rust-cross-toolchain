@@ -72,9 +72,11 @@ if [[ -z "${CI:-}" ]]; then
         echo >&2 "WARNING: 'shellcheck' is not installed"
     fi
 else
+    verbose=1
     x rustfmt --check $(git ls-files '*.rs')
     x shfmt -d $(git ls-files '*.sh')
     x "${prettier}" -c $(git ls-files '*.yml')
+    x clang-format -i $(git ls-files '*.c')
     x clang-format -i $(git ls-files '*.cpp')
     x git diff --exit-code
     x shellcheck $(git ls-files '*.sh')

@@ -5,15 +5,11 @@ ARG UBUNTU_VERSION=18.04
 # See tools/build-docker.sh
 ARG OPENBSD_VERSION
 
-FROM ghcr.io/taiki-e/downloader as builder
+FROM ghcr.io/taiki-e/downloader as sysroot
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
-ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${SYSROOT_DIR}"
-
 ARG OPENBSD_VERSION
+RUN mkdir -p /sysroot
 # Download OpenBSD libraries and header files.
 # https://cdn.openbsd.org/pub/OpenBSD
 RUN <<EOF
@@ -25,11 +21,28 @@ case "${RUST_TARGET}" in
     x86_64-*) openbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${openbsd_arch}/base${OPENBSD_VERSION/./}.tgz" \
-    | tar xzf - -C "${SYSROOT_DIR}" ./usr/include ./usr/lib
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${openbsd_arch}/comp${OPENBSD_VERSION/./}.tgz" \
-    | tar xzf - -C "${SYSROOT_DIR}" ./usr/include ./usr/lib
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${openbsd_arch}/base${OPENBSD_VERSION/./}.tgz" \
+    | tar xzf - -C /sysroot ./usr/include ./usr/lib
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${openbsd_arch}/comp${OPENBSD_VERSION/./}.tgz" \
+    | tar xzf - -C /sysroot ./usr/include ./usr/lib
 EOF
+
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
+ARG RUST_TARGET
+ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
+ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
+RUN mkdir -p "${TOOLCHAIN_DIR}"
+ARG OPENBSD_VERSION
+RUN <<EOF
+cc_target="${RUST_TARGET}${OPENBSD_VERSION}"
+echo "${cc_target}" >/CC_TARGET
+cd "${TOOLCHAIN_DIR}"
+mkdir -p "${cc_target}"
+ln -s "${cc_target}" "${RUST_TARGET}"
+EOF
+COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 COPY /clang-cross.sh /
 # TODO(sparc64-unknown-openbsd):

@@ -10,7 +10,7 @@ export RUSTUP_MAX_RETRIES=10
 rust_toolchain_version=nightly-2021-12-09
 
 # Install Rust.
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://sh.rustup.rs \
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://sh.rustup.rs \
     | sh -s -- -y --no-modify-path --profile minimal --default-toolchain "${rust_toolchain_version}" --component rust-src
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
@@ -39,20 +39,20 @@ name = "deps"
 version = "0.0.0"
 edition = "2021"
 [dependencies]
-getopts = "=0.2.21"
-hashbrown = "=0.11.0"
-miniz_oxide = "=0.4.0"
-memchr = "=2.4.1"
-libc = "=0.2.108"
-compiler_builtins = "=0.1.55"
 addr2line = "=0.16.0"
-unicode-width = "=0.1.8"
-rustc-demangle = "=0.1.21"
-object = "=0.26.2"
-gimli = "=0.25.0"
-cfg-if = "=0.1.10"
-cc = "=1.0.69"
 adler = "=0.2.3"
+cc = "=1.0.69"
+cfg-if = "=0.1.10"
+compiler_builtins = "=0.1.55"
+getopts = "=0.2.21"
+gimli = "=0.25.0"
+hashbrown = "=0.11.0"
+libc = "=0.2.108"
+memchr = "=2.4.1"
+miniz_oxide = "=0.4.0"
+object = "=0.26.2"
+rustc-demangle = "=0.1.21"
+unicode-width = "=0.1.8"
 EOF
 cargo fetch
 popd >/dev/null

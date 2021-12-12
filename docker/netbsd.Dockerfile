@@ -3,47 +3,42 @@
 # Refs:
 # - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
 
+# When using clang:
+# - aarch64, i686, and x86_64 work without gnu binutils.
+# - sparc64 works with only gnu binutils.
+# - others don't work without binutils built by build.sh (unrecognized emulation mode error).
+
+ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04
+ARG TOOLCHAIN_TAG=dev
 
 # See tools/build-docker.sh
 ARG NETBSD_VERSION
 
-FROM ghcr.io/taiki-e/downloader as builder
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${NETBSD_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-amd64" as toolchain
+
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${SYSROOT_DIR}"
+COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 
+# When updating this, the reminder to update docker/base/netbsd.Dockerfile.
 ARG NETBSD_VERSION
-# https://ftp.netbsd.org/pub/NetBSD
-# https://wiki.netbsd.org/ports
 RUN <<EOF
 case "${RUST_TARGET}" in
-    aarch64-*) netbsd_arch=evbarm-aarch64 ;;
-    armv6-*) netbsd_arch=evbarm-earmv6hf ;;
-    armv7-*) netbsd_arch=evbarm-earmv7hf ;;
-    i686-*) netbsd_arch=i386 ;;
-    powerpc-*) netbsd_arch=evbppc ;;
-    sparc64-*) netbsd_arch=sparc64 ;;
-    x86_64-*) netbsd_arch=amd64 ;;
+    aarch64-*) cc_target=aarch64--netbsd ;;
+    armv6-*) cc_target=armv6--netbsdelf-eabihf ;;
+    armv7-*) cc_target=armv7--netbsdelf-eabihf ;;
+    i686-*) cc_target=i486--netbsdelf ;;
+    powerpc-*) cc_target=powerpc--netbsd ;;
+    sparc64-*) cc_target=sparc64--netbsd ;;
+    x86_64-*) cc_target=x86_64--netbsd ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-ext=.tgz
-cmd=xzf
-case "${RUST_TARGET}" in
-    sparc64-* | x86_64-*)
-        if [[ "${NETBSD_VERSION}" != "8"* ]]; then
-            ext=.tar.xz
-            cmd=xJf
-        fi
-        ;;
-esac
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/base${ext}" \
-    | tar "${cmd}" - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/comp${ext}" \
-    | tar "${cmd}" - -C "${SYSROOT_DIR}" ./usr/include ./usr/lib
+echo "${cc_target}" >/CC_TARGET
 EOF
 
 COPY /clang-cross.sh /
@@ -52,8 +47,16 @@ export CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++"
 if [[ "${NETBSD_VERSION}" == "8"* ]]; then
     export CXXFLAGS="-std=c++14 ${CXXFLAGS}"
 fi
-COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib" \
-    /clang-cross.sh
+export COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib"
+case "${RUST_TARGET}" in
+    armv6-* | armv7-* | powerpc-*)
+        export COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld"
+        ;;
+    sparc64-*)
+        export COMMON_FLAGS="${COMMON_FLAGS} -fintegrated-as --ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld"
+        ;;
+esac
+/clang-cross.sh
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
@@ -72,6 +75,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG NETBSD_VERSION
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
+RUN /test/test.sh gcc
 RUN /test/test.sh clang
 RUN touch /DONE
 
@@ -83,6 +87,7 @@ ARG NETBSD_VERSION
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
+RUN /test/test.sh gcc
 RUN /test/test.sh clang
 COPY --from=test-relocated /DONE /
 

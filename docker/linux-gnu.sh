@@ -2,6 +2,9 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
+# Refs:
+# - https://wiki.debian.org/Multiarch/Tuples
+
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu)
         # Toolchains for aarch64_be-linux-gnu is not available in APT.
@@ -13,7 +16,7 @@ case "${RUST_TARGET}" in
         gcc_version=10.2.1
         echo "${cc_target}" >/CC_TARGET
         echo "${gcc_version}" >/GCC_VERSION
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://developer.arm.com/-/media/Files/downloads/gnu-a/${arm_gcc_version}/binrel/gcc-arm-${arm_gcc_version}-x86_64-${cc_target}.tar.xz" \
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://developer.arm.com/-/media/Files/downloads/gnu-a/${arm_gcc_version}/binrel/gcc-arm-${arm_gcc_version}-x86_64-${cc_target}.tar.xz" \
             | tar xJf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;
@@ -26,7 +29,7 @@ case "${RUST_TARGET}" in
         codename=Stretch
         echo "${cc_target}" >/CC_TARGET
         echo "${gcc_version}" >/GCC_VERSION
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/${codename}/GCC%20${gcc_version}/Raspberry%20Pi%201%2C%20Zero/cross-gcc-${gcc_version}-pi_0-1.tar.gz/download" \
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/${codename}/GCC%20${gcc_version}/Raspberry%20Pi%201%2C%20Zero/cross-gcc-${gcc_version}-pi_0-1.tar.gz/download" \
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;
@@ -39,7 +42,7 @@ case "${RUST_TARGET}" in
         gcc_version=11.1.0
         echo "${cc_target}" >/CC_TARGET
         echo "${gcc_version}" >/GCC_VERSION
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${riscv_gcc_version}/riscv32-glibc-ubuntu-${UBUNTU_VERSION}-nightly-${riscv_gcc_version}-nightly.tar.gz" \
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${riscv_gcc_version}/riscv32-glibc-ubuntu-${UBUNTU_VERSION}-nightly-${riscv_gcc_version}-nightly.tar.gz" \
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;

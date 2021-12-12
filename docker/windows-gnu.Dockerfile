@@ -37,12 +37,10 @@ RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 
     wine32 \
     wine64
 # To install the latest wine: https://wiki.winehq.org/Ubuntu
-# apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-#     software-properties-common
 # RUN <<EOF
-# curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
+# curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
 # codename="$(grep </etc/os-release '^VERSION_CODENAME=' | sed 's/^VERSION_CODENAME=//')"
-# add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu/ ${codename} main"
+# echo "deb https://dl.winehq.org/wine-builds/ubuntu/ ${codename} main" >/etc/apt/sources.list.d/winehq.list
 # EOF
 # # Use winehq-devel instead of winehq-stable (6.0.2), because mio needs wine 6.11+.
 # # https://dl.winehq.org/wine-builds/ubuntu/dists/focal/main/binary-amd64

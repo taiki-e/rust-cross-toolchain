@@ -15,57 +15,19 @@ FROM ghcr.io/taiki-e/downloader as binutils-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p /binutils-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
 FROM ghcr.io/taiki-e/downloader as gcc-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG GCC_VERSION
 RUN mkdir -p /gcc-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /gcc-src
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as sysroot
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    libgmp-dev \
-    libmpc-dev \
-    libmpfr-dev \
-    software-properties-common
-
 ARG RUST_TARGET
-ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
-ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
-
-ARG SOLARIS_VERSION
-RUN <<EOF
-cc_target="${RUST_TARGET}${SOLARIS_VERSION}"
-echo "${cc_target}" >/CC_TARGET
-cd "${TOOLCHAIN_DIR}"
-mkdir -p "${cc_target}"
-ln -s "${cc_target}" "${RUST_TARGET}"
-EOF
-
-ARG BINUTILS_VERSION
-COPY --from=binutils-src /binutils-src /tmp/binutils-src
-RUN mkdir -p /tmp/binutils-build
-RUN <<EOF
-export CFLAGS="-g0 -O2 -fPIC"
-export CXXFLAGS="-g0 -O2 -fPIC"
-cd /tmp/binutils-build
-/tmp/binutils-src/configure \
-    --prefix="${TOOLCHAIN_DIR}" \
-    --target="$(</CC_TARGET)" \
-    --with-sysroot="${SYSROOT_DIR}" \
-    --with-debug-prefix-map="$(pwd)"= \
-    --disable-nls \
-    &>build.log || (tail <build.log -5000 && exit 1)
-make -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
-make -p "${TOOLCHAIN_DIR}" &>build.log || (tail <build.log -5000 && exit 1)
-make install &>build.log || (tail <build.log -5000 && exit 1)
-EOF
-
 RUN mkdir -p /tmp/sysroot
 WORKDIR /tmp/sysroot
 RUN <<EOF
@@ -75,7 +37,7 @@ case "${RUST_TARGET}" in
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 74DA7924C5513486
-add-apt-repository -y 'deb http://apt.dilos.org/dilos dilos2 main'
+echo "deb http://apt.dilos.org/dilos dilos2 main" >/etc/apt/sources.list.d/dilos.list
 dpkg --add-architecture "${dpkg_arch}"
 apt-get -o Acquire::Retries=10 update -qq
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
@@ -88,6 +50,8 @@ apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends -
     "system-crt:${dpkg_arch}" \
     "system-header:${dpkg_arch}" \
     | grep '^\w')
+ls
+set +x
 for deb in *"${dpkg_arch}.deb"; do
     dpkg -x "${deb}" .
     rm "${deb}"
@@ -97,6 +61,7 @@ EOF
 # However, those packages are just symlinks from *.so to *.so.<version>.
 # This makes all those symlinks.
 RUN <<EOF
+set +x
 for lib in $(find . -name '*.so.*'); do
     target="${lib%.so.*}.so"
     [[ -e "${target}" ]] || ln -s "${lib##*/}" "${target}"
@@ -108,15 +73,40 @@ case "${RUST_TARGET}" in
     sparcv9-*) lib_arch=sparcv9 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-mkdir -p "${SYSROOT_DIR}"/usr
-mv usr/include "${SYSROOT_DIR}/usr/include"
-mv "usr/lib/${lib_arch}"/* "${SYSROOT_DIR}/lib"
-mv "lib/${lib_arch}"/* "${SYSROOT_DIR}/lib"
-ln -s usr/include "${SYSROOT_DIR}/sys-include"
-ln -s usr/include "${SYSROOT_DIR}/include"
+mkdir -p /sysroot/{usr,lib}
+mv usr/include /sysroot/usr/include
+mv usr/lib/"${lib_arch}"/* /sysroot/lib
+mv lib/"${lib_arch}"/* /sysroot/lib
+ln -s usr/include /sysroot/sys-include
+ln -s usr/include /sysroot/include
 EOF
-WORKDIR /
-RUN rm -rf /tmp/sysroot
+
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+    libgmp-dev \
+    libmpc-dev \
+    libmpfr-dev
+
+ARG RUST_TARGET
+ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
+ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
+RUN mkdir -p "${TOOLCHAIN_DIR}"
+ARG SOLARIS_VERSION
+RUN <<EOF
+cc_target="${RUST_TARGET}${SOLARIS_VERSION}"
+echo "${cc_target}" >/CC_TARGET
+cd "${TOOLCHAIN_DIR}"
+mkdir -p "${cc_target}"
+ln -s "${cc_target}" "${RUST_TARGET}"
+EOF
+
+COPY --from=binutils-src /binutils-src /tmp/binutils-src
+COPY /build-binutils.sh /
+RUN CC_TARGET="$(</CC_TARGET)" /build-binutils.sh
+
+COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 ARG GCC_VERSION
 COPY --from=gcc-src /gcc-src /tmp/gcc-src

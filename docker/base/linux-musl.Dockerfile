@@ -22,7 +22,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MUSL_CROSS_MAKE_REV
 RUN mkdir -p /musl-cross-make
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://github.com/richfelker/musl-cross-make/archive/${MUSL_CROSS_MAKE_REV}.tar.gz" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/richfelker/musl-cross-make/archive/${MUSL_CROSS_MAKE_REV}.tar.gz" \
         | tar xzf - --strip-components 1 -C /musl-cross-make
 
 ARG RUST_TARGET
@@ -30,7 +30,7 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${TOOLCHAIN_DIR}"
 
-# When updating this, the reminder to update docker/base/linux-musl.Dockerfile.
+# When updating this, the reminder to update docker/linux-musl.Dockerfile.
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) cc_target=aarch64-linux-musl ;;
@@ -73,7 +73,7 @@ BINUTILS_VER = ${BINUTILS_VERSION}
 GCC_VER = ${GCC_VERSION}
 MUSL_VER = ${MUSL_VERSION}
 LINUX_VER = ${LINUX_VERSION}
-DL_CMD = curl -fsSL --retry 10 -C - -o
+DL_CMD = curl -fsSL --retry 10 --retry-connrefused -C - -o
 COMMON_CONFIG += CC="gcc -static --static" CXX="g++ -static --static"
 # Use -g1: https://github.com/rust-lang/rust/pull/90733
 COMMON_CONFIG += CFLAGS="-g1 -O2" CXXFLAGS="-g1 -O2" LDFLAGS="-s -static --static"

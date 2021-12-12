@@ -28,6 +28,7 @@ jobs:
           - target: linux-musl
             musl: 1.2
           - target: linux-uclibc
+          # - target: android
           - target: freebsd
           - target: netbsd
           - target: openbsd
@@ -35,6 +36,7 @@ jobs:
           - target: solaris
           - target: illumos
           - target: redox
+          # - target: fuchsia
           - target: wasi
           - target: emscripten
           - target: windows-gnu
@@ -70,8 +72,8 @@ jobs:
       - name: Install ShellCheck
         run: |
           sudo apt-get -o Dpkg::Use-Pty=0 remove -y shellcheck
-          tag="$(curl -fsSL --retry 10 https://api.github.com/repos/koalaman/shellcheck/releases/latest | jq -r '.tag_name')"
-          curl -fsSL --retry 10 "https://github.com/koalaman/shellcheck/releases/download/${tag}/shellcheck-${tag}.linux.x86_64.tar.xz" \
+          tag="$(curl -fsSL --retry 10 --retry-connrefused https://api.github.com/repos/koalaman/shellcheck/releases/latest | jq -r '.tag_name')"
+          curl -fsSL --retry 10 --retry-connrefused "https://github.com/koalaman/shellcheck/releases/download/${tag}/shellcheck-${tag}.linux.x86_64.tar.xz" \
             | tar xJf - --strip-components 1 -C /usr/local/bin "shellcheck-${tag}/shellcheck"
           shellcheck --version
-      - run: tools/tidy.sh -v
+      - run: tools/tidy.sh

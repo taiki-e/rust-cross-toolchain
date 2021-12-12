@@ -1,33 +1,36 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # Test the toolchain.
 
+x() {
+    local cmd="$1"
+    shift
+    (
+        set -x
+        "$cmd" "$@"
+    )
+}
 bail() {
-    set +x
     echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
     exit 1
 }
 run_cargo() {
-    (
-        set +x
-        local cargo_flags=()
-        if [[ -n "${no_rust_cpp}" ]]; then
-            cargo_flags+=(--no-default-features)
+    local cargo_flags=()
+    if [[ -n "${no_rust_cpp}" ]]; then
+        cargo_flags+=(--no-default-features)
+    fi
+    if [[ -f /BUILD_STD ]]; then
+        if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
+            cargo_flags+=(-Z build-std="panic_abort,std")
+        else
+            cargo_flags+=(-Z build-std)
         fi
-        if [[ -f /BUILD_STD ]]; then
-            if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
-                cargo_flags+=(-Z build-std="panic_abort,std")
-            else
-                cargo_flags+=(-Z build-std)
-            fi
-        fi
-        subcmd="$1"
-        shift
-        set -x
-        cargo "${subcmd}" --offline --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
-    )
+    fi
+    subcmd="$1"
+    shift
+    x cargo "${subcmd}" --offline --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
 }
 assert_file_info() {
     local pat="$1"
@@ -37,10 +40,7 @@ assert_file_info() {
         if ! file "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
-            (
-                set -x
-                file "${bin}"
-            )
+            x file "${bin}"
             exit 1
         fi
         echo "ok"
@@ -54,10 +54,7 @@ assert_not_file_info() {
         if ! file "${bin}" | grep -v "${pat}" >/dev/null; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
-            (
-                set -x
-                file "${bin}"
-            )
+            x file "${bin}"
             exit 1
         fi
         echo "ok"
@@ -71,10 +68,7 @@ assert_file_header() {
         if ! readelf --file-header "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
-            (
-                set -x
-                readelf --file-header "${bin}"
-            )
+            x readelf --file-header "${bin}"
             exit 1
         fi
         echo "ok"
@@ -88,10 +82,7 @@ assert_not_file_header() {
         if ! readelf --file-header "${bin}" | grep -v "${pat}" >/dev/null; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
-            (
-                set -x
-                readelf --file-header "${bin}"
-            )
+            x readelf --file-header "${bin}"
             exit 1
         fi
         echo "ok"
@@ -105,10 +96,7 @@ assert_arch_specific() {
         if ! readelf --arch-specific "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
-            (
-                set -x
-                readelf --arch-specific "${bin}"
-            )
+            x readelf --arch-specific "${bin}"
             exit 1
         fi
         echo "ok"
@@ -122,10 +110,7 @@ assert_not_arch_specific() {
         if ! readelf --arch-specific "${bin}" | grep -v "${pat}" >/dev/null; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
-            (
-                set -x
-                readelf --arch-specific "${bin}"
-            )
+            x readelf --arch-specific "${bin}"
             exit 1
         fi
         echo "ok"
@@ -133,8 +118,8 @@ assert_not_arch_specific() {
 }
 
 export CARGO_NET_RETRY=10
-export RUSTUP_MAX_RETRIES=10
 export RUST_BACKTRACE=1
+export RUSTUP_MAX_RETRIES=10
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
@@ -224,11 +209,11 @@ export RUSTFLAGS="\${RUSTFLAGS:-} -C debuginfo=0"
 EOF
         ;;
     aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
-        # TODO
+        # TODO(aarch64_be-unknown-linux-gnu,arm-unknown-linux-gnueabihf)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
     riscv32gc-unknown-linux-gnu)
-        # TODO
+        # TODO(riscv32gc-unknown-linux-gnu)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/lib:${toolchain_dir}/sysroot/lib:${toolchain_dir}/sysroot/usr/lib:${LD_LIBRARY_PATH:-}"
         ;;
 esac
@@ -247,7 +232,7 @@ case "${RUST_TARGET}" in
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
     wasm32-wasi) no_rust_cpp=1 ;;
 esac
-cat "${dev_tools_dir}/${cc}.env"
+x cat "${dev_tools_dir}/${cc}.env"
 # shellcheck disable=SC1090
 . "${dev_tools_dir}/${cc}.env"
 case "${RUST_TARGET}" in
@@ -266,9 +251,9 @@ case "${RUST_TARGET}" in
                 # llvm libunwind does not support s390x, powerpc
                 # https://github.com/llvm/llvm-project/blob/54405a49d868444958d1ee51eef8b943aaebebdc/libunwind/src/libunwind.cpp#L48-L77
                 powerpc-* | s390x-*) ;;
-                # TODO
+                # TODO(riscv64gc-unknown-linux-musl)
                 riscv64gc-*) ;;
-                # TODO
+                # TODO(hexagon-unknown-linux-musl)
                 hexagon-*) ;;
                 *)
                     rm /BUILD_STD
@@ -277,7 +262,7 @@ case "${RUST_TARGET}" in
 
                     rm -rf /tmp/libunwind
                     mkdir -p /tmp/libunwind
-                    build-libunwind --target="${RUST_TARGET}" --out=/tmp/libunwind
+                    x build-libunwind --target="${RUST_TARGET}" --out=/tmp/libunwind
                     cp /tmp/libunwind/libunwind*.a "${self_contained}"
 
                     rm -rf /tmp/build-std
@@ -291,7 +276,7 @@ version = "0.0.0"
 edition = "2021"
 EOF
                     RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
-                        cargo build -Z build-std --offline --target "${RUST_TARGET}" --all-targets --release
+                        x cargo build -Z build-std --offline --target "${RUST_TARGET}" --all-targets --release
                     rm target/"${RUST_TARGET}"/release/deps/*build_std-*
                     cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
                     popd >/dev/null
@@ -316,15 +301,21 @@ esac
 if [[ -z "${NO_RUN:-}" ]]; then
     # Build C/C++.
     pushd cpp >/dev/null
-    "${target_cc}" -v
-    "${target_cc}" -o c.out hello.c
+    x "${target_cc}" -v
+    case "${cc}" in
+        gcc | clang) x "${target_cc}" '-###' hello.c ;;
+    esac
+    x "${target_cc}" -o c.out hello.c
     case "${RUST_TARGET}" in
         arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu*) ;;
         *) cp "$(pwd)"/c.out "${out_dir}" ;;
     esac
     if [[ -z "${no_cpp}" ]]; then
-        "${target_cxx}" -v
-        "${target_cxx}" -o cpp.out hello.cpp
+        x "${target_cxx}" -v
+        case "${cc}" in
+            gcc | clang) x "${target_cxx}" '-###' hello.cpp ;;
+        esac
+        x "${target_cxx}" -o cpp.out hello.cpp
         case "${RUST_TARGET}" in
             arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu*) ;;
             *) cp "$(pwd)"/cpp.out "${out_dir}" ;;
@@ -340,15 +331,15 @@ if [[ -z "${NO_RUN:-}" ]]; then
                 # llvm libunwind does not support s390x, powerpc
                 # https://github.com/llvm/llvm-project/blob/54405a49d868444958d1ee51eef8b943aaebebdc/libunwind/src/libunwind.cpp#L48-L77
                 powerpc-* | s390x-*) ;;
-                # TODO
+                # TODO(riscv64gc-unknown-linux-musl)
                 riscv64gc-*) ;;
-                # TODO
+                # TODO(hexagon-unknown-linux-musl)
                 hexagon-*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
                     cp "$(pwd)/target/${RUST_TARGET}/debug/rust-test${exe}" "${out_dir}/rust-test-no-cpp-static${exe}"
-                    cargo clean
+                    x cargo clean
                     ;;
             esac
             ;;
@@ -360,8 +351,8 @@ if [[ -z "${NO_RUN:-}" ]]; then
             ;;
     esac
     run_cargo build
-    ls "$(pwd)/target/${RUST_TARGET}"/debug
-    ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out
+    x ls "$(pwd)/target/${RUST_TARGET}"/debug
+    x ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out
     cp "$(pwd)/target/${RUST_TARGET}"/debug/rust*test"${exe}" "${out_dir}"
     cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_c.o "${out_dir}"
     if [[ -z "${no_rust_cpp}" ]]; then
@@ -372,8 +363,8 @@ if [[ -z "${NO_RUN:-}" ]]; then
     # Build Rust with C using CMake
     pushd rust-cmake >/dev/null
     run_cargo build || (tail -n +1 "target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/*.log && exit 1)
-    ls "$(pwd)/target/${RUST_TARGET}"/debug
-    ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir
+    x ls "$(pwd)/target/${RUST_TARGET}"/debug
+    x ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir
     cp "$(pwd)/target/${RUST_TARGET}"/debug/rust*cmake*test"${exe}" "${out_dir}"
     case "${RUST_TARGET}" in
         *-redox* | *-windows-*) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir/double.obj "${out_dir}" ;;
@@ -387,15 +378,14 @@ if [[ -z "${NO_RUN:-}" ]]; then
     popd >/dev/null
 
     # Check the compiled binaries.
-    file "${out_dir}"/*
+    x file "${out_dir}"/*
     case "${RUST_TARGET}" in
         *-wasi* | *-emscripten* | *-windows-*) ;;
         *)
-            readelf --file-header "${out_dir}"/*
-            readelf --arch-specific "${out_dir}"/*
+            x readelf --file-header "${out_dir}"/*
+            x readelf --arch-specific "${out_dir}"/*
             ;;
     esac
-    set +x
     file_info_pat=()         # file
     file_info_pat_not=()     # file
     file_header_pat=()       # readelf --file-header
@@ -444,14 +434,20 @@ if [[ -z "${NO_RUN:-}" ]]; then
                             ;;
                     esac
                     case "${RUST_TARGET}" in
-                        arm-*) arch_specific_pat+=('Tag_CPU_arch: v6') ;;
+                        armv6-*-netbsd-eabihf)
+                            case "${cc}" in
+                                clang) arch_specific_pat+=('Tag_CPU_arch: v6(KZ)?') ;;
+                                *) arch_specific_pat+=('Tag_CPU_arch: v6KZ') ;;
+                            esac
+                            ;;
+                        arm-* | armv6-*) arch_specific_pat+=('Tag_CPU_arch: v6') ;;
                         armv4t-*) arch_specific_pat+=('Tag_CPU_arch: v4T') ;;
                         armv5te-*) arch_specific_pat+=('Tag_CPU_arch: v5TE(J)?') ;;
                         armv7-* | thumbv7neon-*) arch_specific_pat+=('Tag_CPU_arch: v7' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
                         *) bail "unrecognized target '${RUST_TARGET}'" ;;
                     esac
                     case "${RUST_TARGET}" in
-                        arm-*hf)
+                        arm-*hf | armv6-*hf)
                             for bin in "${out_dir}"/*; do
                                 if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
                                     assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
@@ -462,7 +458,7 @@ if [[ -z "${NO_RUN:-}" ]]; then
                                 fi
                             done
                             ;;
-                        arm-*)
+                        arm-* | armv6-*)
                             for bin in "${out_dir}"/*; do
                                 if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
                                     assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
@@ -487,11 +483,15 @@ if [[ -z "${NO_RUN:-}" ]]; then
                             done
                             ;;
                         armv7-*hf)
+                            fp_arch=VFPv3-D16
+                            case "${RUST_TARGET}" in
+                                *-netbsd*) fp_arch=VFPv3 ;;
+                            esac
                             for bin in "${out_dir}"/*; do
                                 if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
                                     assert_arch_specific 'Tag_FP_arch: VFPv3' "${bin}"
                                 else
-                                    assert_arch_specific 'Tag_FP_arch: VFPv3-D16' "${bin}"
+                                    assert_arch_specific "Tag_FP_arch: ${fp_arch}" "${bin}"
                                 fi
                             done
                             ;;
@@ -564,19 +564,18 @@ if [[ -z "${NO_RUN:-}" ]]; then
                             ;;
                         *)
                             file_info_pat_not+=('OpenPOWER ELF V2 ABI')
-                            file_header_pat+=('(Flags:.*abiv1)?')
                             file_header_pat_not+=('abiv2')
+                            for bin in "${out_dir}"/*; do
+                                if [[ -x "${bin}" ]]; then
+                                    assert_file_header 'Flags:.*abiv1' "${bin}"
+                                fi
+                            done
                             ;;
                     esac
                     ;;
-                riscv32gc-*)
+                riscv32gc-* | riscv64gc-*)
                     file_info_pat+=('UCB RISC-V')
-                    # TODO: Flags
-                    file_header_pat+=('Machine:\s+RISC-V')
-                    ;;
-                riscv64gc-*)
-                    file_info_pat+=('UCB RISC-V')
-                    file_header_pat+=('Machine:\s+RISC-V' 'Flags:.*RVC, double-float ABI')
+                    file_header_pat+=('Machine:\s+RISC-V' 'Flags:\s+0x5, RVC, double-float ABI')
                     ;;
                 s390x-*)
                     file_info_pat+=('IBM S/390')
@@ -629,22 +628,20 @@ if [[ -z "${NO_RUN:-}" ]]; then
                         hexagon-*) ldso_arch=hexagon ;;
                         i*86-*) ldso_arch=i386 ;;
                         mips-*)
-                            # TODO
-                            if [[ "${cc}" == "clang" ]]; then
-                                ldso_arch=mips
-                            else
-                                ldso_arch=mips-sf
-                            fi
+                            # TODO(clang,mips-musl-sf):
+                            case "${cc}" in
+                                clang) ldso_arch=mips ;;
+                                *) ldso_arch=mips-sf ;;
+                            esac
                             ;;
                         mips64-*) ldso_arch=mips64 ;;
                         mips64el-*) ldso_arch=mips64el ;;
                         mipsel-*)
-                            # TODO
-                            if [[ "${cc}" == "clang" ]]; then
-                                ldso_arch=mipsel
-                            else
-                                ldso_arch=mipsel-sf
-                            fi
+                            # TODO(clang,mips-musl-sf):
+                            case "${cc}" in
+                                clang) ldso_arch=mipsel ;;
+                                *) ldso_arch=mipsel-sf ;;
+                            esac
                             ;;
                         powerpc-*) ldso_arch=powerpc ;;
                         powerpc64-*) ldso_arch=powerpc64 ;;
@@ -660,7 +657,7 @@ if [[ -z "${NO_RUN:-}" ]]; then
                 *-linux-uclibc*)
                     case "${cc}" in
                         clang)
-                            # TODO
+                            # TODO(clang,uclibc): should be /lib/ld-uClibc.so.0
                             case "${RUST_TARGET}" in
                                 armv5te-*) file_info_pat+=('interpreter /lib/ld-linux\.so\.3') ;;
                                 armv7-*) file_info_pat+=('interpreter /lib/ld-linux-armhf\.so\.3') ;;
@@ -687,8 +684,16 @@ if [[ -z "${NO_RUN:-}" ]]; then
                 *-netbsd*)
                     for bin in "${out_dir}"/*; do
                         if [[ -x "${bin}" ]]; then
-                            assert_file_info 'interpreter /libexec/ld\.elf_so' "${bin}"
                             assert_file_info "for NetBSD ${NETBSD_VERSION}" "${bin}"
+                            # /usr/libexec/ld.elf_so is symbolic link to /libexec/ld.elf_so.
+                            case "${cc}" in
+                                clang) assert_file_info 'interpreter /libexec/ld\.elf_so' "${bin}" ;;
+                                *) assert_file_info 'interpreter /usr/libexec/ld\.elf_so' "${bin}" ;;
+                            esac
+                            case "${RUST_TARGET}" in
+                                armv6-*) assert_file_info "compiled for: earmv6hf" "${bin}" ;;
+                                armv7-*) assert_file_info "compiled for: earmv7hf" "${bin}" ;;
+                            esac
                         fi
                     done
                     ;;
@@ -774,7 +779,6 @@ if [[ -z "${NO_RUN:-}" ]]; then
         done
     done
 fi
-set -x
 
 # Run the compiled binaries.
 # TODO(freebsd): can we use vm or ci images for testing? https://download.freebsd.org/ftp/releases/VM-IMAGES https://download.freebsd.org/ftp/releases/CI-IMAGES
@@ -792,7 +796,7 @@ case "${RUST_TARGET}" in
                 qemu_arch=arm
                 case "${RUST_TARGET}" in
                     # ARMv6: https://en.wikipedia.org/wiki/ARM11
-                    arm-*) export QEMU_CPU=arm11mpcore ;;
+                    arm-* | armv6-*) export QEMU_CPU=arm11mpcore ;;
                     # ARMv4: https://en.wikipedia.org/wiki/StrongARM
                     armv4t-*) export QEMU_CPU=sa1110 ;;
                     # ARMv5TE
@@ -844,7 +848,6 @@ case "${RUST_TARGET}" in
             x86_64-*) qemu_arch=x86_64 ;;
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
-        export QEMU_STRACE=1
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
         runner="${RUST_TARGET}-runner"
         [[ -f "${toolchain_dir}/bin/${runner}" ]] || cat >"${toolchain_dir}/bin/${runner}" <<EOF
@@ -854,7 +857,7 @@ toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
 exec qemu-${qemu_arch} -L "\${toolchain_dir}"/${sysroot_suffix} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
-        cat "${toolchain_dir}/bin/${runner}"
+        x cat "${toolchain_dir}/bin/${runner}"
         ;;
     *-wasi*)
         [[ -f "${toolchain_dir}/bin/wasmtime" ]] || cp "$(type -P "wasmtime")" "${toolchain_dir}/bin"
@@ -865,7 +868,7 @@ set -eu
 exec wasmtime run --wasm-features all "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
-        cat "${toolchain_dir}/bin/${runner}"
+        x cat "${toolchain_dir}/bin/${runner}"
         ;;
     *-emscripten*)
         runner=node
@@ -879,7 +882,7 @@ EOF
         export WINEPREFIX=/tmp/wine
         mkdir -p "${WINEPREFIX}"
         if [[ ! -e /WINEBOOT ]]; then
-            wineboot &>/dev/null
+            x wineboot &>/dev/null
             touch /WINEBOOT
         fi
         # Put libstdc++ and some other mingw dlls in WINEPATH
@@ -900,13 +903,13 @@ EOF
             fi
             case "${RUST_TARGET}" in
                 armv5te-unknown-linux-uclibceabi | armv7-unknown-linux-uclibceabihf)
-                    # TODO: qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+                    # TODO(clang,uclibc): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
                     if [[ "${cc}" == "clang" ]] && [[ "${bin}" == *"cpp.out" ]]; then
                         continue
                     fi
                     ;;
             esac
-            "${runner}" "${bin}" | tee run.log
+            x "${runner}" "${bin}" | tee run.log
             if ! grep <run.log -E '^Hello (C|C\+\+|Rust|C from Rust|C\+\+ from Rust|Cmake from Rust)!' >/dev/null; then
                 bail
             fi

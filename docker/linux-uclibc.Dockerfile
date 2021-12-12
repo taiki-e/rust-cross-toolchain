@@ -35,10 +35,9 @@ case "${RUST_TARGET}" in
     mipsel-*) arch=mips32el ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://toolchains.bootlin.com/downloads/releases/toolchains/${arch}/tarballs/${arch}--uclibc--bleeding-edge-${TOOLCHAIN_VERSION}.tar.bz2" \
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://toolchains.bootlin.com/downloads/releases/toolchains/${arch}/tarballs/${arch}--uclibc--bleeding-edge-${TOOLCHAIN_VERSION}.tar.bz2" \
     | tar xjf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
 EOF
-RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 
 RUN <<EOF
 cd "${TOOLCHAIN_DIR}"
@@ -51,27 +50,16 @@ cp -r "${orig_sysroot_dir}"/usr/lib/. "${dest_sysroot_dir}"/usr/lib/
 cp -r "${orig_sysroot_dir}"/lib/. "${dest_sysroot_dir}"/lib/
 EOF
 
-# Create symbolic links with Rust's target name for convenience.
-RUN <<EOF
-set +x
-cc_target="$(</CC_TARGET)"
-while IFS= read -r -d '' path; do
-    pushd "$(dirname "${path}")" >/dev/null
-    original="$(basename "${path}")"
-    link="${original/"${cc_target}"/"${RUST_TARGET}"}"
-    [[ -e "${link}" ]] || ln -s "${original}" "${link}"
-    popd >/dev/null
-done < <(find "${TOOLCHAIN_DIR}" -name "${cc_target}*" -print0)
-EOF
+COPY /base/common.sh /
+RUN /common.sh
 
-# TODO: needed for clang
+# TODO(clang,uclibc): needed for clang
 RUN <<EOF
 cd "${SYSROOT_DIR}/lib"
 case "${RUST_TARGET}" in
     armv5te-*) ln -s ld-uClibc.so.0 ld-linux.so.3 ;;
     armv7-*hf) ln -s ld-uClibc.so.0 ld-linux-armhf.so.3 ;;
     mips-* | mipsel-*) ln -s ld-uClibc.so.0 ld.so.1 ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 EOF
 

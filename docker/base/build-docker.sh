@@ -29,8 +29,7 @@ export DOCKER_BUILDKIT=1
 export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
 
 owner="${OWNER:-taiki-e}"
-registry="ghcr.io/${owner}"
-tag_base="${registry}/rust-cross-toolchain:"
+repository="ghcr.io/${owner}/rust-cross-toolchain"
 arch="${HOST_ARCH:-amd64}"
 case "${arch}" in
     amd64)
@@ -41,7 +40,7 @@ case "${arch}" in
         full_arch=arm64v8
         platform=linux/arm64/v8
         ;;
-    *) echo >&2 "unsupported architecture '${arch}'" && exit 1 ;;
+    *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
 esac
 time="$(date --utc '+%Y-%m-%d-%H-%M-%S')"
 
@@ -55,11 +54,11 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        x docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --push "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker pull "${tag}"
         x docker history "${tag}"
     else
-        x docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --load "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker history "${tag}"
     fi
 }
@@ -76,7 +75,7 @@ build() {
         --platform "${platform}"
         --build-arg "RUST_TARGET=${target}"
     )
-    local tag="${tag_base}${target}"
+    local tag="${repository}:${target}"
     log_dir="tmp/log/base/${base}/${target}"
     if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
         local sys_version="$1"
@@ -89,7 +88,7 @@ build() {
 
     mkdir -p "${log_dir}"
     __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee "${log_dir}/build-docker-${time}.log"
-    echo "build log saved at ${log_dir}/build-docker-${time}.log"
+    echo "info: build log saved at ${log_dir}/build-docker-${time}.log"
 }
 
 case "${target}" in
@@ -98,9 +97,7 @@ case "${target}" in
         if [[ -n "${MUSL_VERSION:-}" ]]; then
             musl_versions=("${MUSL_VERSION}")
         else
-            # https://musl.libc.org/releases.html
-            # https://github.com/rust-lang/libc/issues/1848
-            # When updating this, the reminder to update tools/build-docker.sh.
+            # See tools/build-docker.sh for more.
             musl_versions=("1.1.24" "1.2.2")
         fi
         for musl_version in "${musl_versions[@]}"; do
@@ -108,12 +105,29 @@ case "${target}" in
                 --build-arg "MUSL_VERSION=${musl_version}"
         done
         ;;
+    *-netbsd*)
+        if [[ -n "${NETBSD_VERSION:-}" ]]; then
+            netbsd_versions=("${NETBSD_VERSION}")
+        else
+            # See tools/build-docker.sh for more.
+            netbsd_versions=("8.2" "9.2")
+        fi
+        for netbsd_version in "${netbsd_versions[@]}"; do
+            case "${target}" in
+                aarch64-*)
+                    if [[ "${netbsd_version}" == "8"* ]]; then
+                        continue
+                    fi
+                    ;;
+            esac
+            build "netbsd" "${target}" "${netbsd_version%%.*}" \
+                --build-arg "NETBSD_VERSION=${netbsd_version}"
+        done
+        ;;
     *-solaris*) build "solaris" "${target}" ;;
     *-illumos*) build "illumos" "${target}" ;;
     *-windows-gnu*) build "windows-gnu" "${target}" ;;
-    *) echo >&2 "unrecognized target '${target}'" && exit 1 ;;
+    *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
 esac
 
-if [[ -n "${CI:-}" ]]; then
-    docker images
-fi
+x docker images "${repository}"

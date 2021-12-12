@@ -5,17 +5,23 @@
 
 ARG UBUNTU_VERSION=20.04
 
+FROM ghcr.io/taiki-e/downloader as toolchain
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG RUST_TARGET
+RUN mkdir -p /toolchain
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://static.redox-os.org/toolchain/${RUST_TARGET}/relibc-install.tar.gz" \
+        | tar xzf - -C /toolchain
+
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+COPY --from=toolchain /toolchain "${TOOLCHAIN_DIR}"
 
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://static.redox-os.org/toolchain/${RUST_TARGET}/relibc-install.tar.gz" \
-        | tar xzf - -C "${TOOLCHAIN_DIR}"
-RUN rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
+COPY /base/common.sh /
+RUN /common.sh
 
 COPY /clang-cross.sh /
 ARG GCC_VERSION=8.2.0

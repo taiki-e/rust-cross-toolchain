@@ -23,14 +23,23 @@ FROM ghcr.io/taiki-e/downloader as binutils-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p /binutils-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
 FROM ghcr.io/taiki-e/downloader as gcc-src
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG GCC_VERSION
 RUN mkdir -p /gcc-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /gcc-src
+
+FROM ghcr.io/taiki-e/downloader as sysroot
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG SYSROOT_VERSION
+RUN mkdir -p /sysroot
+RUN <<EOF
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/illumos/sysroot/releases/download/${SYSROOT_VERSION}/illumos-sysroot-i386-${SYSROOT_VERSION}.tar.gz" \
+    | tar xzf - -C /sysroot
+EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -44,7 +53,6 @@ ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${TOOLCHAIN_DIR}"
-
 ARG SOLARIS_VERSION
 RUN <<EOF
 cc_target=x86_64-pc-solaris${SOLARIS_VERSION}
@@ -54,30 +62,11 @@ mkdir -p "${cc_target}"
 ln -s "${cc_target}" "${RUST_TARGET}"
 EOF
 
-ARG BINUTILS_VERSION
 COPY --from=binutils-src /binutils-src /tmp/binutils-src
-RUN mkdir -p /tmp/binutils-build
-RUN <<EOF
-export CFLAGS="-g0 -O2 -fPIC"
-export CXXFLAGS="-g0 -O2 -fPIC"
-cd /tmp/binutils-build
-/tmp/binutils-src/configure \
-    --prefix="${TOOLCHAIN_DIR}" \
-    --target="$(</CC_TARGET)" \
-    --with-sysroot="${SYSROOT_DIR}" \
-    --with-debug-prefix-map="$(pwd)"= \
-    --disable-nls \
-    &>build.log || (tail <build.log -5000 && exit 1)
-make -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
-make -p "${TOOLCHAIN_DIR}" &>build.log || (tail <build.log -5000 && exit 1)
-make install &>build.log || (tail <build.log -5000 && exit 1)
-EOF
+COPY /build-binutils.sh /
+RUN CC_TARGET="$(</CC_TARGET)" /build-binutils.sh
 
-ARG SYSROOT_VERSION
-RUN <<EOF
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://github.com/illumos/sysroot/releases/download/${SYSROOT_VERSION}/illumos-sysroot-i386-${SYSROOT_VERSION}.tar.gz" \
-    | tar xzf - -C "${SYSROOT_DIR}"
-EOF
+COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 ARG GCC_VERSION
 COPY --from=gcc-src /gcc-src /tmp/gcc-src

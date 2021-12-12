@@ -11,10 +11,17 @@ cd "$(cd "$(dirname "$0")" && pwd)"/..
 x() {
     local cmd="$1"
     shift
-    (
-        set -x
-        "$cmd" "$@"
-    )
+    if [[ -n "${dry_run:-}" ]]; then
+        (
+            IFS=' '
+            echo "+ $cmd $*"
+        )
+    else
+        (
+            set -x
+            "$cmd" "$@"
+        )
+    fi
 }
 
 if [[ "${1:-}" == "-"* ]]; then
@@ -25,20 +32,20 @@ USAGE:
 EOF
     exit 1
 fi
+# shellcheck disable=SC1091
+. tools/target-list-shared.sh
 if [[ "${1:-}" == "target-list" ]]; then
-    # shellcheck disable=SC1091
-    . tools/target-list.sh
     for target in "${targets[@]}"; do
         echo "${target}"
     done
     exit 0
 fi
 if [[ $# -gt 0 ]]; then
-    # shellcheck disable=SC1091
-    . tools/target-list.sh
     targets=()
     while [[ $# -gt 0 ]]; do
         case "$1" in
+            --dry-run) dry_run=1 ;;
+            -*) echo >&2 "error: unknown argument '$1'" && exit 1 ;;
             linux-gnu) targets+=(${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}) ;;
             linux-musl) targets+=(${linux_musl_targets[@]+"${linux_musl_targets[@]}"}) ;;
             linux-uclibc) targets+=(${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}) ;;
@@ -58,12 +65,9 @@ if [[ $# -gt 0 ]]; then
         esac
         shift
     done
-else
-    # shellcheck disable=SC1091
-    . tools/target-list.sh
 fi
 if [[ ${#targets[@]} -eq 0 ]]; then
-    echo >&2 "no target to build"
+    echo >&2 "error: no target to build"
     exit 1
 fi
 
@@ -71,8 +75,7 @@ export DOCKER_BUILDKIT=1
 export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
 
 owner="${OWNER:-taiki-e}"
-registry="ghcr.io/${owner}"
-tag_base="${registry}/rust-cross-toolchain:"
+repository="ghcr.io/${owner}/rust-cross-toolchain"
 arch="${HOST_ARCH:-amd64}"
 case "${arch}" in
     amd64)
@@ -83,7 +86,7 @@ case "${arch}" in
         # full_arch=arm64v8
         platform=linux/arm64/v8
         ;;
-    *) echo >&2 "unsupported architecture '${arch}'" && exit 1 ;;
+    *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
 esac
 time="$(date --utc '+%Y-%m-%d-%H-%M-%S')"
 
@@ -99,11 +102,11 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        x docker buildx build --push "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --push "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker pull "${tag}"
         x docker history "${tag}"
     else
-        x docker buildx build --load "$@" || (echo "build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --load "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker history "${tag}"
     fi
 }
@@ -120,7 +123,7 @@ build() {
         --platform "${platform}"
         --build-arg "RUST_TARGET=${target}"
     )
-    local tag="${tag_base}${target}"
+    local tag="${repository}:${target}"
     log_dir="tmp/log/${base}/${target}"
     if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
         local sys_version="$1"
@@ -144,7 +147,7 @@ build() {
 
     mkdir -p "${log_dir}"
     __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee "${log_dir}/build-docker-${time}.log"
-    echo "build log saved at ${log_dir}/build-docker-${time}.log"
+    echo "info: build log saved at ${log_dir}/build-docker-${time}.log"
 }
 
 for target in "${targets[@]}"; do
@@ -193,11 +196,14 @@ for target in "${targets[@]}"; do
             else
                 # FreeBSD have binary compatibility with previous releases.
                 # Therefore, the default is FreeBSD 12 that is the minimum supported version.
-                # However, for powerpc* and riscv64, we don't support FreeBSD 12, because:
-                # - powerpc/powerpc64: FreeBSD 12 uses gcc instead of clang.
-                # - powerpc64le/riscv64: not available in FreeBSD 12.
+                # However, we don't support FreeBSD 12 for the following targets, because:
+                # - powerpc,powerpc64: FreeBSD 12 uses gcc instead of clang.
+                # - powerpc64le,riscv64: not available in FreeBSD 12.
                 # See also https://www.freebsd.org/releases/13.0R/announce.
+                #
                 # Supported releases: https://www.freebsd.org/security/#sup
+                # FreeBSD 11 was EoL on 2021-9-30.
+                # https://www.freebsd.org/security/unsupported
                 # TODO: update 12.2 to 12.3 on 2022-4: 12.2 will be EoL on 2022-3-31
                 freebsd_versions=("12.2" "13.0")
             fi
@@ -219,13 +225,16 @@ for target in "${targets[@]}"; do
             if [[ -n "${NETBSD_VERSION:-}" ]]; then
                 netbsd_versions=("${NETBSD_VERSION}")
             else
-                # The default is NetBSD 8 that is the minimum supported version.
-                # However, for aarch64, we don't support NetBSD 8, because:
+                # NetBSD have binary compatibility with previous releases.
+                # Therefore, the default is NetBSD 8 that is the minimum supported version.
+                # However, we don't support NetBSD 8 for the following targets, because:
                 # - aarch64: not available in NetBSD 8.
                 # See also https://www.netbsd.org/releases/formal-9/NetBSD-9.0.html.
+                #
                 # Supported releases: https://www.netbsd.org/releases
-                # See also https://www.netbsd.org/releases/formal.html.
-                netbsd_versions=("8.2" "9.2")
+                # NetBSD 7 was EoL on 2020-6-30.
+                # https://www.netbsd.org/releases/formal.html
+                netbsd_versions=("8" "9")
             fi
             default_netbsd_version=8
             for netbsd_version in "${netbsd_versions[@]}"; do
@@ -272,10 +281,8 @@ for target in "${targets[@]}"; do
         *-wasi*) build "wasi" "${target}" ;;
         *-emscripten*) build "emscripten" "${target}" ;;
         *-windows-gnu*) build "windows-gnu" "${target}" ;;
-        *) echo >&2 "unrecognized target '${target}'" && exit 1 ;;
+        *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
     esac
 done
 
-if [[ -n "${CI:-}" ]]; then
-    docker images
-fi
+x docker images "${repository}"

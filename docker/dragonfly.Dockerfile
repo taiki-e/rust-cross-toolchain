@@ -5,18 +5,22 @@ ARG UBUNTU_VERSION=18.04
 # See tools/build-docker.sh
 ARG DRAGONFLY_VERSION
 
-FROM ghcr.io/taiki-e/downloader as builder
+FROM ghcr.io/taiki-e/downloader as sysroot
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DRAGONFLY_VERSION
+RUN mkdir -p /sysroot
+# https://mirror-master.dragonflybsd.org/iso-images
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://mirror-master.dragonflybsd.org/iso-images/dfly-x86_64-${DRAGONFLY_VERSION}_REL.iso.bz2" \
+        | bsdtar xjf - -C /sysroot ./lib ./usr/include ./usr/lib
+
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${SYSROOT_DIR}"
-
-ARG DRAGONFLY_VERSION
-# https://mirror-master.dragonflybsd.org/iso-images
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 "https://mirror-master.dragonflybsd.org/iso-images/dfly-x86_64-${DRAGONFLY_VERSION}_REL.iso.bz2" \
-        | bsdtar xjf - -C "${SYSROOT_DIR}" ./lib ./usr/include ./usr/lib
+COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 COPY /clang-cross.sh /
 ARG GCC_VERSION=8.0

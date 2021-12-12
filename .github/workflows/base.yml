@@ -45,6 +45,15 @@ jobs:
           - target: thumbv7neon-unknown-linux-musleabihf # tier3
           - target: x86_64-unknown-linux-musl
 
+          # NetBSD
+          - target: aarch64-unknown-netbsd # tier3
+          - target: armv6-unknown-netbsd-eabihf # tier3
+          - target: armv7-unknown-netbsd-eabihf # tier3
+          - target: i686-unknown-netbsd # tier3
+          - target: powerpc-unknown-netbsd # tier3
+          - target: sparc64-unknown-netbsd # tier3
+          - target: x86_64-unknown-netbsd
+
           # Solaris
           - target: sparcv9-sun-solaris
           - target: x86_64-pc-solaris
@@ -69,5 +78,5 @@ jobs:
       - run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"
-        if: github.repository_owner == 'taiki-e' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        if: github.repository_owner == 'taiki-e' && github.event_name == 'push' && (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/'))
       - run: docker/base/build-docker.sh "${{ matrix.target }}"
