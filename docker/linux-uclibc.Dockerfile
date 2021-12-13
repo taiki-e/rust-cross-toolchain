@@ -107,7 +107,7 @@ ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
 RUN /test/test.sh gcc
 RUN /test/test.sh clang
-COPY --from=test-relocated /DONE /
+# COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

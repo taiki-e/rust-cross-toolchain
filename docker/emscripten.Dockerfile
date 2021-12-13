@@ -56,7 +56,7 @@ COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 RUN /test/check.sh
 RUN /test/test.sh emcc
 RUN node --version
-COPY --from=test-relocated /DONE /
+# COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

@@ -122,7 +122,7 @@ case "${RUST_TARGET}" in
 esac
 EOF
 RUN /test/test.sh clang
-COPY --from=test-relocated /DONE /
+# COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

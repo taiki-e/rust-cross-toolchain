@@ -91,19 +91,19 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
-# TODO(linux-gnu)
-RUN <<EOF
-case "${RUST_TARGET}" in
-    aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh gcc ;;
-    *) NO_RUN=1 /test/test.sh gcc ;;
-esac
-EOF
-RUN <<EOF
-case "${RUST_TARGET}" in
-    aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh clang ;;
-    *) NO_RUN=1 /test/test.sh clang ;;
-esac
-EOF
+# # TODO(linux-gnu)
+# RUN <<EOF
+# case "${RUST_TARGET}" in
+#     aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh gcc ;;
+#     *) NO_RUN=1 /test/test.sh gcc ;;
+# esac
+# EOF
+# RUN <<EOF
+# case "${RUST_TARGET}" in
+#     aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh clang ;;
+#     *) NO_RUN=1 /test/test.sh clang ;;
+# esac
+# EOF
 COPY --from=test-relocated /DONE /
 
 FROM "${DISTRO}":"${DISTRO_VERSION}" as final
