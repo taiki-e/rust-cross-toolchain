@@ -11,11 +11,12 @@
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04
 ARG TOOLCHAIN_TAG=dev
+ARG HOST_ARCH=amd64
 
 # See tools/build-docker.sh
 ARG NETBSD_VERSION
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${NETBSD_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-amd64" as toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${NETBSD_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as toolchain
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -26,7 +27,6 @@ ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 
 # When updating this, the reminder to update docker/base/netbsd.Dockerfile.
-ARG NETBSD_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) cc_target=aarch64--netbsd ;;
@@ -42,20 +42,13 @@ echo "${cc_target}" >/CC_TARGET
 EOF
 
 COPY /clang-cross.sh /
+ARG NETBSD_VERSION
 RUN <<EOF
 export CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++"
 if [[ "${NETBSD_VERSION}" == "8"* ]]; then
     export CXXFLAGS="-std=c++14 ${CXXFLAGS}"
 fi
 export COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib"
-case "${RUST_TARGET}" in
-    armv6-* | armv7-* | powerpc-*)
-        export COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld"
-        ;;
-    sparc64-*)
-        export COMMON_FLAGS="${COMMON_FLAGS} -fintegrated-as --ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld"
-        ;;
-esac
 /clang-cross.sh
 EOF
 

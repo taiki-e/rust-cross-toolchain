@@ -12,11 +12,16 @@ ARG OPENBSD_VERSION
 RUN mkdir -p /sysroot
 # Download OpenBSD libraries and header files.
 # https://cdn.openbsd.org/pub/OpenBSD
+# https://www.openbsd.org/plat.html
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) openbsd_arch=arm64 ;;
+    armv7-*) openbsd_arch=armv7 ;;
     i686-*) openbsd_arch=i386 ;;
+    mips64-*) openbsd_arch=octeon ;;
     powerpc-*) openbsd_arch=macppc ;;
+    powerpc64-*) openbsd_arch=powerpc64 ;;
+    riscv64gc-*) openbsd_arch=riscv64 ;;
     sparc64-*) openbsd_arch=sparc64 ;;
     x86_64-*) openbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -59,7 +64,8 @@ COPY /clang-cross.sh /
 #   $ cargo build -Z build-std --offline --target sparc64-unknown-openbsd
 #      ld.lld: error: relocation R_SPARC_64 cannot be used against local symbol; recompile with -fPIC
 #   https://bugs.llvm.org/show_bug.cgi?id=42446
-RUN COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib" \
+#   Does it seem we need to build binutils?
+RUN COMMON_FLAGS="-fuse-ld=lld -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib" \
     /clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base

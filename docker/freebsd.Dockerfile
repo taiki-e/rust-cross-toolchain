@@ -81,7 +81,10 @@ case "${RUST_TARGET}" in
         COMMON_FLAGS="--ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld" \
             /clang-cross.sh
         ;;
-    *) /clang-cross.sh ;;
+    *)
+        COMMON_FLAGS="-fuse-ld=lld" \
+            /clang-cross.sh
+        ;;
 esac
 EOF
 

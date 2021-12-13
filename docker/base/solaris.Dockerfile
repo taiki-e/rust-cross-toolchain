@@ -37,7 +37,7 @@ case "${RUST_TARGET}" in
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 74DA7924C5513486
-echo "deb http://apt.dilos.org/dilos dilos2 main" >/etc/apt/sources.list.d/dilos.list
+echo "deb https://apt.dilos.org/dilos dilos2 main" >/etc/apt/sources.list.d/dilos.list
 dpkg --add-architecture "${dpkg_arch}"
 apt-get -o Acquire::Retries=10 update -qq
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \

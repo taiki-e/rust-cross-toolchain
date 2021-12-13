@@ -76,14 +76,16 @@ export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
 
 owner="${OWNER:-taiki-e}"
 repository="ghcr.io/${owner}/rust-cross-toolchain"
-arch="${HOST_ARCH:-amd64}"
+arch="${HOST_ARCH:-"$(uname -m)"}"
 case "${arch}" in
-    amd64)
-        # full_arch=amd64
+    x86_64 | x86-64 | x64 | amd64)
+        arch=x86_64
+        docker_arch=amd64
         platform=linux/amd64
         ;;
-    arm64)
-        # full_arch=arm64v8
+    aarch64 | arm64)
+        arch=aarch64
+        docker_arch=arm64v8
         platform=linux/arm64/v8
         ;;
     *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
@@ -122,6 +124,7 @@ build() {
         --file "${dockerfile}" docker/
         --platform "${platform}"
         --build-arg "RUST_TARGET=${target}"
+        --build-arg "HOST_ARCH=${docker_arch}"
     )
     local tag="${repository}:${target}"
     log_dir="tmp/log/${base}/${target}"
@@ -132,17 +135,17 @@ build() {
         shift
         if [[ "${sys_version}" == "${default_sys_version}" ]]; then
             if [[ -n "${is_release}" ]]; then
-                build_args+=(--tag "${tag}")
+                build_args+=(--tag "${tag}-${docker_arch}")
             fi
-            build_args+=(--tag "${tag}-${github_tag}")
+            build_args+=(--tag "${tag}-${github_tag}-${docker_arch}")
         fi
         local tag="${tag}${sys_version}"
         log_dir="${log_dir}${sys_version}"
     fi
     if [[ -n "${is_release}" ]]; then
-        build_args+=(--tag "${tag}")
+        build_args+=(--tag "${tag}-${docker_arch}")
     fi
-    local tag="${tag}-${github_tag}"
+    local tag="${tag}-${github_tag}-${docker_arch}"
     build_args+=(--tag "${tag}")
 
     mkdir -p "${log_dir}"
@@ -153,14 +156,51 @@ build() {
 for target in "${targets[@]}"; do
     case "${target}" in
         *-linux-gnu*)
-            # NOTE: g++-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
             ubuntu_version=18.04
             case "${target}" in
-                # g++-mipsisa(32|64)r6(el)-linux-gnu(abi64) is not available in ubuntu 18.04.
-                mipsisa32r6* | mipsisa64r6*) ubuntu_version=20.04 ;;
+                x86_64-*)
+                    # TODO
+                    case "${arch}" in
+                        x86_64) continue ;;
+                    esac
+                    ;;
+                aarch64-*)
+                    # TODO
+                    case "${arch}" in
+                        aarch64) continue ;;
+                    esac
+                    ;;
+                aarch64_be-* | arm-*hf | riscv32gc-*)
+                    # Toolchains for these targets are not available on non-x86_64 host.
+                    case "${arch}" in
+                        x86_64) ;;
+                        *) continue ;;
+                    esac
+                    ;;
+            esac
+            case "${arch}" in
+                # NOTE: gcc-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
+                x86_64)
+                    case "${target}" in
+                        # g++-mipsisa(32|64)r6(el)-linux-gnu(abi64) is not available in ubuntu 18.04.
+                        mipsisa32r6* | mipsisa64r6*) ubuntu_version=20.04 ;;
+                    esac
+                    ;;
+                aarch64)
+                    case "${target}" in
+                        # gcc-(mips|mipsel|mips64|mips64el|mipsisa32r6|mipsisa32r6el)-linux-gnu for arm64 host is not available in ubuntu 20.04.
+                        # TODO: consider using debian bullseye that has the same glibc version as ubuntu 20.04.
+                        mips*)
+                            # ubuntu_version=21.04
+                            continue
+                            ;;
+                        # gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
+                        powerpc-* | powerpc64-* | sparc64-*) continue ;;
+                    esac
+                    ;;
             esac
             build "linux-gnu" "${target}" \
-                --build-arg "UBUNTU_VERSION=${ubuntu_version}"
+                --build-arg "DISTRO_VERSION=${ubuntu_version}"
             ;;
         *-linux-musl*)
             if [[ -n "${MUSL_VERSION:-}" ]]; then
@@ -191,6 +231,15 @@ for target in "${targets[@]}"; do
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
         *-android*) build "android" "${target}" ;;
         *-freebsd*)
+            case "${target}" in
+                riscv64gc-*)
+                    if [[ "${docker_arch}" != "amd64"* ]]; then
+                        # riscv64gc needs to build binutils from source.
+                        # TODO: don't skip if actual host is arm64
+                        continue
+                    fi
+                    ;;
+            esac
             if [[ -n "${FREEBSD_VERSION:-}" ]]; then
                 freebsd_versions=("${FREEBSD_VERSION}")
             else
@@ -280,7 +329,17 @@ for target in "${targets[@]}"; do
         *-fuchsia*) build "fuchsia" "${target}" ;;
         *-wasi*) build "wasi" "${target}" ;;
         *-emscripten*) build "emscripten" "${target}" ;;
-        *-windows-gnu*) build "windows-gnu" "${target}" ;;
+        *-windows-gnu*)
+            case "${target}" in
+                i686-*)
+                    if [[ "${docker_arch}" != "amd64"* ]]; then
+                        # i686 needs to build gcc from source.
+                        continue
+                    fi
+                    ;;
+            esac
+            build "windows-gnu" "${target}"
+            ;;
         *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
     esac
 done

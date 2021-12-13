@@ -1,13 +1,11 @@
 # syntax=docker/dockerfile:1.3-labs
 
-# Refs:
-# - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
-
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04
 ARG TOOLCHAIN_TAG=dev
+ARG HOST_ARCH=amd64
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-amd64" as toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as toolchain
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

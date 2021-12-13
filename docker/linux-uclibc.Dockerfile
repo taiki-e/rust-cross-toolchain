@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1.3-labs
 
+# Refs:
+# - https://www.uclibc-ng.org
+# - https://github.com/rust-lang/rust/blob/3d71e749a244890cd370d49963e747cf92f4a037/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabihf.md
+
 ARG UBUNTU_VERSION=18.04
 
 # https://toolchains.bootlin.com/releases_armv7-eabihf.html
@@ -7,25 +11,10 @@ ARG UBUNTU_VERSION=18.04
 ARG TOOLCHAIN_VERSION=2020.08-1
 ARG GCC_VERSION=10.2.0
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/downloader as toolchain
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
-ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
-ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
-
-RUN <<EOF
-case "${RUST_TARGET}" in
-    armv5te-*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
-    armv7-*hf) cc_target=arm-buildroot-linux-uclibcgnueabihf ;;
-    mips-*) cc_target=mips-buildroot-linux-uclibc ;;
-    mipsel-*) cc_target=mipsel-buildroot-linux-uclibc ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
-esac
-echo "${cc_target}" >/CC_TARGET
-EOF
-
+RUN mkdir -p /toolchain
 ARG TOOLCHAIN_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
@@ -36,7 +25,26 @@ case "${RUST_TARGET}" in
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://toolchains.bootlin.com/downloads/releases/toolchains/${arch}/tarballs/${arch}--uclibc--bleeding-edge-${TOOLCHAIN_VERSION}.tar.bz2" \
-    | tar xjf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
+    | tar xjf - --strip-components 1 -C /toolchain
+EOF
+
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
+ARG RUST_TARGET
+ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
+ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
+COPY --from=toolchain /toolchain "${TOOLCHAIN_DIR}"
+
+RUN <<EOF
+case "${RUST_TARGET}" in
+    armv5te-*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
+    armv7-*hf) cc_target=arm-buildroot-linux-uclibcgnueabihf ;;
+    mips-*) cc_target=mips-buildroot-linux-uclibc ;;
+    mipsel-*) cc_target=mipsel-buildroot-linux-uclibc ;;
+    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+esac
+echo "${cc_target}" >/CC_TARGET
 EOF
 
 RUN <<EOF

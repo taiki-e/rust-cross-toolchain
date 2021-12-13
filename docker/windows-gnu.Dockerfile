@@ -3,8 +3,9 @@
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=20.04
 ARG TOOLCHAIN_TAG=dev
+ARG HOST_ARCH=amd64
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-amd64" as toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as toolchain
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -31,7 +32,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV HOME=/tmp/home
 COPY /test-base.sh /
 RUN /test-base.sh
-RUN dpkg --add-architecture i386
+RUN <<EOF
+dpkg_arch="$(dpkg --print-architecture)"
+case "${dpkg_arch##*-}" in
+    amd64) dpkg --add-architecture i386 ;;
+    arm64) dpkg --add-architecture armhf ;;
+    *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
+esac
+EOF
 RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     wine-stable \
     wine32 \
@@ -53,7 +61,6 @@ ARG RUST_TARGET
 COPY /test-base-target.sh /
 RUN /test-base-target.sh
 COPY /test /test
-COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
 FROM test-base as test-relocated
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -80,4 +87,5 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
+COPY --from=toolchain /"${RUST_TARGET}-deb" /"${RUST_TARGET}-deb"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

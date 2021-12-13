@@ -46,14 +46,6 @@ case "${SYSROOT:-}" in
 esac
 common_flags="${common_flags}${COMMON_FLAGS:+" ${COMMON_FLAGS}"}"
 common_flags_last="${common_flags_last}${COMMON_FLAGS_LAST:+" ${COMMON_FLAGS_LAST}"}"
-case "${RUST_TARGET}" in
-    *-freebsd* | *-netbsd* | *-openbsd* | *-dragonfly*)
-        case "${common_flags}" in
-            *" -fuse-ld"* | *" --ld-path"*) ;;
-            *) common_flags="${common_flags} -fuse-ld=lld" ;;
-        esac
-        ;;
-esac
 
 cflags="${common_flags}${CFLAGS:+" ${CFLAGS}"}"
 cflags_last="${common_flags_last}${CFLAGS_LAST:+" ${CFLAGS_LAST}"}"

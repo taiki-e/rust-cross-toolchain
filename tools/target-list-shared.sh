@@ -38,7 +38,7 @@ linux_gnu_targets=(
     # sparc-unknown-linux-gnu # tier3
     sparc64-unknown-linux-gnu
     thumbv7neon-unknown-linux-gnueabihf
-    # x86_64-unknown-linux-gnu
+    x86_64-unknown-linux-gnu
     x86_64-unknown-linux-gnux32
 )
 # Linux (musl)
@@ -144,7 +144,7 @@ netbsd_targets=(
 openbsd_targets=(
     aarch64-unknown-openbsd # tier3
     i686-unknown-openbsd    # tier3
-    # powerpc-unknown-openbsd # tier3, libc doesn't support this target
+    # powerpc-unknown-openbsd # tier3, libc doesn't support this target: https://github.com/rust-lang/libc/pull/2591
     # sparc64-unknown-openbsd # tier3, see docker/openbsd.Dockerfile
     x86_64-unknown-openbsd # tier3
 )

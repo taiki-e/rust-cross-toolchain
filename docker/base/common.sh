@@ -28,7 +28,7 @@ if [[ -f /CC_TARGET ]]; then
 fi
 
 for bin_dir in "${TOOLCHAIN_DIR}/bin" "${TOOLCHAIN_DIR}/${RUST_TARGET}/bin"; do
-    if [[ -d "${bin_dir}" ]]; then
+    if [[ -e "${bin_dir}" ]]; then
         for path in "${bin_dir}"/*; do
             if file "${path}" | grep -E 'not stripped' >/dev/null; then
                 x strip "${path}"

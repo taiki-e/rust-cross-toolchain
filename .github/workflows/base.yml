@@ -65,6 +65,8 @@ jobs:
           # Windows (GNU)
           - target: i686-pc-windows-gnu
           - target: x86_64-pc-windows-gnu
+          - target: x86_64-pc-windows-gnu
+            host: aarch64
 
     runs-on: ubuntu-latest
     steps:
@@ -80,3 +82,5 @@ jobs:
           echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"
         if: github.repository_owner == 'taiki-e' && github.event_name == 'push' && (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/'))
       - run: docker/base/build-docker.sh "${{ matrix.target }}"
+        env:
+          HOST_ARCH: ${{ matrix.host }}

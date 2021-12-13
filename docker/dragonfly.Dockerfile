@@ -24,7 +24,7 @@ COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 COPY /clang-cross.sh /
 ARG GCC_VERSION=8.0
-RUN COMMON_FLAGS="-B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${GCC_VERSION/./} -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${GCC_VERSION/./}" \
+RUN COMMON_FLAGS="-fuse-ld=lld -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${GCC_VERSION/./} -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${GCC_VERSION/./}" \
     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++" \
     /clang-cross.sh
 

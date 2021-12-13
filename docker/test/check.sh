@@ -16,8 +16,20 @@ x() {
 
 toolchain_dir="/${RUST_TARGET}"
 
+# In Ubuntu's binutils-* packages, $toolchain/$target/bin/* are symlinks to $toolchain/bin/*.
+if [[ -e "${toolchain_dir}/${RUST_TARGET}/bin" ]]; then
+    pushd "${toolchain_dir}/${RUST_TARGET}/bin" >/dev/null
+    for path in "${toolchain_dir}/${RUST_TARGET}/bin"/*; do
+        tool="$(basename "${path}")"
+        if [[ ! -L "${tool}" ]] && [[ -e ../../bin/"${RUST_TARGET}-${tool}" ]]; then
+            ln -sf ../../bin/"${RUST_TARGET}-${tool}" "${tool}"
+        fi
+    done
+    popd >/dev/null
+fi
+
 for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
-    if [[ -d "${bin_dir}" ]]; then
+    if [[ -e "${bin_dir}" ]]; then
         for path in "${bin_dir}"/*; do
             if file "${path}" | grep -E 'not stripped' >/dev/null; then
                 x strip "${path}"
@@ -48,6 +60,6 @@ for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-g++" "${RUST_TARGET}-clang" "${RU
         x file "$(type -P "${cc}")"
     fi
 done
-if [[ -f "${toolchain_dir}/bin/${RUST_TARGET}-clang" ]]; then
+if [[ -e "${toolchain_dir}/bin/${RUST_TARGET}-clang" ]]; then
     x tail -n +1 "${toolchain_dir}/bin/${RUST_TARGET}-clang" "${toolchain_dir}/bin/${RUST_TARGET}-clang++"
 fi

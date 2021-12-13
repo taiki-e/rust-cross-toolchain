@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:1.3-labs
 
-ARG UBUNTU_VERSION=18.04
+ARG DISTRO=ubuntu
+ARG DISTRO_VERSION=18.04
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UBUNTU_VERSION
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 
 COPY /linux-gnu.sh /
 RUN /linux-gnu.sh
@@ -63,7 +63,7 @@ case "${RUST_TARGET}" in
 esac
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -92,13 +92,24 @@ COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
 # TODO(linux-gnu)
-RUN NO_RUN=1 /test/test.sh gcc
-RUN NO_RUN=1 /test/test.sh clang
+RUN <<EOF
+case "${RUST_TARGET}" in
+    aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh gcc ;;
+    *) NO_RUN=1 /test/test.sh gcc ;;
+esac
+EOF
+RUN <<EOF
+case "${RUST_TARGET}" in
+    aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh clang ;;
+    *) NO_RUN=1 /test/test.sh clang ;;
+esac
+EOF
 COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM "${DISTRO}":"${DISTRO_VERSION}" as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"
+COPY --from=builder /"${RUST_TARGET}-deb" /"${RUST_TARGET}-deb"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

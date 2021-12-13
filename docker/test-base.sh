@@ -4,6 +4,16 @@ IFS=$'\n\t'
 
 # Set up tools to test the toolchain. (target-independent)
 
+dpkg_arch="$(dpkg --print-architecture)"
+case "${dpkg_arch##*-}" in
+    amd64) ;;
+    *)
+        # TODO: don't skip if actual host is arm64
+        echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+        exit 0
+        ;;
+esac
+
 export CARGO_NET_RETRY=10
 export RUSTUP_MAX_RETRIES=10
 

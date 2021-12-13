@@ -2,14 +2,15 @@
 
 use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 
+use anyhow::Result;
 use fs_err as fs;
 
 fn usage<T>() -> T {
-    println!("USAGE: build-libunwind [--host=<HOST>] --target=<TARGET> --out=<OUT_DIR> [--sysroot=<SYSROOT>]");
+    println!("USAGE: build-libunwind --target=<TARGET> --out=<OUT_DIR> [--host=<HOST>] [--sysroot=<SYSROOT>]");
     std::process::exit(1);
 }
 
-fn main() {
+fn main() -> Result<()> {
     let args: Vec<_> = env::args().skip(1).collect();
     let mut host = None;
     let mut target = None;
@@ -25,6 +26,7 @@ fn main() {
         } else if let Some(v) = arg.strip_prefix("--sysroot=") {
             sysroot = Some(v.to_owned())
         } else {
+            eprintln!("error: unknown argument '{}'", arg);
             usage()
         }
     }
@@ -34,10 +36,9 @@ fn main() {
     let host = &match host {
         Some(host) => host,
         None => {
-            let output = Command::new("rustc").arg("-Vv").output().unwrap();
+            let output = Command::new("rustc").arg("-Vv").output()?;
             assert!(output.status.success());
-            String::from_utf8(output.stdout)
-                .unwrap()
+            String::from_utf8(output.stdout)?
                 .lines()
                 .find_map(|line| line.strip_prefix("host: "))
                 .unwrap()
@@ -50,10 +51,9 @@ fn main() {
             let output = Command::new("rustc")
                 .arg("--print")
                 .arg("sysroot")
-                .output()
-                .unwrap();
+                .output()?;
             assert!(output.status.success());
-            String::from_utf8(output.stdout).unwrap().trim_end().into()
+            String::from_utf8(output.stdout)?.trim_end().into()
         }
     };
     let root = &sysroot.join("lib/rustlib/src/rust/src/llvm-project/libunwind");
@@ -61,7 +61,7 @@ fn main() {
     let target_cc = env::var_os(&format!("CC_{}", target_lower)).unwrap();
     let target_cxx = env::var_os(&format!("CXX_{}", target_lower));
     let target_ar = env::var_os(&format!("AR_{}", target_lower));
-    fs::create_dir_all(&out_dir).unwrap();
+    fs::create_dir_all(&out_dir)?;
 
     let mut cc_cfg = cc::Build::new();
     let mut cpp_cfg = cc::Build::new();
@@ -151,19 +151,19 @@ fn main() {
     }
 
     for src in c_sources {
-        cc_cfg.file(fs::canonicalize(root.join("src").join(src)).unwrap());
+        cc_cfg.file(fs::canonicalize(root.join("src").join(src))?);
     }
 
     for src in &cpp_sources {
-        cpp_cfg.file(fs::canonicalize(root.join("src").join(src)).unwrap());
+        cpp_cfg.file(fs::canonicalize(root.join("src").join(src))?);
     }
 
     cpp_cfg.compile("unwind-cpp");
 
     // FIXME: https://github.com/alexcrichton/cc-rs/issues/545#issuecomment-679242845
     let mut count = 0;
-    for entry in fs::read_dir(&out_dir).unwrap() {
-        let file = fs::canonicalize(entry.unwrap().path()).unwrap();
+    for entry in fs::read_dir(&out_dir)? {
+        let file = fs::canonicalize(entry?.path())?;
         if file.is_file() && file.extension() == Some(OsStr::new("o")) {
             // file name starts with "Unwind-EHABI", "Unwind-seh" or "libunwind"
             let file_name = file.file_name().unwrap().to_str().expect("UTF-8 file name");
@@ -179,4 +179,6 @@ fn main() {
     assert_eq!(cpp_len, count, "Can't get object files from {:?}", &out_dir);
 
     cc_cfg.compile("unwind");
+
+    Ok(())
 }

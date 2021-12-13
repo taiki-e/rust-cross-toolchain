@@ -33,24 +33,13 @@ RUN mkdir -p "${TOOLCHAIN_DIR}"
 # When updating this, the reminder to update docker/linux-musl.Dockerfile.
 RUN <<EOF
 case "${RUST_TARGET}" in
-    aarch64-*) cc_target=aarch64-linux-musl ;;
     arm*hf | thumbv7neon-*) cc_target=arm-linux-musleabihf ;;
     arm*) cc_target=arm-linux-musleabi ;;
     hexagon-*) cc_target=hexagon-unknown-linux-musl ;;
-    i586-*) cc_target=i586-linux-musl ;;
-    i686-*) cc_target=i686-linux-musl ;;
     mips-*) cc_target=mips-linux-muslsf ;;
-    mips64-*) cc_target=mips64-linux-muslabi64 ;;
-    mips64el-*) cc_target=mips64el-linux-muslabi64 ;;
     mipsel-*) cc_target=mipsel-linux-muslsf ;;
-    powerpc-*) cc_target=powerpc-linux-musl ;;
-    powerpc64-*) cc_target=powerpc64-linux-musl ;;
-    powerpc64le-*) cc_target=powerpc64le-linux-musl ;;
-    riscv32gc-*) cc_target=riscv32-linux-musl ;;
-    riscv64gc-*) cc_target=riscv64-linux-musl ;;
-    s390x-*) cc_target=s390x-linux-musl ;;
-    x86_64-*) cc_target=x86_64-linux-musl ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
+    *) cc_target="${RUST_TARGET/-unknown/}" ;;
 esac
 echo "${cc_target}" >/CC_TARGET
 EOF

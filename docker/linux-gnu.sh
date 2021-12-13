@@ -42,7 +42,7 @@ case "${RUST_TARGET}" in
         gcc_version=11.1.0
         echo "${cc_target}" >/CC_TARGET
         echo "${gcc_version}" >/GCC_VERSION
-        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${riscv_gcc_version}/riscv32-glibc-ubuntu-${UBUNTU_VERSION}-nightly-${riscv_gcc_version}-nightly.tar.gz" \
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${riscv_gcc_version}/riscv32-glibc-ubuntu-18.04-nightly-${riscv_gcc_version}-nightly.tar.gz" \
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;
@@ -81,23 +81,14 @@ if [[ -n "${lib_arch}" ]]; then
     apt-get -o Acquire::Retries=10 update -qq
     # shellcheck disable=SC2046
     apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
-        "g++-${gcc_version%%.*}-${apt_target/_/-}" \
+        "g++-${apt_target/_/-}" \
         | grep '^\w' \
         | grep -E "${apt_target/_/-}|${lib_arch}-cross")
     for deb in *.deb; do
         dpkg -x "${deb}" .
-        rm "${deb}"
+        mv "${deb}" "${TOOLCHAIN_DIR}-deb"
     done
     mv usr/* "${TOOLCHAIN_DIR}"
 else
     exit 1
 fi
-
-# Create symlinks: $tool-$gcc_version -> $tool
-set +x
-cd "${TOOLCHAIN_DIR}/bin"
-for tool in *-"${gcc_version%%.*}"; do
-    link="${tool%"-${gcc_version%%.*}"}"
-    [[ -e "${link}" ]] || ln -s "${tool}" "${link}"
-done
-set -x

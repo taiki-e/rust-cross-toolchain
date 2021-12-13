@@ -15,7 +15,7 @@ EOF
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 RUN mkdir -p /tmp/toolchain
 WORKDIR /tmp/toolchain
 RUN <<EOF
@@ -55,7 +55,7 @@ EOF
 RUN <<EOF
 for deb in *.deb; do
     dpkg -x "${deb}" .
-    rm "${deb}"
+    mv "${deb}" "${TOOLCHAIN_DIR}-deb"
 done
 mv usr/* "${TOOLCHAIN_DIR}"
 EOF
@@ -84,4 +84,5 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
+COPY --from=builder /"${RUST_TARGET}-deb" /"${RUST_TARGET}-deb"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

@@ -30,14 +30,16 @@ export BUILDKIT_STEP_LOG_MAX_SIZE=10485760
 
 owner="${OWNER:-taiki-e}"
 repository="ghcr.io/${owner}/rust-cross-toolchain"
-arch="${HOST_ARCH:-amd64}"
+arch="${HOST_ARCH:-"$(uname -m)"}"
 case "${arch}" in
-    amd64)
-        full_arch=amd64
+    x86_64 | x86-64 | x64 | amd64)
+        arch=x86_64
+        docker_arch=amd64
         platform=linux/amd64
         ;;
-    arm64)
-        full_arch=arm64v8
+    aarch64 | arm64)
+        arch=aarch64
+        docker_arch=arm64v8
         platform=linux/arm64/v8
         ;;
     *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
@@ -83,7 +85,7 @@ build() {
         local tag="${tag}${sys_version}"
         log_dir="${log_dir}${sys_version}"
     fi
-    local tag="${tag}-base-${github_tag}-${full_arch}"
+    local tag="${tag}-base-${github_tag}-${docker_arch}"
     build_args+=(--tag "${tag}")
 
     mkdir -p "${log_dir}"
