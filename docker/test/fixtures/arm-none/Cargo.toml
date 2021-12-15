@@ -1,0 +1,16 @@
+[package]
+name = "arm-none-test"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[features]
+c = []
+cpp = ["c"]
+
+[build-dependencies]
+cc = "1"
+
+[dependencies]

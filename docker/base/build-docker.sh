@@ -129,6 +129,26 @@ case "${target}" in
     *-solaris*) build "solaris" "${target}" ;;
     *-illumos*) build "illumos" "${target}" ;;
     *-windows-gnu*) build "windows-gnu" "${target}" ;;
+    various)
+        targets=(
+            aarch64-none-elf
+            arm-none-eabi
+            riscv32-unknown-elf
+            riscv64-unknown-elf
+        )
+        for target in "${targets[@]}"; do
+            case "${target}" in
+                riscv*)
+                    # Toolchains for these targets are not available on non-x86_64 host.
+                    case "${arch}" in
+                        x86_64) ;;
+                        *) continue ;;
+                    esac
+                    ;;
+            esac
+            build "various" "${target}" --build-arg "TARGET=${target}"
+        done
+        ;;
     *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
 esac
 

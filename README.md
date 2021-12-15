@@ -14,6 +14,7 @@
   - [WASI](#wasi)
   - [Emscripten](#emscripten)
   - [Windows (GNU)](#windows-gnu)
+  - [No-std](#no-std)
 
 ## Platform Support
 
@@ -21,7 +22,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| glibc [1] | [1] | host | ✓ (libstdc++) | ✓ (qemu-user) [2] | [1] |
+| glibc [1] | [1] | host | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
 
 [1] See target list below for details<br>
 [2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
@@ -65,7 +66,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| musl 1.1.24 [1] [2] / 1.2.2 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu-user) | x86_64 linux (any libc) |
+| musl 1.1.24 [1] [2] / 1.2.2 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (any libc) |
 
 [1] Default (see [libc#1848] for details)<br>
 [2] With a patch that fixes CVE-2020-28928<br>
@@ -98,7 +99,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| uClibc-ng 1.0.34 | 10.2.0 | host [1] | ✓ (libstdc++) | ✓ (qemu-user) | x86_64 linux (glibc 2.27+) |
+| uClibc-ng 1.0.34 | 10.2.0 | host [1] | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
 
 [1] It is not recommended to use clang for these targets at this time due to some bugs.
 
@@ -115,7 +116,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| freebsd [1] | N/A | host | ✓ (libc++) |  | x86_64/aarch64 linux (any libc) |
+| freebsd [1] | N/A | host | ✓ (libc++) |  | linux (any arch, any libc) |
 
 [1] See target list below for details<br>
 
@@ -158,7 +159,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| openbsd 7.0 | N/A | host | ✓ (libc++) [1] |  | x86_64/aarch64 linux (any libc) |
+| openbsd 7.0 | N/A | host | ✓ (libc++) [1] |  | linux (any arch, any libc) |
 
 [1] only i686 and x86_64<br>
 
@@ -174,7 +175,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| dragonfly 6.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | x86_64/aarch64 linux (any libc) |
+| dragonfly 6.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | linux (any arch, any libc) |
 
 ([Dockerfile](docker/dragonfly.Dockerfile))
 
@@ -275,3 +276,38 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 | ------ | ---- |
 | `x86_64-pc-windows-gnu` | x86_64/aarch64 linux (glibc 2.31+) |
 | `i686-pc-windows-gnu` | x86_64 linux (glibc 2.31+) |
+
+### No-std
+
+| libc | GCC | clang | C++ | test | host |
+| ---- | --- | ----- | --- | ---- | ---- |
+| newlib 4.1.0 | [1] |  | ✓ (libstdc++) | [1] | [1] |
+
+[1] See target list below for details<br>
+
+([Dockerfile](docker/none.Dockerfile))
+
+**Supported targets**:
+
+| target | GCC | test | host |
+| ------ | --- | ---- | ---- |
+| `aarch64-unknown-none` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `aarch64-unknown-none-softfloat` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armebv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armebv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armv7a-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armv7a-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `riscv32i-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `riscv32imac-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `riscv32imc-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `riscv64gc-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `riscv64imac-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `thumbv6m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `thumbv7em-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `thumbv7em-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `thumbv7m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `thumbv8m.base-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `thumbv8m.main-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `thumbv8m.main-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |

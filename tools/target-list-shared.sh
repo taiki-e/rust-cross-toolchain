@@ -305,34 +305,34 @@ cuda_targets=(
 # rustup target list | grep -e '-none'
 # rustc --print target-list | grep -e '-none'
 no_std_targets=(
-    # aarch64-unknown-none
-    # aarch64-unknown-none-softfloat
-    # armebv7r-none-eabi
-    # armebv7r-none-eabihf
-    # armv7a-none-eabi
-    # armv7a-none-eabihf # tier3
-    # armv7r-none-eabi
-    # armv7r-none-eabihf
-    # # bpfeb-unknown-none  # tier3
-    # # bpfel-unknown-none  # tier3
-    # # mipsel-unknown-none # tier3
-    # # msp430-none-elf     # tier3
-    # riscv32i-unknown-none-elf
-    # riscv32imac-unknown-none-elf
-    # riscv32imc-unknown-none-elf
-    # riscv64gc-unknown-none-elf
-    # riscv64imac-unknown-none-elf
+    aarch64-unknown-none
+    aarch64-unknown-none-softfloat
+    armebv7r-none-eabi
+    armebv7r-none-eabihf
+    armv7a-none-eabi
+    armv7a-none-eabihf # tier3
+    armv7r-none-eabi
+    armv7r-none-eabihf
+    # bpfeb-unknown-none  # tier3
+    # bpfel-unknown-none  # tier3
+    # mipsel-unknown-none # tier3
+    # msp430-none-elf     # tier3
+    riscv32i-unknown-none-elf
+    riscv32imac-unknown-none-elf
+    riscv32imc-unknown-none-elf
+    riscv64gc-unknown-none-elf
+    riscv64imac-unknown-none-elf
     # thumbv4t-none-eabi # tier3
-    # thumbv6m-none-eabi
-    # thumbv7em-none-eabi
-    # thumbv7em-none-eabihf
-    # thumbv7m-none-eabi
-    # thumbv8m.base-none-eabi
-    # thumbv8m.main-none-eabi
-    # thumbv8m.main-none-eabihf
-    # # x86_64-unknown-none              # tier3
-    # # x86_64-unknown-none-hermitkernel # tier3
-    # # x86_64-unknown-none-linuxkernel  # tier3
+    thumbv6m-none-eabi
+    thumbv7em-none-eabi
+    thumbv7em-none-eabihf
+    thumbv7m-none-eabi
+    thumbv8m.base-none-eabi
+    thumbv8m.main-none-eabi
+    thumbv8m.main-none-eabihf
+    # x86_64-unknown-none              # tier3
+    # x86_64-unknown-none-hermitkernel # tier3
+    # x86_64-unknown-none-linuxkernel  # tier3
 )
 
 targets=(

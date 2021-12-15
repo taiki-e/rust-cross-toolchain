@@ -54,8 +54,8 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://gi
     | tar xJf - --strip-components 1 -C /usr/local/bin "wasmtime-v${WASMTIME_VERSION}-x86_64-linux/wasmtime"
 EOF
 ARG RUST_TARGET
-COPY /test-base-target.sh /
-RUN /test-base-target.sh
+COPY /test-base /test-base
+RUN /test-base/target.sh
 COPY /test /test
 
 FROM test-base as test-relocated

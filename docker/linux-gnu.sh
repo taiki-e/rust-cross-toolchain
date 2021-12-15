@@ -9,7 +9,7 @@ case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu)
         # Toolchains for aarch64_be-linux-gnu is not available in APT.
         # https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads
-        # GCC 10.2.1, Linux header 4.20.13, glibc 2.31, binutils 2.35.1
+        # GCC 10.2.1, Linux header 4.20.13, glibc 2.31, binutils 2.35.1, GDB 10.1
         # Use 10.2-2020.11 instead of the latest 10.3-2021.07 because 10.3-2021.07 requires glibc 2.33.
         arm_gcc_version=10.2-2020.11
         cc_target=aarch64_be-none-linux-gnu
@@ -34,7 +34,7 @@ case "${RUST_TARGET}" in
         exit 0
         ;;
     riscv32gc-unknown-linux-gnu)
-        # Toolchains for aarch64_be-linux-gnu is not available in APT.
+        # Toolchains for riscv32-linux-gnu is not available in APT.
         # https://github.com/riscv-collab/riscv-gnu-toolchain/releases
         # GCC 11.1.0, Linux header 5.10.5, glibc 2.33, binutils 2.37
         riscv_gcc_version=2021.09.21

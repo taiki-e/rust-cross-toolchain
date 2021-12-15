@@ -32,15 +32,9 @@ jobs:
           - target: linux-uclibc
           # - target: android
           - target: freebsd
-          - target: freebsd
-            host: aarch64
           - target: netbsd
           - target: openbsd
-          - target: openbsd
-            host: aarch64
           - target: dragonfly
-          - target: dragonfly
-            host: aarch64
           - target: solaris
           - target: illumos
           - target: redox
@@ -50,6 +44,9 @@ jobs:
           - target: windows-gnu
           - target: windows-gnu
             host: aarch64
+          - target: none
+          - target: none
+            host: aarch64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -58,7 +55,9 @@ jobs:
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
         with:
-          driver-opts: env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+          driver-opts: |
+            env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+            image=moby/buildkit:latest
       - run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"

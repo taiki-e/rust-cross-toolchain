@@ -20,10 +20,15 @@ FROM rust:alpine as build-libunwind
 SHELL ["/bin/sh", "-eux", "-c"]
 COPY /build-libunwind /build-libunwind
 WORKDIR /build-libunwind
-RUN RUSTFLAGS="-C target-feature=+crt-static -C link-self-contained=yes" \
-        cargo build --release --target "$(rustc -Vv | grep host | sed 's/host: //')"
+ARG CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+ARG CARGO_PROFILE_RELEASE_DEBUG=1
+ARG CARGO_PROFILE_RELEASE_LTO=true
+ARG CARGO_PROFILE_RELEASE_OPT_LEVEL=z
+ARG RUSTFLAGS='-C target-feature=+crt-static -C link-self-contained=yes'
+RUN cargo build --release --target "$(rustc -Vv | grep host | sed 's/host: //')"
 RUN mv target/x86_64-unknown-linux-musl/release/build-libunwind /usr/local/bin/
 RUN strip /usr/local/bin/build-libunwind
+WORKDIR /
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -86,8 +91,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
 ARG RUST_TARGET
-COPY /test-base-target.sh /
-RUN /test-base-target.sh
+COPY /test-base /test-base
+RUN /test-base/target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 COPY --from=build-libunwind /usr/local/bin/build-libunwind /usr/local/bin/

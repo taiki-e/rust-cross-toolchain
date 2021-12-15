@@ -4,6 +4,10 @@ fn main() {
     let target = &*env::var("TARGET").unwrap();
 
     cc::Build::new().file("hello_c.c").compile("hello_c");
+    if !target.contains("-windows-gnu") && !target.contains("-openbsd") {
+        // Make sure that the link with libc works.
+        println!("cargo:rustc-link-lib=c");
+    }
 
     if cfg!(feature = "cpp") {
         cc::Build::new()
@@ -16,7 +20,6 @@ fn main() {
             env!("CARGO_PKG_NAME"),
             target
         );
-        println!("cargo:rustc-cfg=no_cpp");
     }
 
     println!("cargo:rerun-if-changed=hello_c.c");

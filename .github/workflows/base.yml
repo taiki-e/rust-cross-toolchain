@@ -68,6 +68,11 @@ jobs:
           - target: x86_64-pc-windows-gnu
             host: aarch64
 
+          # Misc
+          - target: various
+          - target: various
+            host: aarch64
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -76,7 +81,9 @@ jobs:
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
         with:
-          driver-opts: env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+          driver-opts: |
+            env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+            image=moby/buildkit:latest
       - run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"

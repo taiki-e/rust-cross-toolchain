@@ -1,0 +1,24 @@
+[package]
+name = "riscv-none-test"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[features]
+c = []
+cpp = ["c"]
+
+[build-dependencies]
+cc = "1"
+
+[dependencies]
+riscv-rt = "0.8"
+
+# This patch is needed for Fix compatibility with GNU linker (riscv-rt#68) and
+# riscv64gc (riscv-rt#79).
+# TODO: remove once https://github.com/rust-embedded/riscv-rt/pull/68 merged
+# and a new version released.
+[patch.crates-io]
+riscv-rt = { git = "https://github.com/taiki-e/riscv-rt.git", rev = "7d2268105af466d2dd2f48ea5f51b593837d8a53" }

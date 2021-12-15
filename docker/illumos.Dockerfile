@@ -27,8 +27,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
 ARG RUST_TARGET
-COPY /test-base-target.sh /
-RUN /test-base-target.sh
+COPY /test-base /test-base
+RUN /test-base/target.sh
 COPY /test /test
 
 FROM test-base as test-relocated

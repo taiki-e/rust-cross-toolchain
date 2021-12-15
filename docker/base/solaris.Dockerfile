@@ -80,6 +80,7 @@ mv lib/"${lib_arch}"/* /sysroot/lib
 ln -s usr/include /sysroot/sys-include
 ln -s usr/include /sysroot/include
 EOF
+WORKDIR /
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

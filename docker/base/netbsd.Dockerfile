@@ -22,6 +22,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/gnusrc.tgz" | tar xzf -
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/sharesrc.tgz" | tar xzf -
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/syssrc.tgz" | tar xzf -
+WORKDIR /
 
 FROM ghcr.io/taiki-e/downloader as sysroot
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -108,6 +109,7 @@ MKUNPRIVED=yes TOOLDIR="${TOOLCHAIN_DIR}" \
     ./build.sh -j"$(nproc)" "${args[@]}" tools &>build.log || (tail <build.log -5000 && exit 1)
 EOF
 RUN rm -rf "${TOOLCHAIN_DIR}"/man
+WORKDIR /
 
 RUN <<EOF
 case "${RUST_TARGET}" in

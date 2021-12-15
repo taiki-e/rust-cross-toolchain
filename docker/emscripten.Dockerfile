@@ -25,8 +25,8 @@ RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 
     libxml2 \
     python3
 ARG RUST_TARGET
-COPY /test-base-target.sh /
-RUN /test-base-target.sh
+COPY /test-base /test-base
+RUN /test-base/target.sh
 COPY /test /test
 
 FROM test-base as test-relocated

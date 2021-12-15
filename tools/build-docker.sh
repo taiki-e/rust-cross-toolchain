@@ -50,6 +50,8 @@ if [[ $# -gt 0 ]]; then
             linux-musl) targets+=(${linux_musl_targets[@]+"${linux_musl_targets[@]}"}) ;;
             linux-uclibc) targets+=(${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}) ;;
             android) targets+=(${android_targets[@]+"${android_targets[@]}"}) ;;
+            macos) targets+=(${macos_targets[@]+"${macos_targets[@]}"}) ;;
+            ios) targets+=(${ios_targets[@]+"${ios_targets[@]}"}) ;;
             freebsd) targets+=(${freebsd_targets[@]+"${freebsd_targets[@]}"}) ;;
             netbsd) targets+=(${netbsd_targets[@]+"${netbsd_targets[@]}"}) ;;
             openbsd) targets+=(${openbsd_targets[@]+"${openbsd_targets[@]}"}) ;;
@@ -61,6 +63,7 @@ if [[ $# -gt 0 ]]; then
             wasi) targets+=(${wasi_targets[@]+"${wasi_targets[@]}"}) ;;
             emscripten) targets+=(${emscripten_targets[@]+"${emscripten_targets[@]}"}) ;;
             windows-gnu) targets+=(${windows_gnu_targets[@]+"${windows_gnu_targets[@]}"}) ;;
+            none) targets+=(${no_std_targets[@]+"${no_std_targets[@]}"}) ;;
             *) targets+=("$1") ;;
         esac
         shift
@@ -230,6 +233,8 @@ for target in "${targets[@]}"; do
             ;;
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
         *-android*) build "android" "${target}" ;;
+        *-macos*) build "macos" "${target}" ;;
+        *-ios*) build "ios" "${target}" ;;
         *-freebsd*)
             case "${target}" in
                 riscv64gc-*)
@@ -332,13 +337,26 @@ for target in "${targets[@]}"; do
         *-windows-gnu*)
             case "${target}" in
                 i686-*)
-                    if [[ "${docker_arch}" != "amd64"* ]]; then
-                        # i686 needs to build gcc from source.
-                        continue
-                    fi
+                    # i686 needs to build gcc from source.
+                    case "${arch}" in
+                        x86_64) ;;
+                        *) continue ;;
+                    esac
                     ;;
             esac
             build "windows-gnu" "${target}"
+            ;;
+        *-none*)
+            case "${target}" in
+                riscv*)
+                    # Toolchains for these targets are not available on non-x86_64 host.
+                    case "${arch}" in
+                        x86_64) ;;
+                        *) continue ;;
+                    esac
+                    ;;
+            esac
+            build "none" "${target}"
             ;;
         *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
     esac
