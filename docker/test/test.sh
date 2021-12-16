@@ -37,7 +37,7 @@ assert_file_info() {
     shift
     for bin in "$@"; do
         echo -n "info: checking file info pattern '${pat}' in ${bin} ..."
-        if ! file "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
+        if ! file "${bin}" | grep -E "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)" >/dev/null; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
             x file "${bin}"
@@ -65,7 +65,7 @@ assert_file_header() {
     shift
     for bin in "$@"; do
         echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
-        if ! readelf --file-header "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
+        if ! readelf --file-header "${bin}" | grep -E "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)" >/dev/null; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
             x readelf --file-header "${bin}"
@@ -93,7 +93,7 @@ assert_arch_specific() {
     shift
     for bin in "$@"; do
         echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
-        if ! readelf --arch-specific "${bin}" | grep -E "(\\b|^)${pat}(\\b|$)" >/dev/null; then
+        if ! readelf --arch-specific "${bin}" | grep -E "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)" >/dev/null; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
             x readelf --arch-specific "${bin}"
@@ -171,6 +171,7 @@ export RUSTFLAGS="${RUSTFLAGS:-} -D warnings -Z print-link-args"
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
+# See entrypoint.sh
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
         # TODO(aarch64_be-unknown-linux-gnu,arm-unknown-linux-gnueabihf)
@@ -200,6 +201,8 @@ case "${RUST_TARGET}" in
     #        0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
     wasm32-wasi) no_rust_cpp=1 ;;
+    # TODO(android): libc++_shared.so is not installed by make_standalone_toolchain.py
+    *-android*) no_rust_cpp=1 ;;
 esac
 case "${RUST_TARGET}" in
     wasm*) exe=".wasm" ;;
@@ -277,6 +280,7 @@ if [[ -z "${no_std}" ]]; then
         # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
         # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
         riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
+        # TODO(android):
         *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*)
             runner="${RUST_TARGET}-runner"
             ;;
@@ -308,7 +312,7 @@ if [[ -z "${no_std}" ]]; then
     x "${target_cc}" -o c.out hello.c
     bin="$(pwd)"/c.out
     case "${RUST_TARGET}" in
-        arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu*) ;;
+        arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
         *) cp "${bin}" "${out_dir}" ;;
     esac
     if [[ -n "${runner}" ]]; then
@@ -323,7 +327,7 @@ if [[ -z "${no_std}" ]]; then
         x "${target_cxx}" -o cpp.out hello.cpp
         bin="$(pwd)"/cpp.out
         case "${RUST_TARGET}" in
-            arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu*) ;;
+            arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
             *) cp "${bin}" "${out_dir}" ;;
         esac
         if [[ -n "${runner}" ]]; then
@@ -581,7 +585,7 @@ fi
 # Check the compiled binaries.
 x file "${out_dir}"/*
 case "${RUST_TARGET}" in
-    *-wasi* | *-emscripten* | *-windows-*) ;;
+    wasm* | asmjs-* | *-windows-*) ;;
     *)
         x readelf --file-header "${out_dir}"/*
         x readelf --arch-specific "${out_dir}"/*
@@ -648,6 +652,7 @@ case "${RUST_TARGET}" in
                             *) arch_specific_pat+=('Tag_CPU_arch: v6KZ') ;;
                         esac
                         ;;
+                    arm-*-android*) arch_specific_pat+=('Tag_CPU_arch: v5TE') ;;
                     arm-* | armv6* | thumbv6*)
                         case "${RUST_TARGET}" in
                             thumb*)
@@ -712,9 +717,14 @@ case "${RUST_TARGET}" in
                         done
                         ;;
                     thumbv7neon-*) arch_specific_pat+=('Tag_FP_arch: VFPv4' 'Tag_Advanced_SIMD_arch: NEONv1 with Fused-MAC') ;;
-                    arm*v7*hf | thumbv7*hf)
+                    arm*v7*hf | thumbv7*hf | armv7-*android*)
                         case "${RUST_TARGET}" in
-                            *-netbsd*) fp_arch=VFPv3 ;;
+                            # TODO: This should be VFPv3-D16
+                            # https://developer.android.com/ndk/guides/abis
+                            # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
+                            # https://github.com/rust-lang/rust/pull/33414
+                            # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
+                            *-android* | *-netbsd*) fp_arch='(VFPv3|VFPv3-D16)' ;;
                             # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
                             thumbv7em-*) fp_arch=VFPv4-D16 ;;
                             *) fp_arch=VFPv3-D16 ;;
@@ -908,6 +918,12 @@ case "${RUST_TARGET}" in
                     *) file_info_pat+=('interpreter /lib/ld-uClibc\.so\.0') ;;
                 esac
                 ;;
+            *-android*)
+                case "${RUST_TARGET}" in
+                    aarch64-* | x86_64-*) file_info_pat+=('interpreter /system/bin/linker64') ;;
+                    *) file_info_pat+=('interpreter /system/bin/linker') ;;
+                esac
+                ;;
             *-freebsd*)
                 # Rust binary doesn't include version info
                 for bin in "${out_dir}"/*.out; do
@@ -924,7 +940,7 @@ case "${RUST_TARGET}" in
             *-netbsd*)
                 for bin in "${out_dir}"/*; do
                     if [[ -x "${bin}" ]]; then
-                        assert_file_info "for NetBSD ${NETBSD_VERSION}" "${bin}"
+                        assert_file_info "for NetBSD ${NETBSD_VERSION}\\.[0-9]+" "${bin}"
                         # /usr/libexec/ld.elf_so is symbolic link to /libexec/ld.elf_so.
                         case "${cc}" in
                             clang) assert_file_info 'interpreter /libexec/ld\.elf_so' "${bin}" ;;
@@ -950,7 +966,7 @@ case "${RUST_TARGET}" in
                 for bin in "${out_dir}"/*; do
                     if [[ -x "${bin}" ]]; then
                         assert_file_info 'interpreter /usr/libexec/ld-elf\.so\.2' "${bin}"
-                        assert_file_info "for DragonFly ${DRAGONFLY_VERSION%.*}" "${bin}"
+                        assert_file_info "for DragonFly ${DRAGONFLY_VERSION%.*}\\.[0-9]+" "${bin}"
                     fi
                 done
                 ;;
@@ -968,9 +984,7 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         ;;
-    wasm*)
-        file_info_pat+=('WebAssembly \(wasm\) binary module version 0x1 \(MVP\)')
-        ;;
+    wasm*) file_info_pat+=('WebAssembly \(wasm\) binary module version 0x1 \(MVP\)') ;;
     asmjs-*) ;;
     *-windows-gnu*)
         for bin in "${out_dir}"/*; do

@@ -4,6 +4,7 @@
   - [Linux (GNU)](#linux-gnu)
   - [Linux (musl)](#linux-musl)
   - [Linux (uClibc)](#linux-uclibc)
+  - [Android](#android)
   - [FreeBSD](#freebsd)
   - [NetBSD](#netbsd)
   - [OpenBSD](#openbsd)
@@ -111,6 +112,29 @@
 - `armv7-unknown-linux-uclibceabihf` (tier3)
 - `mips-unknown-linux-uclibc` (tier3)
 - `mipsel-unknown-linux-uclibc` (tier3)
+
+### Android
+
+| libc | GCC | clang | C++ | test | host |
+| ---- | --- | ----- | --- | ---- | ---- |
+| [1] | 4.9 | 5.0 | ? (libc++) |  | x86_64 linux (glibc 2.27+) |
+
+[1] See target list below for details<br>
+
+([Dockerfile](docker/android.Dockerfile))
+
+**Supported targets**:
+
+| target | NDK version |
+| ------ | ------- |
+| `aarch64-linux-android` | 21 |
+| `arm-linux-androideabi` [1] | 14 (default), 21 |
+| `armv7-linux-androideabi` | 14 (default), 21 |
+| `i686-linux-android` | 14 (default), 21 |
+| `thumbv7neon-linux-androideabi` | 14 (default), 21 |
+| `x86_64-linux-android` | 21 |
+
+[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1d01550f7ea9fce1cf625128fefc73b9da3c1508/src/bootstrap/cc_detect.rs#L174) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
 
 ### FreeBSD
 

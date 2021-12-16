@@ -53,11 +53,7 @@ cxxflags="${common_flags}${CXXFLAGS:+" ${CXXFLAGS}"}"
 cxxflags_last="${common_flags_last}${CXXFLAGS_LAST:+" ${CXXFLAGS_LAST}"}"
 case "${RUST_TARGET}" in
     *-linux-gnu* | *-netbsd* | *-dragonfly* | *-redox* | *-windows-gnu*)
-        # Ideally, cxxstdlib should be placed before "$@" to allow for user customization.
-        # However, cc-rs sets libc++ as the default for clang, so we need to override it by default.
-        # The best way here is probably to set the CXXSTDLIB environment variable on the user side,
-        # but that is not very easy.
-        cxxflags_last=" -stdlib=libstdc++${cxxflags_last}"
+        cxxflags=" -stdlib=libstdc++ ${cxxflags}"
         ;;
     *-freebsd* | *-openbsd*)
         cxxflags=" -stdlib=libc++ ${cxxflags}"

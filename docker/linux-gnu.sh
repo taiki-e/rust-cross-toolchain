@@ -84,10 +84,12 @@ if [[ -n "${lib_arch}" ]]; then
         "g++-${apt_target/_/-}" \
         | grep '^\w' \
         | grep -E "${apt_target/_/-}|${lib_arch}-cross")
+    set +x
     for deb in *.deb; do
         dpkg -x "${deb}" .
         mv "${deb}" "${TOOLCHAIN_DIR}-deb"
     done
+    set -x
     mv usr/* "${TOOLCHAIN_DIR}"
 else
     exit 1

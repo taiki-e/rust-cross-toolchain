@@ -48,7 +48,7 @@ time="$(date --utc '+%Y-%m-%d-%H-%M-%S')"
 
 github_tag="dev"
 if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
-    github_tag="${GITHUB_REF_NAME}"
+    github_tag="${GITHUB_REF_NAME#base-}"
 fi
 
 __build() {

@@ -12,8 +12,11 @@ fn main() {
             return;
         }
     };
-    // thumbv7neon means armv7a+neon
-    if target.starts_with("thumb") && !target.contains("neon") {
+    // thumbv7neon means armv7a+neon, thumbv7a means armv7a
+    if matches!(
+        target.split(|c| c == '-' || c == '.').next().unwrap(),
+        "thumbv6m" | "thumbv7em" | "thumbv7m" | "thumbv8m"
+    ) {
         println!("cargo:rustc-cfg=thumb");
     }
 

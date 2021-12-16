@@ -16,6 +16,19 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 
+RUN <<EOF
+cc_target="${RUST_TARGET%%-*}-w64-mingw32"
+echo "${cc_target}" >/CC_TARGET
+EOF
+RUN <<EOF
+set +x
+cd "${TOOLCHAIN_DIR}/bin"
+for tool in "${RUST_TARGET}"-*-posix "$(</CC_TARGET)"-*-posix; do
+    link="${tool%-posix}"
+    [[ -e "${link}" ]] || ln -s "${tool}" "${link}"
+done
+EOF
+
 COPY /clang-cross.sh /
 RUN <<EOF
 gcc_version="${GCC_VERSION:-"$(gcc --version | sed -n '1 s/^.*) //p')"}"
@@ -78,6 +91,7 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
+# TODO: test both thread=posix and thread=win32
 RUN /test/test.sh gcc
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /

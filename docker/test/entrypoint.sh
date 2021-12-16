@@ -120,7 +120,7 @@ case "${RUST_TARGET}" in
     asmjs-unknown-emscripten)
         # emcc: error: wasm2js does not support source maps yet (debug in wasm for now)
         cat >>"${env_path}" <<EOF
-export RUSTFLAGS="\${RUSTFLAGS:-} -C debuginfo=0"
+export RUSTFLAGS="-C debuginfo=0 \${RUSTFLAGS:-}"
 EOF
         ;;
     aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
@@ -177,6 +177,31 @@ export CFLAGS_${rust_target_lower}="-mabi=lp64d \${CFLAGS_${rust_target_lower}:-
 export CXXFLAGS_${rust_target_lower}="-mabi=lp64d \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
+    # https://developer.android.com/ndk/guides/abis
+    armv7-linux-androideabi)
+        case "${cc}" in
+            # cc-rs doesn't emit any flags when cc is clang family and target is android.
+            # https://github.com/alexcrichton/cc-rs/blob/4ce82754372762d59b6f7ab0c3d3b021718b937d/src/lib.rs#L3134-L3141
+            clang)
+                cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-mfpu=vfpv3-d16 \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-mfpu=vfpv3-d16 \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+                ;;
+        esac
+        ;;
+    thumbv7neon-linux-androideabi)
+        case "${cc}" in
+            # cc-rs doesn't emit any flags when cc is clang family and target is android.
+            # https://github.com/alexcrichton/cc-rs/blob/4ce82754372762d59b6f7ab0c3d3b021718b937d/src/lib.rs#L3134-L3141
+            clang)
+                cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-mfpu=neon-vfpv4 \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-mfpu=neon-vfpv4 \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+                ;;
+        esac
+        ;;
 esac
 
 case "${RUST_TARGET}" in
@@ -186,7 +211,7 @@ case "${RUST_TARGET}" in
 esac
 
 case "${RUST_TARGET}" in
-    *-unknown-linux-*)
+    *-unknown-linux-* | *-android*)
         case "${RUST_TARGET}" in
             aarch64-* | aarch64_be-*)
                 qemu_arch="${RUST_TARGET%%-*}"
@@ -259,13 +284,17 @@ case "${RUST_TARGET}" in
             # test for a specific CPU, so we allow overrides by user-set QEMU_CPU.
             qemu_cpu=" --cpu \${QEMU_CPU:-${qemu_cpu}}"
         fi
+        case "${RUST_TARGET}" in
+            *-android*) ;;
+            *) qemu_ld_prefix=" -L \"\${toolchain_dir}\"/${sysroot_suffix}" ;;
+        esac
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
         runner="${RUST_TARGET}-runner"
         cat >"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
-exec qemu-${qemu_arch}${qemu_cpu:-} -L "\${toolchain_dir}"/${sysroot_suffix} "\$@"
+exec qemu-${qemu_arch}${qemu_cpu:-}${qemu_ld_prefix:-} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
         cat "${toolchain_dir}/bin/${runner}"

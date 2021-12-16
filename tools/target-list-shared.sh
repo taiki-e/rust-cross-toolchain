@@ -79,12 +79,12 @@ linux_uclibc_targets=(
 # rustup target list | grep -e '-android'
 # rustc --print target-list | grep -e '-android'
 android_targets=(
-    # aarch64-linux-android
-    # arm-linux-androideabi
-    # armv7-linux-androideabi
-    # i686-linux-android
-    # thumbv7neon-linux-androideabi
-    # x86_64-linux-android
+    aarch64-linux-android
+    arm-linux-androideabi
+    armv7-linux-androideabi
+    i686-linux-android
+    thumbv7neon-linux-androideabi
+    x86_64-linux-android
 )
 # macOS
 # rustup target list | grep -e '-apple-darwin'

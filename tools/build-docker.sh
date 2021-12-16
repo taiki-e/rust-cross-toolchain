@@ -232,7 +232,27 @@ for target in "${targets[@]}"; do
             done
             ;;
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
-        *-android*) build "android" "${target}" ;;
+        *-android*)
+            # https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
+            case "${target}" in
+                aarch64-* | x86_64-*)
+                    default_ndk_version=21
+                    ndk_versions=("21")
+                    ;;
+                arm* | thumb* | i686-*)
+                    default_ndk_version=14
+                    ndk_versions=("14" "21")
+                    ;;
+                *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+            esac
+            if [[ -n "${NDK_VERSION:-}" ]]; then
+                ndk_versions=("${NDK_VERSION}")
+            fi
+            for ndk_version in "${ndk_versions[@]}"; do
+                build "android" "${target}" "${ndk_version}" "${default_ndk_version}" \
+                    --build-arg "NDK_VERSION=${ndk_version}"
+            done
+            ;;
         *-macos*) build "macos" "${target}" ;;
         *-ios*) build "ios" "${target}" ;;
         *-freebsd*)

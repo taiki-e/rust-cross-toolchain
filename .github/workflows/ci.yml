@@ -30,7 +30,7 @@ jobs:
           - target: linux-musl
             musl: '1.2'
           - target: linux-uclibc
-          # - target: android
+          - target: android
           - target: freebsd
           - target: netbsd
           - target: openbsd

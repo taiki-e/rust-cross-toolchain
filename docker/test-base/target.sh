@@ -26,6 +26,20 @@ case "${RUST_TARGET}" in
         rust_toolchain_version=nightly-2021-12-09
         rustup toolchain add "${rust_toolchain_version}" --no-self-update --component rust-src
         rustup default "${rust_toolchain_version}"
+        mkdir -p /tmp/deps/src
+        pushd /tmp/deps >/dev/null
+        touch src/lib.rs
+        cat >Cargo.toml <<EOF
+[package]
+name = "deps"
+version = "0.0.0"
+edition = "2021"
+[dependencies]
+compiler_builtins = "=0.1.55"
+EOF
+        cargo fetch
+        popd >/dev/null
+        rm -rf /tmp/deps
         ;;
 esac
 
@@ -50,5 +64,16 @@ case "${RUST_TARGET}" in
         # TODO: send patch to upstream
         patch -p1 </test-base/patches/riscv64gc-unknown-linux-musl-libc.diff
         popd >/dev/null
+        ;;
+    arm-linux-androideabi)
+        # The pre-compiled library distributed by rustup targets armv7a because
+        # it uses the default arm-linux-androideabi-clang.
+        # To target armv5te, which is the minimum supported architecture of
+        # arm-linux-androideabi, the standard library needs to be recompiled.
+        # https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility
+        # https://github.com/rust-lang/rust/blob/1d01550f7ea9fce1cf625128fefc73b9da3c1508/src/bootstrap/cc_detect.rs#L174
+        # https://developer.android.com/ndk/guides/abis
+        # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/arm_linux_androideabi.rs#L12
+        touch /BUILD_STD
         ;;
 esac

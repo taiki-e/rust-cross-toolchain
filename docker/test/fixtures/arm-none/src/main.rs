@@ -2,8 +2,8 @@
 #![no_std]
 #![feature(asm)]
 #![warn(rust_2018_idioms, unsafe_op_in_unsafe_fn)]
-#![allow(non_upper_case_globals)]
 
+use core::arch::asm;
 use core::panic::PanicInfo;
 
 #[cfg(feature = "c")]
@@ -23,11 +23,12 @@ unsafe fn _start() -> ! {
     exit();
 }
 
-// https://developer.arm.com/documentation/100863/latest
-const angel_SWIreason_ReportException: usize = 0x18;
-const ADP_Stopped_ApplicationExit: usize = 0x20026;
-
+#[allow(non_upper_case_globals)]
 fn exit() -> ! {
+    // https://developer.arm.com/documentation/100863/latest
+    const angel_SWIreason_ReportException: usize = 0x18;
+    const ADP_Stopped_ApplicationExit: usize = 0x20026;
+
     unsafe {
         // https://stackoverflow.com/a/40957928
         #[cfg(target_arch = "arm")]
@@ -61,7 +62,10 @@ fn exit() -> ! {
                 options(nostack)
             );
         }
-        loop {}
+
+        loop {
+            asm!("wfe", options(nomem, nostack));
+        }
     }
 }
 
