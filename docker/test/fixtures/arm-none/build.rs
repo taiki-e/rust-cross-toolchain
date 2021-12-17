@@ -12,11 +12,13 @@ fn main() {
             return;
         }
     };
-    // thumbv7neon means armv7a+neon, thumbv7a means armv7a
-    if matches!(
-        target.split(|c| c == '-' || c == '.').next().unwrap(),
-        "thumbv6m" | "thumbv7em" | "thumbv7m" | "thumbv8m"
-    ) {
+
+    // NOTE: `starts_with("thumb")` is not enough because arch such as thumbv7neon-, thumbv7a- means armv7a.
+    if target.starts_with("thumbv6m")
+        || target.starts_with("thumbv7em")
+        || target.starts_with("thumbv7m")
+        || target.starts_with("thumbv8m")
+    {
         println!("cargo:rustc-cfg=thumb");
     }
 

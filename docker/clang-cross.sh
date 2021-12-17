@@ -7,7 +7,7 @@ IFS=$'\n\t'
 # - https://mcilloni.ovh/2021/02/09/cxx-cross-clang
 
 case "${RUST_TARGET}" in
-    *-linux-musl* | *-linux-gnu* | *-freebsd* | *-netbsd* | *-openbsd*) cc_target="$(</CC_TARGET)" ;;
+    *-linux-musl* | *-linux-gnu* | *-freebsd* | *-netbsd* | *-openbsd*) cc_target="${CC_TARGET:-"$(</CC_TARGET)"}" ;;
     *) cc_target="${CC_TARGET:-"${RUST_TARGET}"}" ;;
 esac
 common_flags=""

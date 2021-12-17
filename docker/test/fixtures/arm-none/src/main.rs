@@ -1,6 +1,5 @@
 #![no_main]
 #![no_std]
-#![feature(asm)]
 #![warn(rust_2018_idioms, unsafe_op_in_unsafe_fn)]
 
 use core::arch::asm;

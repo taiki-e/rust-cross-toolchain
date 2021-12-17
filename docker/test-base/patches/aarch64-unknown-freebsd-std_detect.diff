@@ -1,0 +1,9 @@
+diff --git a/src/detect/os/aarch64.rs b/src/detect/os/aarch64.rs
+--- a/src/detect/os/aarch64.rs
++++ b/src/detect/os/aarch64.rs
+@@ -19,6 +19,7 @@
+ use crate::detect::{cache, Feature};
++use core::arch::asm;
+
+ /// Try to read the features from the system registers.
+ ///

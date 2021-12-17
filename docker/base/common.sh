@@ -14,10 +14,14 @@ x() {
 x rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
 
 if [[ -f /CC_TARGET ]]; then
+    if [[ -f /APT_TARGET ]]; then
+        cc_target="$(</APT_TARGET)"
+    else
+        cc_target="$(</CC_TARGET)"
+    fi
     # Some paths still use the target name that passed by --target even if we use
     # options such as --program-prefix. So use the target name for C by default,
     # and create symbolic links with Rust's target name for convenience.
-    cc_target="$(</CC_TARGET)"
     while IFS= read -r -d '' path; do
         pushd "$(dirname "${path}")" >/dev/null
         original="$(basename "${path}")"

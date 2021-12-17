@@ -198,7 +198,7 @@ for target in "${targets[@]}"; do
                             continue
                             ;;
                         # gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
-                        powerpc-* | powerpc64-* | sparc64-*) continue ;;
+                        powerpc-* | powerpc64-* | sparc-* | sparc64-*) continue ;;
                     esac
                     ;;
             esac
@@ -325,6 +325,15 @@ for target in "${targets[@]}"; do
             done
             ;;
         *-openbsd*)
+            case "${target}" in
+                sparc64-*)
+                    if [[ "${docker_arch}" != "amd64"* ]]; then
+                        # sparc64 needs to build binutils from source.
+                        # TODO: don't skip if actual host is arm64
+                        continue
+                    fi
+                    ;;
+            esac
             # OpenBSD does not have binary compatibility with previous releases.
             # For now, we select the oldest supported version as default version.
             # However, we don't support OpenBSD 6.9, because there is no

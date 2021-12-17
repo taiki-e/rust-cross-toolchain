@@ -15,7 +15,7 @@ COPY /linux-gnu.sh /
 RUN /linux-gnu.sh
 # fd -t d '\b(doc|lintian|locale|i18n|man)\b'
 RUN <<EOF
-cc_target="$(</CC_TARGET)"
+cc_target="$(</APT_TARGET)"
 case "${RUST_TARGET}" in
     aarch64_be-* | arm-*hf)
         rm -rf "${TOOLCHAIN_DIR}/${cc_target}"/libc/usr/share/{i18n,locale}
@@ -34,9 +34,38 @@ case "${RUST_TARGET}" in
 esac
 EOF
 
+RUN <<EOF
+case "${RUST_TARGET}" in
+    sparc-*) ;;
+    *) exit 0 ;;
+esac
+cc_target="$(</APT_TARGET)"
+gcc_version="$(</GCC_VERSION)"
+# The interpreter for sparc-linux-gnu is /lib/ld-linux.so.2,
+# so lib/ld-linux.so.2 must be target sparc-linux-gnu to run binaries on qemu-user.
+rm -rf "${TOOLCHAIN_DIR}/${cc_target}/lib"
+rm -rf "${TOOLCHAIN_DIR}/${cc_target}/lib64"
+ln -s lib32 "${TOOLCHAIN_DIR}/${cc_target}/lib"
+common_flags="-m32 -mv8plus -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib32 -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/gcc-cross/${RUST_TARGET}/${gcc_version}/32"
+cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" <<EOF2
+#!/bin/sh
+set -eu
+toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+exec "\${toolchain_dir}"/bin/${cc_target}-gcc ${common_flags} "\$@"
+EOF2
+cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++" <<EOF2
+#!/bin/sh
+set -eu
+toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+exec "\${toolchain_dir}"/bin/${cc_target}-g++ ${common_flags} "\$@"
+EOF2
+chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
+EOF
+
 COPY /base/common.sh /
 RUN /common.sh
 
+# TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
 COPY /clang-cross.sh /
 RUN <<EOF
 gcc_version="$(</GCC_VERSION)"
@@ -53,6 +82,7 @@ case "${RUST_TARGET}" in
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
             /clang-cross.sh
         ;;
+    sparc-*) ;;
     *)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" -B\"\${toolchain_dir}\"/${RUST_TARGET}/bin -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L${TOOLCHAIN_DIR}/lib/gcc-cross/${RUST_TARGET}/${gcc_version%%.*}" \
             CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
@@ -84,7 +114,13 @@ ARG RUST_TARGET
 # NOTE: currently works only on this location
 COPY --from=builder /"${RUST_TARGET}"/. /usr/
 RUN /test/test.sh gcc
-RUN /test/test.sh clang
+# TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
+RUN <<EOF
+case "${RUST_TARGET}" in
+    sparc-*) ;;
+    *) /test/test.sh clang ;;
+esac
+EOF
 RUN touch /DONE
 
 FROM test-base as test

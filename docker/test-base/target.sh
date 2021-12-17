@@ -19,6 +19,7 @@ export RUSTUP_MAX_RETRIES=10
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
+libc_version=0.2.108
 case "${RUST_TARGET}" in
     # TODO: remove once https://github.com/rust-lang/libc/pull/2594 and
     # https://github.com/rust-lang/rust/pull/91955 merged and released.
@@ -48,23 +49,7 @@ if rustup target list | grep -E "^${RUST_TARGET}( |$)" >/dev/null; then
 else
     touch /BUILD_STD
 fi
-
-libc_version=0.2.108
 case "${RUST_TARGET}" in
-    hexagon-unknown-linux-musl)
-        pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-"${libc_version}" >/dev/null
-        # "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
-        # TODO: send patch to upstream
-        patch -p1 </test-base/patches/hexagon-unknown-linux-musl-libc.diff
-        popd >/dev/null
-        ;;
-    riscv64gc-unknown-linux-musl)
-        pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-"${libc_version}" >/dev/null
-        # "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
-        # TODO: send patch to upstream
-        patch -p1 </test-base/patches/riscv64gc-unknown-linux-musl-libc.diff
-        popd >/dev/null
-        ;;
     arm-linux-androideabi)
         # The pre-compiled library distributed by rustup targets armv7a because
         # it uses the default arm-linux-androideabi-clang.
@@ -75,5 +60,32 @@ case "${RUST_TARGET}" in
         # https://developer.android.com/ndk/guides/abis
         # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/arm_linux_androideabi.rs#L12
         touch /BUILD_STD
+        ;;
+esac
+
+case "${RUST_TARGET}" in
+    hexagon-unknown-linux-musl | riscv64gc-unknown-linux-musl | riscv64gc-unknown-freebsd | powerpc-unknown-openbsd)
+        pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-"${libc_version}" >/dev/null
+        # hexagon-unknown-linux-musl:
+        #   "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
+        #   TODO: send patch to upstream
+        # riscv64gc-unknown-linux-musl:
+        #   "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
+        #   TODO: send patch to upstream
+        # riscv64gc-unknown-freebsd:
+        #   this target needs libc 0.2.110, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2570
+        # powerpc-unknown-openbsd:
+        #   this target needs libc 0.2.112, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2591
+        #   Also, libstd defined it as i8, but libc#2591 defined c_char as u8.
+        patch -p1 </test-base/patches/"${RUST_TARGET}"-libc.diff
+        popd >/dev/null
+        ;;
+    aarch64-unknown-freebsd)
+        pushd "$(rustc --print sysroot)"/lib/rustlib/src/rust/library/stdarch/crates/std_detect >/dev/null
+        # error: cannot find macro `asm` in this scope
+        # https://github.com/taiki-e/rust-cross-toolchain/runs/4555834110?check_suite_focus=true
+        # TODO: send patch to upstream
+        patch -p1 </test-base/patches/"${RUST_TARGET}"-std_detect.diff
+        popd >/dev/null
         ;;
 esac

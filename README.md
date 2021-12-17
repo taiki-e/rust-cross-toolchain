@@ -23,10 +23,11 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| glibc [1] | [1] | host | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
+| glibc [1] | [1] | host [3] | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
 
 [1] See target list below for details<br>
-[2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
+[2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, sparc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
+[3] Except for sparc-unknown-linux-gnu<br>
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
 
@@ -58,6 +59,7 @@
 | `riscv32gc-unknown-linux-gnu` (tier3) | 2.33 | 11.1.0 | x86_64 linux (glibc 2.27+) |
 | `riscv64gc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `s390x-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
+| `sparc-unknown-linux-gnu` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `sparc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnu` | 2.27 | 7.4.0 | aarch64 linux (glibc 2.27+) |
@@ -140,7 +142,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| freebsd [1] | N/A | host | ✓ (libc++) |  | linux (any arch, any libc) |
+| freebsd [1] | N/A | host | ✓ (libc++) |  | [1] |
 
 [1] See target list below for details<br>
 
@@ -148,14 +150,15 @@
 
 **Supported targets**:
 
-| target | version |
-| ------ | ------- |
-| `aarch64-unknown-freebsd` (tier3) | 12.2 (default), 13.0 |
-| `i686-unknown-freebsd` | 12.2 (default), 13.0 |
-| `powerpc-unknown-freebsd` (tier3) | 13.0 |
-| `powerpc64-unknown-freebsd` (tier3) | 13.0 |
-| `powerpc64le-unknown-freebsd` (tier3) | 13.0 |
-| `x86_64-unknown-freebsd` | 12.2 (default), 13.0 |
+| target | version | host |
+| ------ | ------- | ---- |
+| `aarch64-unknown-freebsd` (tier3) | 12.2 (default), 13.0 | linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 12.2 (default), 13.0 | linux (any arch, any libc) |
+| `powerpc-unknown-freebsd` (tier3) | 13.0 | linux (any arch, any libc) |
+| `powerpc64-unknown-freebsd` (tier3) | 13.0 | linux (any arch, any libc) |
+| `powerpc64le-unknown-freebsd` (tier3) | 13.0 | linux (any arch, any libc) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.0 | x86_64 linux (glibc 2.27+) |
+| `x86_64-unknown-freebsd` | 12.2 (default), 13.0 | linux (any arch, any libc) |
 
 ### NetBSD
 
@@ -183,17 +186,22 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| openbsd 7.0 | N/A | host | ✓ (libc++) [1] |  | linux (any arch, any libc) |
+| openbsd [1] | N/A | host | ✓ (libc++) [2] |  | [1] |
 
-[1] only i686 and x86_64<br>
+[1] See target list below for details<br>
+[2] only i686 and x86_64<br>
 
 ([Dockerfile](docker/openbsd.Dockerfile))
 
 **Supported targets**:
 
-- `aarch64-unknown-openbsd` (tier3)
-- `i686-unknown-openbsd` (tier3)
-- `x86_64-unknown-openbsd` (tier3)
+| target | version | host |
+| ------ | ------- | ---- |
+| `aarch64-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.0 | x86_64 linux (glibc 2.27+) |
+| `x86_64-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
 
 ### DragonFly BSD
 

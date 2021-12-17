@@ -35,7 +35,7 @@ linux_gnu_targets=(
     riscv32gc-unknown-linux-gnu # tier3
     riscv64gc-unknown-linux-gnu
     s390x-unknown-linux-gnu
-    # sparc-unknown-linux-gnu # tier3
+    sparc-unknown-linux-gnu # tier3
     sparc64-unknown-linux-gnu
     thumbv7neon-unknown-linux-gnueabihf
     x86_64-unknown-linux-gnu
@@ -124,7 +124,7 @@ freebsd_targets=(
     powerpc-unknown-freebsd     # tier3
     powerpc64-unknown-freebsd   # tier3
     powerpc64le-unknown-freebsd # tier3
-    # riscv64gc-unknown-freebsd # tier3, this target needs libc 0.2.110, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2570
+    riscv64gc-unknown-freebsd   # tier3
     x86_64-unknown-freebsd
 )
 # NetBSD
@@ -144,9 +144,9 @@ netbsd_targets=(
 openbsd_targets=(
     aarch64-unknown-openbsd # tier3
     i686-unknown-openbsd    # tier3
-    # powerpc-unknown-openbsd # tier3, libc doesn't support this target: https://github.com/rust-lang/libc/pull/2591
-    # sparc64-unknown-openbsd # tier3, see docker/openbsd.Dockerfile
-    x86_64-unknown-openbsd # tier3
+    powerpc-unknown-openbsd # tier3
+    sparc64-unknown-openbsd # tier3
+    x86_64-unknown-openbsd  # tier3
 )
 # DragonFly BSD
 # rustc --print target-list | grep -e '-dragonfly'

@@ -17,7 +17,7 @@ esac
 export CARGO_NET_RETRY=10
 export RUSTUP_MAX_RETRIES=10
 
-rust_toolchain_version=nightly-2021-12-15
+rust_toolchain_version=nightly-2021-12-17
 
 # Install Rust.
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://sh.rustup.rs \
@@ -53,7 +53,7 @@ addr2line = "=0.16.0"
 adler = "=0.2.3"
 cc = "=1.0.69"
 cfg-if = "=0.1.10"
-compiler_builtins = "=0.1.55"
+compiler_builtins = "=0.1.66"
 getopts = "=0.2.21"
 gimli = "=0.25.0"
 hashbrown = "=0.11.0"

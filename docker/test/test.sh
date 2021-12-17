@@ -152,25 +152,6 @@ mkdir -p "${dev_tools_dir}"/lib
 /test/entrypoint.sh "${cc}"
 # shellcheck disable=SC1090
 . "${dev_tools_dir}/${cc}-env"
-
-dpkg_arch="$(dpkg --print-architecture)"
-case "${dpkg_arch##*-}" in
-    amd64) ;;
-    *)
-        # TODO: don't skip if actual host is arm64
-        echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-        exit 0
-        ;;
-esac
-
-export CARGO_NET_RETRY=10
-export CARGO_NET_OFFLINE=true
-export RUST_BACKTRACE=1
-export RUSTUP_MAX_RETRIES=10
-export RUSTFLAGS="${RUSTFLAGS:-} -D warnings -Z print-link-args"
-# shellcheck disable=SC1091
-. "${HOME}/.cargo/env"
-
 # See entrypoint.sh
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
@@ -183,6 +164,33 @@ case "${RUST_TARGET}" in
         ;;
 esac
 
+dpkg_arch="$(dpkg --print-architecture)"
+case "${dpkg_arch##*-}" in
+    amd64) ;;
+    *)
+        # TODO: don't skip if actual host is arm64
+        echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+        exit 0
+        ;;
+esac
+if [[ -n "${NO_RUN:-}" ]]; then
+    exit 0
+fi
+
+export CARGO_NET_RETRY=10
+export CARGO_NET_OFFLINE=true
+export RUST_BACKTRACE=1
+export RUSTUP_MAX_RETRIES=10
+export RUSTFLAGS="${RUSTFLAGS:-} -D warnings -Z print-link-args"
+# shellcheck disable=SC1091
+. "${HOME}/.cargo/env"
+
+case "${RUST_TARGET}" in
+    wasm*) exe=".wasm" ;;
+    asmjs-*) exe=".js" ;;
+    *-windows-*) exe=".exe" ;;
+    *) exe="" ;;
+esac
 no_std=""
 case "${RUST_TARGET}" in
     *-none* | *-cuda*) no_std=1 ;;
@@ -190,8 +198,9 @@ esac
 no_cpp=""
 case "${RUST_TARGET}" in
     # TODO(aarch64-unknown-openbsd): clang segfault
+    # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
     # TODO(hexagon-unknown-linux-musl): use gcc based toolchain or pass -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" in llvm build
-    aarch64-unknown-openbsd | hexagon-unknown-linux-musl) no_cpp=1 ;;
+    aarch64-unknown-openbsd | sparc64-unknown-openbsd | hexagon-unknown-linux-musl) no_cpp=1 ;;
 esac
 no_rust_cpp="${no_cpp}"
 case "${RUST_TARGET}" in
@@ -200,78 +209,25 @@ case "${RUST_TARGET}" in
     #    Caused by:
     #        0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
-    wasm32-wasi) no_rust_cpp=1 ;;
-    # TODO(android): libc++_shared.so is not installed by make_standalone_toolchain.py
-    *-android*) no_rust_cpp=1 ;;
+    wasm32-wasi | *-android*) no_rust_cpp=1 ;;
 esac
+# Whether or not to build the test.
+no_build_test=""
 case "${RUST_TARGET}" in
-    wasm*) exe=".wasm" ;;
-    asmjs-*) exe=".js" ;;
-    *-windows-*) exe=".exe" ;;
-    *) exe="" ;;
+    # TODO(sparc-unknown-linux-gnu):
+    #     undefined reference to `__sync_val_compare_and_swap_8'
+    # TODO(sparc64-unknown-openbsd):
+    #     /sparc64-unknown-openbsd/bin/sparc64-unknown-openbsd7.0-ld: /sparc64-unknown-openbsd/sparc64-unknown-openbsd/usr/lib/libm.a(s_fmin.o): in function `*_libm_fmin':
+    #         /usr/src/lib/libm/src/s_fmin.c:35: undefined reference to `__isnan'
+    sparc-unknown-linux-gnu | sparc64-unknown-openbsd) no_build_test=1 ;;
 esac
-
-# Build std for tier3 linux-musl targets.
+# Whether or not to run the test.
+no_run_test=""
 case "${RUST_TARGET}" in
-    *-linux-musl*)
-        rustlib="$(rustc --print sysroot)/lib/rustlib/${RUST_TARGET}"
-        self_contained="${rustlib}/lib/self-contained"
-        if [[ -f /BUILD_STD ]]; then
-            case "${RUST_TARGET}" in
-                # llvm libunwind does not support s390x, powerpc
-                # https://github.com/llvm/llvm-project/blob/54405a49d868444958d1ee51eef8b943aaebebdc/libunwind/src/libunwind.cpp#L48-L77
-                powerpc-* | s390x-*) ;;
-                # TODO(riscv64gc-unknown-linux-musl)
-                riscv64gc-*) ;;
-                # TODO(hexagon-unknown-linux-musl)
-                hexagon-*) ;;
-                *)
-                    rm -rf "${rustlib}"
-                    mkdir -p "${self_contained}"
-
-                    rm -rf /tmp/libunwind
-                    mkdir -p /tmp/libunwind
-                    x "${dev_tools_dir}/build-libunwind" --target="${RUST_TARGET}" --out=/tmp/libunwind
-                    cp /tmp/libunwind/libunwind*.a "${self_contained}"
-
-                    rm -rf /tmp/build-std
-                    mkdir -p /tmp/build-std/src
-                    pushd /tmp/build-std >/dev/null
-                    touch src/lib.rs
-                    cat >Cargo.toml <<EOF
-[package]
-name = "build-std"
-version = "0.0.0"
-edition = "2021"
-EOF
-                    RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
-                        x cargo build -Z build-std --target "${RUST_TARGET}" --all-targets --release
-                    rm target/"${RUST_TARGET}"/release/deps/*build_std-*
-                    cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
-                    popd >/dev/null
-
-                    # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/src/bootstrap/compile.rs#L201-L231
-                    # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/compiler/rustc_target/src/spec/crt_objects.rs
-                    # Only recent nightly has libc.a in self-contained.
-                    # https://github.com/rust-lang/rust/pull/90527
-                    # Additionally, there is a vulnerability in the version of libc.a
-                    # distributed via rustup.
-                    # https://github.com/rust-lang/rust/issues/91178
-                    # And if I understand correctly, the code generation on the
-                    # 32bit arm targets looks wrong about FPU arch and thumb ISA.
-                    cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                    cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
-
-                    rm /BUILD_STD
-                    ;;
-            esac
-        fi
-        ;;
+    # TODO(powerpc-unknown-linux-gnuspe):
+    #     run-pass, but test-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
+    powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
 esac
-
-if [[ -n "${NO_RUN:-}" ]]; then
-    exit 0
-fi
 
 if [[ -z "${no_std}" ]]; then
     runner=""
@@ -281,9 +237,7 @@ if [[ -z "${no_std}" ]]; then
         # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
         riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
         # TODO(android):
-        *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*)
-            runner="${RUST_TARGET}-runner"
-            ;;
+        *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) runner="${RUST_TARGET}-runner" ;;
     esac
     if [[ -z "${runner}" ]]; then
         echo "info: test for target '${RUST_TARGET}' is not supported yet"
@@ -299,6 +253,64 @@ if [[ -z "${no_std}" ]]; then
             if [[ ! -e /WINEBOOT ]]; then
                 x wineboot &>/dev/null
                 touch /WINEBOOT
+            fi
+            ;;
+    esac
+
+    # Build std for tier3 linux-musl targets.
+    case "${RUST_TARGET}" in
+        *-linux-musl*)
+            rustlib="$(rustc --print sysroot)/lib/rustlib/${RUST_TARGET}"
+            self_contained="${rustlib}/lib/self-contained"
+            if [[ -f /BUILD_STD ]]; then
+                case "${RUST_TARGET}" in
+                    # llvm libunwind does not support s390x, powerpc
+                    # https://github.com/llvm/llvm-project/blob/54405a49d868444958d1ee51eef8b943aaebebdc/libunwind/src/libunwind.cpp#L48-L77
+                    powerpc-* | s390x-*) ;;
+                    # TODO(riscv64gc-unknown-linux-musl)
+                    riscv64gc-*) ;;
+                    # TODO(hexagon-unknown-linux-musl)
+                    hexagon-*) ;;
+                    *)
+                        rm -rf "${rustlib}"
+                        mkdir -p "${self_contained}"
+
+                        rm -rf /tmp/libunwind
+                        mkdir -p /tmp/libunwind
+                        x "${dev_tools_dir}/build-libunwind" --target="${RUST_TARGET}" --out=/tmp/libunwind
+                        cp /tmp/libunwind/libunwind*.a "${self_contained}"
+
+                        rm -rf /tmp/build-std
+                        mkdir -p /tmp/build-std/src
+                        pushd /tmp/build-std >/dev/null
+                        touch src/lib.rs
+                        cat >Cargo.toml <<EOF
+[package]
+name = "build-std"
+version = "0.0.0"
+edition = "2021"
+EOF
+                        RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
+                            x cargo build -Z build-std --target "${RUST_TARGET}" --all-targets --release
+                        rm target/"${RUST_TARGET}"/release/deps/*build_std-*
+                        cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
+                        popd >/dev/null
+
+                        # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/src/bootstrap/compile.rs#L201-L231
+                        # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/compiler/rustc_target/src/spec/crt_objects.rs
+                        # Only recent nightly has libc.a in self-contained.
+                        # https://github.com/rust-lang/rust/pull/90527
+                        # Additionally, there is a vulnerability in the version of libc.a
+                        # distributed via rustup.
+                        # https://github.com/rust-lang/rust/issues/91178
+                        # And if I understand correctly, the code generation on the
+                        # 32bit arm targets looks wrong about FPU arch and thumb ISA.
+                        cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
+                        cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
+
+                        rm /BUILD_STD
+                        ;;
+                esac
             fi
             ;;
     esac
@@ -430,13 +442,11 @@ if [[ -z "${no_std}" ]]; then
 
     # Build Rust tests
     pushd rust >/dev/null
-    run_cargo test --no-run
-    if [[ -n "${runner}" ]]; then
-        case "${RUST_TARGET}" in
-            # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
-            powerpc-unknown-linux-gnuspe) ;;
-            *) run_cargo test ;;
-        esac
+    if [[ -z "${no_build_test}" ]]; then
+        run_cargo test --no-run
+        if [[ -n "${runner}" ]] && [[ -z "${no_run_test}" ]]; then
+            run_cargo test
+        fi
     fi
     popd >/dev/null
 else
@@ -600,7 +610,7 @@ arch_specific_pat_not=() # readelf --arch-specific
 case "${RUST_TARGET}" in
     *-linux-* | *-freebsd* | *-netbsd* | *-openbsd* | *-dragonfly* | *-solaris* | *-illumos* | *-redox* | *-none*)
         case "${RUST_TARGET}" in
-            armeb* | mips-* | mipsisa32r6-* | powerpc-*)
+            armeb* | mips-* | mipsisa32r6-* | powerpc-* | sparc-*)
                 file_info_pat+=('ELF 32-bit MSB')
                 file_header_pat+=('Class:\s+ELF32' 'big endian')
                 ;;
@@ -830,6 +840,15 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('IBM S/390')
                 file_header_pat+=('Machine:\s+IBM S/390')
                 ;;
+            sparc-*)
+                file_info_pat+=('SPARC32PLUS' 'V8\+ Required')
+                file_header_pat+=('Machine:\s+Sparc v8\+')
+                for bin in "${out_dir}"/*; do
+                    if [[ -x "${bin}" ]]; then
+                        assert_arch_specific 'Tag_GNU_Sparc_HWCAPS: div32' "${bin}"
+                    fi
+                done
+                ;;
             sparc64-* | sparcv9-*)
                 file_info_pat+=('SPARC V9')
                 file_header_pat+=('Machine:\s+Sparc v9')
@@ -841,9 +860,26 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         case "${RUST_TARGET}" in
-            *-freebsd*) file_header_pat+=('OS/ABI:\s+UNIX - FreeBSD') ;;
-            *-linux-gnu* | *-linux-musl*) file_header_pat+=('OS/ABI:\s+UNIX - (System V|GNU)') ;;
-            *) file_header_pat+=('OS/ABI:\s+UNIX - System V') ;;
+            *-freebsd*)
+                case "${RUST_TARGET}" in
+                    riscv64gc-*)
+                        file_info_pat+=('(SYSV|FreeBSD)')
+                        file_header_pat+=('OS/ABI:\s+UNIX - (System V|FreeBSD)')
+                        ;;
+                    *)
+                        file_info_pat+=('FreeBSD')
+                        file_header_pat+=('OS/ABI:\s+UNIX - FreeBSD')
+                        ;;
+                esac
+                ;;
+            *-linux-gnu* | *-linux-musl*)
+                file_info_pat+=('(SYSV|GNU/Linux)')
+                file_header_pat+=('OS/ABI:\s+UNIX - (System V|GNU)')
+                ;;
+            *)
+                file_info_pat+=('SYSV')
+                file_header_pat+=('OS/ABI:\s+UNIX - System V')
+                ;;
         esac
         case "${RUST_TARGET}" in
             *-linux-gnu*)
@@ -863,12 +899,18 @@ case "${RUST_TARGET}" in
                     riscv32gc-*) ldso='/lib/ld-linux-riscv32-ilp32d\.so\.1' ;;
                     riscv64gc-*) ldso='/lib/ld-linux-riscv64-lp64d\.so\.1' ;;
                     s390x-*) ldso='/lib/ld64\.so\.1' ;;
+                    sparc-*) ldso='/lib/ld-linux\.so\.2' ;;
                     sparc64-*) ldso='/lib64/ld-linux\.so\.2' ;;
                     x86_64-*x32) ldso='/libx32/ld-linux-x32\.so\.2' ;;
                     x86_64-*) ldso='/lib64/ld-linux-x86-64\.so\.2' ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
-                file_info_pat+=("interpreter ${ldso}")
+                for bin in "${out_dir}"/*; do
+                    if [[ -x "${bin}" ]]; then
+                        assert_file_info "interpreter ${ldso}" "${bin}"
+                        assert_file_info 'for GNU/Linux' "${bin}"
+                    fi
+                done
                 ;;
             *-linux-musl*)
                 case "${RUST_TARGET}" in
@@ -929,7 +971,6 @@ case "${RUST_TARGET}" in
                 for bin in "${out_dir}"/*.out; do
                     assert_file_info "for FreeBSD ${FREEBSD_VERSION}" "${bin}"
                 done
-                file_info_pat+=('FreeBSD')
                 for bin in "${out_dir}"/*; do
                     if [[ -x "${bin}" ]]; then
                         assert_file_info 'interpreter /libexec/ld-elf\.so\.1' "${bin}"
@@ -956,7 +997,16 @@ case "${RUST_TARGET}" in
             *-openbsd*)
                 for bin in "${out_dir}"/*; do
                     if [[ -x "${bin}" ]]; then
-                        assert_file_info 'interpreter /usr/libexec/ld\.so' "${bin}"
+                        case "${RUST_TARGET}" in
+                            sparc64-*)
+                                if [[ "${bin}" == *".out" ]]; then
+                                    assert_file_info 'statically linked' "${bin}"
+                                else
+                                    assert_file_info 'interpreter /usr/libexec/ld\.so' "${bin}"
+                                fi
+                                ;;
+                            *) assert_file_info 'interpreter /usr/libexec/ld\.so' "${bin}" ;;
+                        esac
                         # version info is not included
                         assert_file_info "for OpenBSD" "${bin}"
                     fi

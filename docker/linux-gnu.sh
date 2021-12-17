@@ -15,6 +15,7 @@ case "${RUST_TARGET}" in
         cc_target=aarch64_be-none-linux-gnu
         gcc_version=10.2.1
         echo "${cc_target}" >/CC_TARGET
+        echo "${cc_target}" >/APT_TARGET
         echo "${gcc_version}" >/GCC_VERSION
         curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://developer.arm.com/-/media/Files/downloads/gnu-a/${arm_gcc_version}/binrel/gcc-arm-${arm_gcc_version}-x86_64-${cc_target}.tar.xz" \
             | tar xJf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
@@ -28,6 +29,7 @@ case "${RUST_TARGET}" in
         gcc_version=9.4.0
         codename=Stretch
         echo "${cc_target}" >/CC_TARGET
+        echo "${cc_target}" >/APT_TARGET
         echo "${gcc_version}" >/GCC_VERSION
         curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/${codename}/GCC%20${gcc_version}/Raspberry%20Pi%201%2C%20Zero/cross-gcc-${gcc_version}-pi_0-1.tar.gz/download" \
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
@@ -41,6 +43,7 @@ case "${RUST_TARGET}" in
         cc_target=riscv32-unknown-linux-gnu
         gcc_version=11.1.0
         echo "${cc_target}" >/CC_TARGET
+        echo "${cc_target}" >/APT_TARGET
         echo "${gcc_version}" >/GCC_VERSION
         curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${riscv_gcc_version}/riscv32-glibc-ubuntu-18.04-nightly-${riscv_gcc_version}-nightly.tar.gz" \
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
@@ -52,6 +55,11 @@ case "${RUST_TARGET}" in
     arm*hf | thumbv7neon-*) cc_target=arm-linux-gnueabihf ;;
     arm*) cc_target=arm-linux-gnueabi ;;
     riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
+    sparc-*)
+        cc_target=sparc-linux-gnu
+        apt_target=sparc64-linux-gnu
+        multilib=1
+        ;;
     *) cc_target="${RUST_TARGET/-unknown/}" ;;
 esac
 lib_arch="${RUST_TARGET%-unknown*}"
@@ -67,11 +75,13 @@ case "${RUST_TARGET}" in
     powerpc64-*) lib_arch=ppc64 ;;
     powerpc64le-*) lib_arch=ppc64el ;;
     riscv64gc-*) lib_arch="${RUST_TARGET%gc-unknown*}" ;;
+    sparc-*) lib_arch=sparc64 ;;
     x86_64-*x32) lib_arch=x32 ;;
     x86_64-*) lib_arch=amd64 ;;
 esac
-apt_target="${cc_target/i586/i686}"
-echo "${apt_target}" >/CC_TARGET
+apt_target="${apt_target:-"${cc_target/i586/i686}"}"
+echo "${cc_target}" >/CC_TARGET
+echo "${apt_target}" >/APT_TARGET
 
 gcc_version="${GCC_VERSION:-"$(gcc --version | sed -n '1 s/^.*) //p')"}"
 echo "${gcc_version}" >/GCC_VERSION
@@ -81,7 +91,7 @@ if [[ -n "${lib_arch}" ]]; then
     apt-get -o Acquire::Retries=10 update -qq
     # shellcheck disable=SC2046
     apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
-        "g++-${apt_target/_/-}" \
+        "g++-${multilib:+multilib-}${apt_target/_/-}" \
         | grep '^\w' \
         | grep -E "${apt_target/_/-}|${lib_arch}-cross")
     set +x

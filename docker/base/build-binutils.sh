@@ -2,8 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-export CFLAGS="-g0 -O2 -fPIC"
-export CXXFLAGS="-g0 -O2 -fPIC"
+export CFLAGS="-g0 -O2 -fPIC ${CFLAGS:-}"
+export CXXFLAGS="-g0 -O2 -fPIC ${CXXFLAGS:-}"
 
 mkdir -p /tmp/binutils-build
 cd /tmp/binutils-build
