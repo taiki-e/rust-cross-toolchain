@@ -35,7 +35,7 @@
 
 | target | glibc | GCC | host |
 | ------ | ----- | --- | ---- |
-| `aarch64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
+| `aarch64-unknown-linux-gnu` | 2.27 (x86_64 host) / host (aarch64 host) | 7.4.0 (x86_64 host) / host (aarch64 host) | x86_64 linux (glibc 2.27+) |
 | `aarch64_be-unknown-linux-gnu` (tier3) | 2.31 | 10.2.1 |x86_64 linux (glibc 2.27+) |
 | `arm-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `arm-unknown-linux-gnueabihf` | 2.24 | 9.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
@@ -62,7 +62,7 @@
 | `sparc-unknown-linux-gnu` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `sparc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `x86_64-unknown-linux-gnu` | 2.27 | 7.4.0 | aarch64 linux (glibc 2.27+) |
+| `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnux32` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 
 ### Linux (musl)
@@ -311,7 +311,7 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 
 ### No-std
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | clang | C++ | run | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | newlib 4.1.0 | [1] |  | ✓ (libstdc++) | [1] | [1] |
 
@@ -321,7 +321,7 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 
 **Supported targets**:
 
-| target | GCC | test | host |
+| target | GCC | run | host |
 | ------ | --- | ---- | ---- |
 | `aarch64-unknown-none` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `aarch64-unknown-none-softfloat` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |

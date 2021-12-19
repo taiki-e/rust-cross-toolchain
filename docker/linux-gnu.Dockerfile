@@ -15,10 +15,10 @@ COPY /linux-gnu.sh /
 RUN /linux-gnu.sh
 # fd -t d '\b(doc|lintian|locale|i18n|man)\b'
 RUN <<EOF
-cc_target="$(</APT_TARGET)"
+apt_target="$(</APT_TARGET)"
 case "${RUST_TARGET}" in
     aarch64_be-* | arm-*hf)
-        rm -rf "${TOOLCHAIN_DIR}/${cc_target}"/libc/usr/share/{i18n,locale}
+        rm -rf "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr/share/{i18n,locale}
         ;;
     riscv32gc-*)
         rm -rf "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
@@ -35,29 +35,33 @@ esac
 EOF
 
 RUN <<EOF
+apt_target="$(</APT_TARGET)"
+gcc_version="$(</GCC_VERSION)"
+if [[ "${gcc_version}" == "host" ]]; then
+    exit 0
+fi
 case "${RUST_TARGET}" in
-    sparc-*) ;;
+    sparc-*)
+        # The interpreter for sparc-linux-gnu is /lib/ld-linux.so.2,
+        # so lib/ld-linux.so.2 must be target sparc-linux-gnu to run binaries on qemu-user.
+        rm -rf "${TOOLCHAIN_DIR}/${apt_target}/lib"
+        rm -rf "${TOOLCHAIN_DIR}/${apt_target}/lib64"
+        ln -s lib32 "${TOOLCHAIN_DIR}/${apt_target}/lib"
+        common_flags="-m32 -mv8plus -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib32 -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/gcc-cross/${RUST_TARGET}/${gcc_version}/32"
+        ;;
     *) exit 0 ;;
 esac
-cc_target="$(</APT_TARGET)"
-gcc_version="$(</GCC_VERSION)"
-# The interpreter for sparc-linux-gnu is /lib/ld-linux.so.2,
-# so lib/ld-linux.so.2 must be target sparc-linux-gnu to run binaries on qemu-user.
-rm -rf "${TOOLCHAIN_DIR}/${cc_target}/lib"
-rm -rf "${TOOLCHAIN_DIR}/${cc_target}/lib64"
-ln -s lib32 "${TOOLCHAIN_DIR}/${cc_target}/lib"
-common_flags="-m32 -mv8plus -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib32 -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/gcc-cross/${RUST_TARGET}/${gcc_version}/32"
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" <<EOF2
 #!/bin/sh
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
-exec "\${toolchain_dir}"/bin/${cc_target}-gcc ${common_flags} "\$@"
+exec "\${toolchain_dir}"/bin/${apt_target}-gcc ${common_flags} "\$@"
 EOF2
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++" <<EOF2
 #!/bin/sh
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
-exec "\${toolchain_dir}"/bin/${cc_target}-g++ ${common_flags} "\$@"
+exec "\${toolchain_dir}"/bin/${apt_target}-g++ ${common_flags} "\$@"
 EOF2
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
 EOF
@@ -69,6 +73,9 @@ RUN /common.sh
 COPY /clang-cross.sh /
 RUN <<EOF
 gcc_version="$(</GCC_VERSION)"
+if [[ "${gcc_version}" == "host" ]]; then
+    exit 0
+fi
 case "${RUST_TARGET}" in
     aarch64_be-* | arm-*hf)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
@@ -130,6 +137,10 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
+RUN <<EOF
+/test/entrypoint.sh gcc
+/test/entrypoint.sh clang
+EOF
 # # TODO(linux-gnu)
 # RUN <<EOF
 # case "${RUST_TARGET}" in

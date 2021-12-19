@@ -30,6 +30,9 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://sh.
 mkdir -p /tmp/deps/src
 pushd /tmp/deps >/dev/null
 touch src/lib.rs
+# See:
+# - docker/test/fixtures/rust/Cargo.toml
+# - docker/test/fixtures/rust-cmake/Cargo.toml
 cat >Cargo.toml <<EOF
 [package]
 name = "deps"
@@ -39,6 +42,22 @@ edition = "2021"
 cc = "1"
 cmake = "0.1"
 EOF
+case "${1:-}" in
+    none)
+        # See:
+        # - docker/test/fixtures/arm-none/Cargo.toml
+        # - docker/test/fixtures/cortex-m/Cargo.toml
+        # - docker/test/fixtures/riscv-none/Cargo.toml
+        cat >>Cargo.toml <<EOF
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+cortex-m-semihosting = "0.3"
+riscv-rt = "0.8"
+[patch.crates-io]
+riscv-rt = { git = "https://github.com/taiki-e/riscv-rt.git", rev = "7d2268105af466d2dd2f48ea5f51b593837d8a53" }
+EOF
+        ;;
+esac
 cargo fetch
 rm Cargo.lock
 # For build-std

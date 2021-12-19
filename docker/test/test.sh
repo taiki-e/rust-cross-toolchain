@@ -142,13 +142,13 @@ else
         toolchain_dir="/${RUST_TARGET}"
     else
         case "${RUST_TARGET}" in
+            *-linux-gnu*) toolchain_dir="/usr" ;;
             *-emscripten*) toolchain_dir="/usr/local/${RUST_TARGET}" ;;
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
     fi
 fi
 dev_tools_dir="${toolchain_dir}/share/rust-cross-toolchain/${RUST_TARGET}"
-mkdir -p "${dev_tools_dir}"/lib
 /test/entrypoint.sh "${cc}"
 # shellcheck disable=SC1090
 . "${dev_tools_dir}/${cc}-env"

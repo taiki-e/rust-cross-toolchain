@@ -5,7 +5,30 @@ IFS=$'\n\t'
 # Refs:
 # - https://wiki.debian.org/Multiarch/Tuples
 
+dpkg_arch="$(dpkg --print-architecture)"
 case "${RUST_TARGET}" in
+    x86_64-unknown-linux-gnu)
+        case "${dpkg_arch##*-}" in
+            amd64)
+                cc_target=x86_64-linux-gnu
+                echo "${cc_target}" >/CC_TARGET
+                echo "${cc_target}" >/APT_TARGET
+                echo "host" >/GCC_VERSION
+                exit 0
+                ;;
+        esac
+        ;;
+    aarch64-unknown-linux-gnu)
+        case "${dpkg_arch##*-}" in
+            arm64)
+                cc_target=aarch64-linux-gnu
+                echo "${cc_target}" >/CC_TARGET
+                echo "${cc_target}" >/APT_TARGET
+                echo "host" >/GCC_VERSION
+                exit 0
+                ;;
+        esac
+        ;;
     aarch64_be-unknown-linux-gnu)
         # Toolchains for aarch64_be-linux-gnu is not available in APT.
         # https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads
@@ -87,20 +110,16 @@ gcc_version="${GCC_VERSION:-"$(gcc --version | sed -n '1 s/^.*) //p')"}"
 echo "${gcc_version}" >/GCC_VERSION
 mkdir -p /tmp/toolchain
 cd /tmp/toolchain
-if [[ -n "${lib_arch}" ]]; then
-    apt-get -o Acquire::Retries=10 update -qq
-    # shellcheck disable=SC2046
-    apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
-        "g++-${multilib:+multilib-}${apt_target/_/-}" \
-        | grep '^\w' \
-        | grep -E "${apt_target/_/-}|${lib_arch}-cross")
-    set +x
-    for deb in *.deb; do
-        dpkg -x "${deb}" .
-        mv "${deb}" "${TOOLCHAIN_DIR}-deb"
-    done
-    set -x
-    mv usr/* "${TOOLCHAIN_DIR}"
-else
-    exit 1
-fi
+apt-get -o Acquire::Retries=10 update -qq
+# shellcheck disable=SC2046
+apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
+    "g++-${multilib:+multilib-}${apt_target/_/-}" \
+    | grep '^\w' \
+    | grep -E "${apt_target/_/-}|${lib_arch}-cross")
+set +x
+for deb in *.deb; do
+    dpkg -x "${deb}" .
+    mv "${deb}" "${TOOLCHAIN_DIR}-deb"
+done
+set -x
+mv usr/* "${TOOLCHAIN_DIR}"

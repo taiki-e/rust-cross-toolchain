@@ -55,9 +55,11 @@ jobs:
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
         with:
+          buildkitd-flags: --debug
           driver-opts: |
             env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
             image=moby/buildkit:latest
+            network=host
       - run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           echo "PUSH_TO_GHCR=1" >> "${GITHUB_ENV}"

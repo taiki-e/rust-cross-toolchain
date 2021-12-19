@@ -21,8 +21,7 @@ export RUSTUP_MAX_RETRIES=10
 
 libc_version=0.2.108
 case "${RUST_TARGET}" in
-    # TODO: remove once https://github.com/rust-lang/libc/pull/2594 and
-    # https://github.com/rust-lang/rust/pull/91955 merged and released.
+    # TODO: remove once https://github.com/rust-lang/rust/pull/92025 released.
     x86_64-unknown-dragonfly)
         rust_toolchain_version=nightly-2021-12-09
         rustup toolchain add "${rust_toolchain_version}" --no-self-update --component rust-src
@@ -74,9 +73,10 @@ case "${RUST_TARGET}" in
         #   TODO: send patch to upstream
         # riscv64gc-unknown-freebsd:
         #   this target needs libc 0.2.110, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2570
+        #   TODO: remove this once https://github.com/rust-lang/rust/pull/92061 merged.
         # powerpc-unknown-openbsd:
         #   this target needs libc 0.2.112, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2591
-        #   Also, libstd defined it as i8, but libc#2591 defined c_char as u8.
+        #   TODO: remove this once https://github.com/rust-lang/rust/pull/92061 merged.
         patch -p1 </test-base/patches/"${RUST_TARGET}"-libc.diff
         popd >/dev/null
         ;;

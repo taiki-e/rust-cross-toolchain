@@ -25,6 +25,7 @@ case "${RUST_TARGET}" in
         case "${RUST_TARGET}" in
             arm-*hf) common_flags="${common_flags} -march=armv6 -marm -mfpu=vfp -mfloat-abi=hard" ;;
             arm-*) common_flags="${common_flags} -march=armv6 -marm -mfloat-abi=soft" ;;
+            armv4t-*) common_flags="${common_flags} -march=armv4t -marm -mfloat-abi=soft" ;;
             armv5te-*) common_flags="${common_flags} -march=armv5te -marm -mfloat-abi=soft" ;;
             armv7-*hf) common_flags="${common_flags} -march=armv7-a -mthumb -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
             armv7-*) common_flags="${common_flags} -march=armv7-a -mthumb -mfloat-abi=softfp" ;;

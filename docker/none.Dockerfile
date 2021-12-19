@@ -123,8 +123,6 @@ RUN /common.sh
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
 # https://launchpad.net/~canonical-server/+archive/ubuntu/server-backports/+packages
 RUN <<EOF
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 94E187AD53A59D1847E4880F8A295C4FB8B190B7
@@ -137,6 +135,8 @@ apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recomm
     qemu-system-arm \
     qemu-system-misc
 EOF
+COPY /test-base.sh /
+RUN /test-base.sh none
 ARG RUST_TARGET
 COPY /test-base /test-base
 RUN /test-base/target.sh

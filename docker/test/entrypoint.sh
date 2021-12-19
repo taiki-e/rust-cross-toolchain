@@ -4,6 +4,12 @@ IFS=$'\n\t'
 
 # Generate entrypoint.sh.
 
+bail() {
+    set +x
+    echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
+    exit 1
+}
+
 cc="$1"
 
 case "${cc}" in
@@ -23,8 +29,9 @@ else
         toolchain_dir="/${RUST_TARGET}"
     else
         case "${RUST_TARGET}" in
+            *-linux-gnu*) toolchain_dir="/usr" ;;
             *-emscripten*) toolchain_dir="/usr/local/${RUST_TARGET}" ;;
-            *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+            *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
     fi
 fi
@@ -34,6 +41,7 @@ case "${RUST_TARGET}" in
     *) sysroot_suffix="${RUST_TARGET}" ;;
 esac
 dev_tools_dir="${toolchain_dir}/share/rust-cross-toolchain/${RUST_TARGET}"
+mkdir -p "${toolchain_dir}/bin" "${dev_tools_dir}"
 
 # Except for the linux-gnu target, all toolchains are designed to work
 # independent of the installation location.
@@ -57,9 +65,11 @@ rust_target_lower="${rust_target_lower//./_}"
 rust_target_upper="$(tr '[:lower:]' '[:upper:]' <<<"${rust_target_lower}")"
 case "${cc}" in
     gcc)
-        cat >>"${env_path}" <<EOF
+        if type -P "${RUST_TARGET}-ar"; then
+            cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=${RUST_TARGET}-ar
 EOF
+        fi
         ;;
     clang)
         # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
@@ -210,6 +220,12 @@ case "${RUST_TARGET}" in
         ;;
 esac
 
+dpkg_arch="$(dpkg --print-architecture)"
+case "${dpkg_arch##*-}" in
+    amd64) host_arch=x86_64 ;;
+    arm64) host_arch=aarch64 ;;
+    *) bail "unsupported architecture '${dpkg_arch}'" ;;
+esac
 case "${RUST_TARGET}" in
     *-unknown-linux-* | *-android*)
         case "${RUST_TARGET}" in
@@ -229,7 +245,7 @@ case "${RUST_TARGET}" in
                     armv5te-*) qemu_cpu=arm1026 ;;
                     # ARMv7-A+NEONv2
                     armv7-* | thumbv7neon-*) qemu_cpu=cortex-a15 ;;
-                    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
             i*86-*) qemu_arch=i386 ;;
@@ -273,10 +289,21 @@ case "${RUST_TARGET}" in
             sparc64-*) qemu_arch=sparc64 ;;
             x86_64-*)
                 qemu_arch=x86_64
-                # AVX512
-                qemu_cpu=Icelake-Server
+                # qemu does not seem to support emulating x86_64 CPU features on x86_64 hosts.
+                # > qemu-x86_64: warning: TCG doesn't support requested feature
+                # The same warning does not seem to appear on aarch64 hosts, so use qemu-user as runner.
+                #
+                # A way that works well for emulating x86_64 CPU features on x86_64 hosts is to use Intel SDE.
+                # https://www.intel.com/content/www/us/en/developer/articles/tool/software-development-emulator.html
+                # It is not OSS, but it is licensed under Intel Simplified Software License and redistribution is allowed.
+                # https://www.intel.com/content/www/us/en/developer/articles/license/pre-release-license-agreement-for-software-development-emulator.html
+                # https://www.intel.com/content/www/us/en/developer/articles/license/onemkl-license-faq.html
+                if [[ "${host_arch}" != "x86_64" ]]; then
+                    # AVX512
+                    qemu_cpu=Icelake-Server
+                fi
                 ;;
-            *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+            *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         if [[ -n "${qemu_cpu:-}" ]]; then
             # We basically set the newer and more powerful CPU as default QEMU_CPU
@@ -288,6 +315,7 @@ case "${RUST_TARGET}" in
             *-android*) ;;
             *) qemu_ld_prefix=" -L \"\${toolchain_dir}\"/${sysroot_suffix}" ;;
         esac
+        # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
         runner="${RUST_TARGET}-runner"
         cat >"${toolchain_dir}/bin/${runner}" <<EOF
@@ -313,7 +341,7 @@ EOF
                     armebv7r-none-eabi) qemu_cpu=cortex-r5 ;;
                     # Cortex-R4F/Cortex-R5F (ARMv7-R): https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/armebv7r_none_eabihf.rs
                     armebv7r-none-eabihf) qemu_cpu=cortex-r5f ;;
-                    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
             arm* | thumb*)
@@ -344,7 +372,7 @@ EOF
                     # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/thumbv8m_main_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/thumbv8m_main_none_eabihf.rs
                     thumbv8m.main-none-eabi | thumbv8m.main-none-eabihf) qemu_cpu=cortex-m33 ;;
-                    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 case "${RUST_TARGET}" in
                     # Cortex-m
@@ -353,14 +381,14 @@ EOF
                     armv7a-*) qemu_machine=vexpress-a15 ;;
                     # TODO: As of qemu 6.1, qemu-system-arm doesn't support Cortex-R machine.
                     arm*v7r-*) ;;
-                    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
             mipsel-*) qemu_arch=mipsel ;;
             riscv32*) qemu_arch=riscv32 ;;
             riscv64*) qemu_arch=riscv64 ;;
             x86_64-*) qemu_arch=x86_64 ;;
-            *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+            *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         if [[ -n "${qemu_cpu:-}" ]]; then
             # We basically set the newer and more powerful CPU as default QEMU_CPU
@@ -368,6 +396,7 @@ EOF
             # test for a specific CPU, so we allow overrides by user-set QEMU_CPU.
             qemu_cpu=" --cpu \${QEMU_CPU:-${qemu_cpu}}"
         fi
+        # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
         runner_qemu_user="${RUST_TARGET}-runner-qemu-user"
         cat >"${toolchain_dir}/bin/${runner_qemu_user}" <<EOF

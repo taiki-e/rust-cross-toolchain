@@ -161,18 +161,6 @@ for target in "${targets[@]}"; do
         *-linux-gnu*)
             ubuntu_version=18.04
             case "${target}" in
-                x86_64-*)
-                    # TODO
-                    case "${arch}" in
-                        x86_64) continue ;;
-                    esac
-                    ;;
-                aarch64-*)
-                    # TODO
-                    case "${arch}" in
-                        aarch64) continue ;;
-                    esac
-                    ;;
                 aarch64_be-* | arm-*hf | riscv32gc-*)
                     # Toolchains for these targets are not available on non-x86_64 host.
                     case "${arch}" in
