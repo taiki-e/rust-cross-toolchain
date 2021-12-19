@@ -22,7 +22,7 @@ fn main() {
         );
     }
 
-    println!("cargo:rerun-if-changed=hello_c.c");
-    println!("cargo:rerun-if-changed=hello_cpp.cpp");
-    println!("cargo:rerun-if-changed=build.rs");
+    let cmake_dst = cmake::build("libhello_cmake");
+    println!("cargo:rustc-link-search=native={}", cmake_dst.display());
+    println!("cargo:rustc-link-lib=static=hello_cmake");
 }

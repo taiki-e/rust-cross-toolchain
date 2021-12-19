@@ -2,6 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# shellcheck disable=SC2154
+trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+
 # Test the toolchain.
 
 x() {
@@ -25,7 +28,11 @@ run_cargo() {
         if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
             cargo_flags+=(-Z build-std="panic_abort,std")
         else
-            cargo_flags+=(-Z build-std)
+            if [[ -z "${no_std}" ]]; then
+                cargo_flags+=(-Z build-std)
+            else
+                cargo_flags+=(-Z build-std="core,alloc")
+            fi
         fi
     fi
     subcmd="$1"
@@ -229,6 +236,7 @@ case "${RUST_TARGET}" in
     powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
 esac
 
+dpkg_arch="$(dpkg --print-architecture)"
 if [[ -z "${no_std}" ]]; then
     runner=""
     # TODO(freebsd): can we use vm or ci images for testing? https://download.freebsd.org/ftp/releases/VM-IMAGES https://download.freebsd.org/ftp/releases/CI-IMAGES
@@ -240,22 +248,32 @@ if [[ -z "${no_std}" ]]; then
         *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) runner="${RUST_TARGET}-runner" ;;
     esac
     if [[ -z "${runner}" ]]; then
-        echo "info: test for target '${RUST_TARGET}' is not supported yet"
+        echo >&2 "info: test for target '${RUST_TARGET}' is not supported yet"
+    else
+        case "${dpkg_arch##*-}" in
+            amd64)
+                case "${RUST_TARGET}" in
+                    *-windows-gnu*)
+                        # Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
+                        export HOME=/tmp/home
+                        mkdir -p "${HOME}"
+                        # Initialize the wine prefix (virtual windows installation)
+                        export WINEPREFIX=/tmp/wine
+                        mkdir -p "${WINEPREFIX}"
+                        if [[ ! -e /WINEBOOT ]]; then
+                            x wineboot &>/dev/null
+                            touch /WINEBOOT
+                        fi
+                        ;;
+                esac
+                ;;
+            *)
+                # TODO: don't skip if actual host is arm64
+                echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+                runner=""
+                ;;
+        esac
     fi
-    case "${RUST_TARGET}" in
-        *-windows-gnu*)
-            # Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
-            export HOME=/tmp/home
-            mkdir -p "${HOME}"
-            # Initialize the wine prefix (virtual windows installation)
-            export WINEPREFIX=/tmp/wine
-            mkdir -p "${WINEPREFIX}"
-            if [[ ! -e /WINEBOOT ]]; then
-                x wineboot &>/dev/null
-                touch /WINEBOOT
-            fi
-            ;;
-    esac
 
     # Build std for tier3 linux-musl targets.
     case "${RUST_TARGET}" in
@@ -395,14 +413,17 @@ EOF
             export RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=-crt-static"
             ;;
     esac
-    run_cargo build
-    x ls "$(pwd)/target/${RUST_TARGET}"/debug
-    x ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out
+    run_cargo build || (tail -n +1 "target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/*.log && exit 1)
+    x ls "$(pwd)/target/${RUST_TARGET}"/debug "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
     cp "$(pwd)/target/${RUST_TARGET}"/debug/rust*test"${exe}" "${out_dir}"
     cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_c.o "${out_dir}"
     if [[ -z "${no_rust_cpp}" ]]; then
         cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_cpp.o "${out_dir}"
     fi
+    case "${RUST_TARGET}" in
+        *-redox* | *-windows-*) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" ;;
+        *) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}" ;;
+    esac
     if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
         x "${runner}" "$(pwd)/target/${RUST_TARGET}"/debug/rust*test"${exe}" | tee run.log
         if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
@@ -416,21 +437,6 @@ EOF
                 bail
             fi
         fi
-    fi
-    popd >/dev/null
-
-    # Build Rust with C using CMake
-    pushd rust-cmake >/dev/null
-    run_cargo build || (tail -n +1 "target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/*.log && exit 1)
-    x ls "$(pwd)/target/${RUST_TARGET}"/debug
-    x ls "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir
-    cp "$(pwd)/target/${RUST_TARGET}"/debug/rust*cmake*test"${exe}" "${out_dir}"
-    case "${RUST_TARGET}" in
-        *-redox* | *-windows-*) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir/double.obj "${out_dir}" ;;
-        *) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-cmake-test-*/out/build/CMakeFiles/double.dir/double.o "${out_dir}" ;;
-    esac
-    if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
-        x "${runner}" "$(pwd)/target/${RUST_TARGET}"/debug/rust*cmake*test"${exe}" | tee run.log
         if ! grep <run.log -E '^Hello Cmake from Rust!' >/dev/null; then
             bail
         fi
@@ -450,23 +456,12 @@ EOF
     fi
     popd >/dev/null
 else
-    case "${RUST_TARGET}" in
-        aarch64-unknown-none* | arm*-none-eabi* | thumb*-none-eabi*)
-            pushd /test/fixtures/arm-none >/dev/null
-            CARGO_NET_OFFLINE=false x cargo fetch --target "${RUST_TARGET}"
-            popd >/dev/null
-            case "${RUST_TARGET}" in
-                thumb*)
-                    pushd /test/fixtures/cortex-m >/dev/null
-                    CARGO_NET_OFFLINE=false x cargo fetch --target "${RUST_TARGET}"
-                    popd >/dev/null
-                    ;;
-            esac
-            ;;
-        riscv*-unknown-none-elf)
-            pushd /test/fixtures/riscv-none >/dev/null
-            CARGO_NET_OFFLINE=false x cargo fetch --target "${RUST_TARGET}"
-            popd >/dev/null
+    case "${dpkg_arch##*-}" in
+        amd64) runner="1" ;;
+        *)
+            # TODO: don't skip if actual host is arm64
+            echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+            runner=""
             ;;
     esac
 
@@ -504,7 +499,6 @@ else
                         ;;
                 esac
                 pushd arm-none >/dev/null
-                cargo clean
                 case "${linker}" in
                     rust-lld | *-ld)
                         RUSTFLAGS="${RUSTFLAGS:-} ${flag}" \
@@ -519,16 +513,17 @@ else
                 esac
                 bin="$(pwd)/target/${RUST_TARGET}"/debug/arm-none-test
                 cp "${bin}" "${out_dir}/arm-none-test-${linker}"
-                # TODO(none,aarch64,cortex-m,cortex-r)
-                case "${RUST_TARGET}" in
-                    armv7a-*) x "${RUST_TARGET}-runner-qemu-system" "${bin}" ;;
-                esac
-                x "${RUST_TARGET}-runner-qemu-user" "${bin}"
+                if [[ -n "${runner}" ]]; then
+                    # TODO(none,aarch64,cortex-m,cortex-r)
+                    case "${RUST_TARGET}" in
+                        armv7a-*) x "${RUST_TARGET}-runner-qemu-system" "${bin}" ;;
+                    esac
+                    x "${RUST_TARGET}-runner-qemu-user" "${bin}"
+                fi
                 popd >/dev/null
                 case "${RUST_TARGET}" in
                     thumb*)
                         pushd cortex-m >/dev/null
-                        cargo clean
                         # To link to pre-compiled C libraries provided by a C
                         # toolchain use GCC as the linker.
                         case "${linker}" in
@@ -545,28 +540,29 @@ else
                         esac
                         bin="$(pwd)/target/${RUST_TARGET}"/debug/cortex-m-test
                         cp "${bin}" "${out_dir}/cortex-m-test-${linker}"
-                        x "${RUST_TARGET}-runner-qemu-system" "${bin}" | tee run.log
-                        if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
-                            bail
+                        if [[ -n "${runner}" ]]; then
+                            x "${RUST_TARGET}-runner-qemu-system" "${bin}" | tee run.log
+                            if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
+                                bail
+                            fi
+                            case "${linker}" in
+                                rust-lld | *-ld) ;;
+                                *)
+                                    if ! grep <run.log -E '^x = 5' >/dev/null; then
+                                        bail
+                                    fi
+                                    if ! grep <run.log -E '^y = 6' >/dev/null; then
+                                        bail
+                                    fi
+                                    ;;
+                            esac
                         fi
-                        case "${linker}" in
-                            rust-lld | *-ld) ;;
-                            *)
-                                if ! grep <run.log -E '^x = 5' >/dev/null; then
-                                    bail
-                                fi
-                                if ! grep <run.log -E '^y = 6' >/dev/null; then
-                                    bail
-                                fi
-                                ;;
-                        esac
                         popd >/dev/null
                         ;;
                 esac
                 ;;
             riscv*-unknown-none-elf)
                 pushd riscv-none >/dev/null
-                cargo clean
                 case "${linker}" in
                     rust-lld | *-ld)
                         RUSTFLAGS="${RUSTFLAGS:-} ${flag} -C link-arg=-Tmemory.x -C link-arg=-Tlink.x" \

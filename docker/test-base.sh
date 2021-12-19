@@ -17,7 +17,7 @@ esac
 export CARGO_NET_RETRY=10
 export RUSTUP_MAX_RETRIES=10
 
-rust_toolchain_version=nightly-2021-12-17
+rust_toolchain_version=nightly-2021-12-19
 
 # Install Rust.
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://sh.rustup.rs \
@@ -32,7 +32,6 @@ pushd /tmp/deps >/dev/null
 touch src/lib.rs
 # See:
 # - docker/test/fixtures/rust/Cargo.toml
-# - docker/test/fixtures/rust-cmake/Cargo.toml
 cat >Cargo.toml <<EOF
 [package]
 name = "deps"

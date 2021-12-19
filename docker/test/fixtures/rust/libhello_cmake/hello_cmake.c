@@ -1,5 +1,5 @@
 #include <stdint.h>
 
-int double_input(int input) {
+int hello_cmake(int input) {
     return input * 2;
 }

@@ -20,28 +20,6 @@ export RUSTUP_MAX_RETRIES=10
 . "${HOME}/.cargo/env"
 
 libc_version=0.2.108
-case "${RUST_TARGET}" in
-    # TODO: remove once https://github.com/rust-lang/rust/pull/92025 released.
-    x86_64-unknown-dragonfly)
-        rust_toolchain_version=nightly-2021-12-09
-        rustup toolchain add "${rust_toolchain_version}" --no-self-update --component rust-src
-        rustup default "${rust_toolchain_version}"
-        mkdir -p /tmp/deps/src
-        pushd /tmp/deps >/dev/null
-        touch src/lib.rs
-        cat >Cargo.toml <<EOF
-[package]
-name = "deps"
-version = "0.0.0"
-edition = "2021"
-[dependencies]
-compiler_builtins = "=0.1.55"
-EOF
-        cargo fetch
-        popd >/dev/null
-        rm -rf /tmp/deps
-        ;;
-esac
 
 if rustup target list | grep -E "^${RUST_TARGET}( |$)" >/dev/null; then
     rustup target add "${RUST_TARGET}"
