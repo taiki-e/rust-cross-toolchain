@@ -48,6 +48,7 @@ du -h "${toolchain_dir}"
 find "${toolchain_dir}" -name "${RUST_TARGET}*" | LC_ALL=C sort
 find "${toolchain_dir}" -name 'libstdc++*'
 find "${toolchain_dir}" -name 'libc++*'
+find "${toolchain_dir}" -name 'pkgconfig'
 
 for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-g++" "${RUST_TARGET}-gdb" "${RUST_TARGET}-clang" "${RUST_TARGET}-clang++" emcc; do
     if type -P "${cc}"; then

@@ -4,6 +4,14 @@ IFS=$'\n\t'
 
 # Refs:
 # - https://wiki.debian.org/Multiarch/Tuples
+# - https://wiki.debian.org/ArmEabiPort
+# - https://wiki.debian.org/ArmHardFloatPort
+# - https://wiki.debian.org/Arm64Port
+# - https://wiki.debian.org/PowerPCSPEPort
+# - https://wiki.debian.org/RISC-V
+# - https://wiki.debian.org/RISC-V/32
+# - https://wiki.debian.org/Sparc32
+# - https://wiki.debian.org/Sparc64
 
 dpkg_arch="$(dpkg --print-architecture)"
 case "${RUST_TARGET}" in

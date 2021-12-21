@@ -161,8 +161,9 @@ for target in "${targets[@]}"; do
         *-linux-gnu*)
             ubuntu_version=18.04
             case "${target}" in
-                aarch64_be-* | arm-*hf | riscv32gc-*)
-                    # Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | arm-*hf | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                    # aarch64_be-*|arm-*hf|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
+                    # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;
@@ -185,8 +186,6 @@ for target in "${targets[@]}"; do
                             # ubuntu_version=21.04
                             continue
                             ;;
-                        # gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
-                        powerpc-* | powerpc64-* | sparc-* | sparc64-*) continue ;;
                     esac
                     ;;
             esac
@@ -246,11 +245,12 @@ for target in "${targets[@]}"; do
         *-freebsd*)
             case "${target}" in
                 riscv64gc-*)
-                    if [[ "${docker_arch}" != "amd64"* ]]; then
-                        # riscv64gc needs to build binutils from source.
-                        # TODO: don't skip if actual host is arm64
-                        continue
-                    fi
+                    # riscv64gc needs to build binutils from source.
+                    # TODO: don't skip if actual host is arm64
+                    case "${arch}" in
+                        x86_64) ;;
+                        *) continue ;;
+                    esac
                     ;;
             esac
             if [[ -n "${FREEBSD_VERSION:-}" ]]; then
@@ -315,11 +315,12 @@ for target in "${targets[@]}"; do
         *-openbsd*)
             case "${target}" in
                 sparc64-*)
-                    if [[ "${docker_arch}" != "amd64"* ]]; then
-                        # sparc64 needs to build binutils from source.
-                        # TODO: don't skip if actual host is arm64
-                        continue
-                    fi
+                    # sparc64 needs to build binutils from source.
+                    # TODO: don't skip if actual host is arm64
+                    case "${arch}" in
+                        x86_64) ;;
+                        *) continue ;;
+                    esac
                     ;;
             esac
             # OpenBSD does not have binary compatibility with previous releases.

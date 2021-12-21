@@ -68,12 +68,23 @@ case "${cc}" in
         if type -P "${RUST_TARGET}-ar"; then
             cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=${RUST_TARGET}-ar
+export STRIP=${RUST_TARGET}-strip
+export OBJDUMP=${RUST_TARGET}-objdump
 EOF
         fi
+        for tool in strip objdump; do
+            if type -P "${RUST_TARGET}-${tool}"; then
+                tool_upper="$(tr '[:lower:]' '[:upper:]' <<<"${tool}")"
+                cat >>"${env_path}" <<EOF
+export ${tool_upper}=${RUST_TARGET}-${tool}
+EOF
+            fi
+        done
         ;;
     clang)
         # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
         cat >>"${env_path}" <<EOF
+export AR_${rust_target_lower}=llvm-ar
 export AR=llvm-ar
 export NM=llvm-nm
 export STRIP=llvm-strip

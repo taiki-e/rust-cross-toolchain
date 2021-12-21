@@ -189,7 +189,7 @@
 | openbsd [1] | N/A | host | ✓ (libc++) [2] |  | [1] |
 
 [1] See target list below for details<br>
-[2] only i686 and x86_64<br>
+[2] Except for aarch64-unknown-openbsd and sparc64-unknown-openbsd<br>
 
 ([Dockerfile](docker/openbsd.Dockerfile))
 
@@ -278,7 +278,7 @@ wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/w
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| emscripten 1.39.20 | N/A |  | ? (libc++) | ✓ (node) | x86_64 linux (glibc 2.27+) |
+| emscripten 1.39.20 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 linux (glibc 2.27+) |
 
 ([Dockerfile](docker/emscripten.Dockerfile))
 

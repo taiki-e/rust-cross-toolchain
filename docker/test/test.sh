@@ -216,6 +216,7 @@ case "${RUST_TARGET}" in
     #    Caused by:
     #        0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
+    # TODO(android):
     wasm32-wasi | *-android*) no_rust_cpp=1 ;;
 esac
 # Whether or not to build the test.
