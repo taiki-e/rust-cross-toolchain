@@ -44,42 +44,29 @@ if type -P npm &>/dev/null && type -P "$(npm bin)/prettier" &>/dev/null; then
     prettier="$(npm bin)/prettier"
 fi
 
-if [[ -z "${CI:-}" ]]; then
-    if type -P rustfmt &>/dev/null; then
-        x rustfmt $(git ls-files '*.rs')
-    fi
-    if type -P shfmt &>/dev/null; then
-        x shfmt -l -w $(git ls-files '*.sh')
-    else
-        echo >&2 "WARNING: 'shfmt' is not installed"
-    fi
-    if type -P "${prettier}" &>/dev/null; then
-        x "${prettier}" -l -w $(git ls-files '*.yml')
-    else
-        echo >&2 "WARNING: 'prettier' is not installed"
-    fi
-    if type -P clang-format &>/dev/null; then
-        x clang-format -i $(git ls-files '*.c')
-        x clang-format -i $(git ls-files '*.cpp')
-    else
-        echo >&2 "WARNING: 'clang-format' is not installed"
-    fi
-    if type -P shellcheck &>/dev/null; then
-        x shellcheck $(git ls-files '*.sh')
-        # SC2154 doesn't seem to work on dockerfile.
-        x shellcheck -e SC2148,SC2154 $(git ls-files '*Dockerfile')
-    else
-        echo >&2 "WARNING: 'shellcheck' is not installed"
-    fi
+if type -P rustfmt &>/dev/null; then
+    x rustfmt $(git ls-files '*.rs')
+fi
+if type -P shfmt &>/dev/null; then
+    x shfmt -l -w $(git ls-files '*.sh')
 else
-    verbose=1
-    x rustfmt --check $(git ls-files '*.rs')
-    x shfmt -d $(git ls-files '*.sh')
-    x "${prettier}" -c $(git ls-files '*.yml')
+    echo >&2 "WARNING: 'shfmt' is not installed"
+fi
+if type -P "${prettier}" &>/dev/null; then
+    x "${prettier}" -l -w $(git ls-files '*.yml')
+else
+    echo >&2 "WARNING: 'prettier' is not installed"
+fi
+if type -P clang-format &>/dev/null; then
     x clang-format -i $(git ls-files '*.c')
     x clang-format -i $(git ls-files '*.cpp')
-    x git diff --exit-code
+else
+    echo >&2 "WARNING: 'clang-format' is not installed"
+fi
+if type -P shellcheck &>/dev/null; then
     x shellcheck $(git ls-files '*.sh')
     # SC2154 doesn't seem to work on dockerfile.
     x shellcheck -e SC2148,SC2154 $(git ls-files '*Dockerfile')
+else
+    echo >&2 "WARNING: 'shellcheck' is not installed"
 fi
