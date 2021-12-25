@@ -12,7 +12,7 @@ x() {
     shift
     (
         set -x
-        "$cmd" "$@"
+        "${cmd}" "$@"
     )
 }
 bail() {
@@ -236,18 +236,22 @@ case "${RUST_TARGET}" in
     #     run-pass, but test-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
     powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
 esac
+# Whether or not to run the compiled binaries.
+no_run="1"
+case "${RUST_TARGET}" in
+    # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
+    # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
+    riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
+    # TODO(android):
+    *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
+esac
 
 dpkg_arch="$(dpkg --print-architecture)"
 if [[ -z "${no_std}" ]]; then
     runner=""
-    # TODO(freebsd): can we use vm or ci images for testing? https://download.freebsd.org/ftp/releases/VM-IMAGES https://download.freebsd.org/ftp/releases/CI-IMAGES
-    case "${RUST_TARGET}" in
-        # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
-        # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
-        riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
-        # TODO(android):
-        *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) runner="${RUST_TARGET}-runner" ;;
-    esac
+    if [[ -z "${no_run}" ]]; then
+        runner="${RUST_TARGET}-runner"
+    fi
     if [[ -z "${runner}" ]]; then
         echo >&2 "info: test for target '${RUST_TARGET}' is not supported yet"
     else

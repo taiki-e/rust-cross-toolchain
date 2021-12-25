@@ -14,12 +14,12 @@ x() {
     if [[ -n "${dry_run:-}" ]]; then
         (
             IFS=' '
-            echo "+ $cmd $*"
+            echo "+ ${cmd} $*"
         )
     else
         (
             set -x
-            "$cmd" "$@"
+            "${cmd}" "$@"
         )
     fi
 }

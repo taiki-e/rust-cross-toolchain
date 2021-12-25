@@ -100,7 +100,7 @@ case "${RUST_TARGET}" in
 export EMSDK="\${toolchain_dir}"
 export EM_CACHE="\${EMSDK}/upstream/emscripten/cache"
 export EMSDK_NODE="\${EMSDK}/node/${NODE_VERSION}_64bit/bin/node"
-export PATH="\${EMSDK}:\${EMSDK}/upstream/emscripten:\${EMSDK}/node/${NODE_VERSION}_64bit/bin:\$PATH"
+export PATH="\${EMSDK}:\${EMSDK}/upstream/emscripten:\${EMSDK}/node/${NODE_VERSION}_64bit/bin:\${PATH}"
 EOF
         ;;
     *)
@@ -109,7 +109,7 @@ export CC_${rust_target_lower}=${target_cc}
 export CXX_${rust_target_lower}=${target_cxx}
 EOF
         cat >>"${entrypoint_path}" <<EOF
-export PATH="\${toolchain_dir}/bin:$PATH"
+export PATH="\${toolchain_dir}/bin:\${PATH}"
 EOF
         ;;
 esac

@@ -7,7 +7,7 @@ IFS=$'\n\t'
 
 toolchain_dir="/${RUST_TARGET}"
 
-# In Ubuntu's binutils-* packages, $toolchain/$target/bin/* are symlinks to $toolchain/bin/*.
+# In Ubuntu's binutils-* packages, ${toolchain}/${target}/bin/* are symlinks to ${toolchain}/bin/*.
 if [[ -e "${toolchain_dir}/${RUST_TARGET}/bin" ]]; then
     pushd "${toolchain_dir}/${RUST_TARGET}/bin" >/dev/null
     set +x

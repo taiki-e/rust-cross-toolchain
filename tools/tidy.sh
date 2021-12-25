@@ -20,10 +20,10 @@ x() {
     if [[ -n "${verbose:-}" ]]; then
         (
             set -x
-            "$cmd" "$@"
+            "${cmd}" "$@"
         )
     else
-        "$cmd" "$@"
+        "${cmd}" "$@"
     fi
 }
 
