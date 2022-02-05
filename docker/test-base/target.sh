@@ -19,7 +19,7 @@ export RUSTUP_MAX_RETRIES=10
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
-libc_version=0.2.108
+libc_version=0.2.116
 
 if rustup target list | grep -E "^${RUST_TARGET}( |$)" >/dev/null; then
     rustup target add "${RUST_TARGET}"
@@ -41,7 +41,7 @@ case "${RUST_TARGET}" in
 esac
 
 case "${RUST_TARGET}" in
-    hexagon-unknown-linux-musl | riscv64gc-unknown-linux-musl | riscv64gc-unknown-freebsd | powerpc-unknown-openbsd)
+    hexagon-unknown-linux-musl | riscv64gc-unknown-linux-musl | powerpc-unknown-openbsd)
         pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-"${libc_version}" >/dev/null
         # hexagon-unknown-linux-musl:
         #   "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
@@ -49,11 +49,7 @@ case "${RUST_TARGET}" in
         # riscv64gc-unknown-linux-musl:
         #   "error[E0425]: cannot find value `SYS_clone3` in this scope" when building std
         #   TODO: send patch to upstream
-        # riscv64gc-unknown-freebsd:
-        #   this target needs libc 0.2.110, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2570
-        #   TODO: remove this once https://github.com/rust-lang/rust/pull/92061 merged.
         # powerpc-unknown-openbsd:
-        #   this target needs libc 0.2.112, but libstd uses libc 0.2.108: https://github.com/rust-lang/libc/pull/2591
         #   TODO: remove this once https://github.com/rust-lang/rust/pull/92061 merged.
         patch -p1 </test-base/patches/"${RUST_TARGET}"-libc.diff
         popd >/dev/null

@@ -5,9 +5,8 @@ fn main() {
         Ok(target) => target,
         Err(e) => {
             println!(
-                "cargo:warning={}: unable to get TARGET environment variable: {}",
+                "cargo:warning={}: unable to get TARGET environment variable: {e}",
                 env!("CARGO_PKG_NAME"),
-                e
             );
             return;
         }

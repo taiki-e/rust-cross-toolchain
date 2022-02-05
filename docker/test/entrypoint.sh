@@ -20,10 +20,19 @@ esac
 if type -P "${RUST_TARGET}-${cc}"; then
     target_cc="${RUST_TARGET}-${cc}"
     target_cxx="${RUST_TARGET}-${cxx}"
+    target_linker="${RUST_TARGET}-${cc}"
+    case "${cc}" in
+        clang)
+            if type -P "${RUST_TARGET}-gcc"; then
+                target_linker="${RUST_TARGET}-gcc"
+            fi
+            ;;
+    esac
     toolchain_dir="$(dirname "$(dirname "$(type -P "${target_cc}")")")"
 else
     target_cc="${cc}"
     target_cxx="${cxx}"
+    target_linker="${cc}"
     # TODO
     if [[ -e "/${RUST_TARGET}" ]]; then
         toolchain_dir="/${RUST_TARGET}"
@@ -117,7 +126,7 @@ case "${RUST_TARGET}" in
     *-emscripten* | *-none*) ;;
     *)
         cat >>"${env_path}" <<EOF
-export CARGO_TARGET_${rust_target_upper}_LINKER=${target_cc}
+export CARGO_TARGET_${rust_target_upper}_LINKER=${target_linker}
 EOF
         ;;
 esac

@@ -52,17 +52,6 @@ esac
 echo "${cc_target}" >/CC_TARGET
 EOF
 
-# TODO(clang,mips-musl-sf): needed for clang
-RUN <<EOF
-case "${RUST_TARGET}" in
-    mips-*) ldso_arch=mips ;;
-    mipsel-*) ldso_arch=mipsel ;;
-    *) exit 0 ;;
-esac
-cd "${SYSROOT_DIR}/lib"
-ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
-EOF
-
 COPY /clang-cross.sh /
 ARG GCC_VERSION
 RUN <<EOF

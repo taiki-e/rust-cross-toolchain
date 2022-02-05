@@ -16,9 +16,8 @@ fn main() {
             .compile("libhello_cpp.a");
     } else {
         println!(
-            "cargo:warning={}: C++ from Rust for '{}' is currently disabled",
+            "cargo:warning={}: C++ from Rust for '{target}' is currently disabled",
             env!("CARGO_PKG_NAME"),
-            target
         );
     }
 

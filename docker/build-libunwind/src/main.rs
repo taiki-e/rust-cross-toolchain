@@ -5,7 +5,7 @@ use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 use anyhow::Result;
 use fs_err as fs;
 
-fn usage<T>() -> T {
+fn usage() -> String {
     println!("USAGE: build-libunwind --target=<TARGET> --out=<OUT_DIR> [--host=<HOST>] [--sysroot=<SYSROOT>]");
     std::process::exit(1);
 }
@@ -18,16 +18,16 @@ fn main() -> Result<()> {
     let mut sysroot = None;
     for arg in args {
         if let Some(v) = arg.strip_prefix("--host=") {
-            host = Some(v.to_owned())
+            host = Some(v.to_owned());
         } else if let Some(v) = arg.strip_prefix("--target=") {
-            target = Some(v.to_owned())
+            target = Some(v.to_owned());
         } else if let Some(v) = arg.strip_prefix("--out=") {
-            out_dir = Some(v.to_owned())
+            out_dir = Some(v.to_owned());
         } else if let Some(v) = arg.strip_prefix("--sysroot=") {
-            sysroot = Some(v.to_owned())
+            sysroot = Some(v.to_owned());
         } else {
-            eprintln!("error: unknown argument '{}'", arg);
-            usage()
+            eprintln!("error: unknown argument '{arg}'");
+            usage();
         }
     }
     let target = &target.unwrap_or_else(usage);
@@ -58,9 +58,9 @@ fn main() -> Result<()> {
     };
     let root = &sysroot.join("lib/rustlib/src/rust/src/llvm-project/libunwind");
 
-    let target_cc = env::var_os(&format!("CC_{}", target_lower)).unwrap();
-    let target_cxx = env::var_os(&format!("CXX_{}", target_lower));
-    let target_ar = env::var_os(&format!("AR_{}", target_lower));
+    let target_cc = env::var_os(&format!("CC_{target_lower}")).unwrap();
+    let target_cxx = env::var_os(&format!("CXX_{target_lower}"));
+    let target_ar = env::var_os(&format!("AR_{target_lower}"));
     fs::create_dir_all(&out_dir)?;
 
     let mut cc_cfg = cc::Build::new();
@@ -176,7 +176,7 @@ fn main() -> Result<()> {
             }
         }
     }
-    assert_eq!(cpp_len, count, "Can't get object files from {:?}", &out_dir);
+    assert_eq!(cpp_len, count, "Can't get object files from {out_dir:?}");
 
     cc_cfg.compile("unwind");
 

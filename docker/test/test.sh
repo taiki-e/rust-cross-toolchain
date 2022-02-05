@@ -188,7 +188,7 @@ export CARGO_NET_RETRY=10
 export CARGO_NET_OFFLINE=true
 export RUST_BACKTRACE=1
 export RUSTUP_MAX_RETRIES=10
-export RUSTFLAGS="${RUSTFLAGS:-} -D warnings -Z print-link-args"
+export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
@@ -198,9 +198,25 @@ case "${RUST_TARGET}" in
     *-windows-*) exe=".exe" ;;
     *) exe="" ;;
 esac
+case "${RUST_TARGET}" in
+    *-redox*) rust_bin_separator="_" ;;
+    *) rust_bin_separator="-" ;;
+esac
 no_std=""
 case "${RUST_TARGET}" in
     *-none* | *-cuda*) no_std=1 ;;
+esac
+no_cc_bin=""
+case "${RUST_TARGET}" in
+    # TODO(clang,sparc-unknown-linux-gnu): clang: error: unknown argument: '-mv8plus'
+    # TODO(clang,linux-uclibc): interpreter should be /lib/ld-uClibc.so.0
+    # TODO(clang,armv5te-unknown-linux-uclibceabi,armv7-unknown-linux-uclibceabihf): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+    # TODO(clang,mips-musl-sf): interpreter should be /lib/ld-musl-mips(el)-sf.so.1
+    sparc-unknown-linux-gnu | mips-unknown-linux-musl | mipsel-unknown-linux-musl | *-linux-uclibc*)
+        case "${cc}" in
+            clang) no_cc_bin=1 ;;
+        esac
+        ;;
 esac
 no_cpp=""
 case "${RUST_TARGET}" in
@@ -243,6 +259,7 @@ case "${RUST_TARGET}" in
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
     # TODO(android):
+    # TODO(redox):
     *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
 esac
 
@@ -344,14 +361,16 @@ EOF
     case "${cc}" in
         gcc | clang) x "${target_cc}" '-###' hello.c ;;
     esac
-    x "${target_cc}" -o c.out hello.c
-    bin="$(pwd)"/c.out
-    case "${RUST_TARGET}" in
-        arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
-        *) cp "${bin}" "${out_dir}" ;;
-    esac
-    if [[ -n "${runner}" ]]; then
-        [[ ! -x "${bin}" ]] || x "${runner}" "${bin}" | grep -E "^Hello C!"
+    if [[ -z "${no_cc_bin}" ]]; then
+        x "${target_cc}" -o c.out hello.c
+        bin="$(pwd)"/c.out
+        case "${RUST_TARGET}" in
+            arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
+            *) cp "${bin}" "${out_dir}" ;;
+        esac
+        if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
+            x "${runner}" "${bin}" | grep -E "^Hello C!"
+        fi
     fi
 
     if [[ -z "${no_cpp}" ]]; then
@@ -359,24 +378,16 @@ EOF
         case "${cc}" in
             gcc | clang) x "${target_cxx}" '-###' hello.cpp ;;
         esac
-        x "${target_cxx}" -o cpp.out hello.cpp
-        bin="$(pwd)"/cpp.out
-        case "${RUST_TARGET}" in
-            arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
-            *) cp "${bin}" "${out_dir}" ;;
-        esac
-        if [[ -n "${runner}" ]]; then
+        if [[ -z "${no_cc_bin}" ]]; then
+            x "${target_cxx}" -o cpp.out hello.cpp
+            bin="$(pwd)"/cpp.out
             case "${RUST_TARGET}" in
-                armv5te-unknown-linux-uclibceabi | armv7-unknown-linux-uclibceabihf)
-                    # TODO(clang,uclibc): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
-                    if [[ "${cc}" != "clang" ]]; then
-                        [[ ! -x "${bin}" ]] || x "${runner}" "${bin}" | grep -E "^Hello C\+\+!"
-                    fi
-                    ;;
-                *)
-                    [[ ! -x "${bin}" ]] || x "${runner}" "${bin}" | grep -E "^Hello C\+\+!"
-                    ;;
+                arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
+                *) cp "${bin}" "${out_dir}" ;;
             esac
+            if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
+                x "${runner}" "${bin}" | grep -E "^Hello C\+\+!"
+            fi
         fi
     fi
     popd >/dev/null
@@ -429,8 +440,9 @@ EOF
         *-redox* | *-windows-*) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" ;;
         *) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}" ;;
     esac
+    bin="$(pwd)/target/${RUST_TARGET}/debug/rust${rust_bin_separator}test${exe}"
     if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
-        x "${runner}" "$(pwd)/target/${RUST_TARGET}"/debug/rust*test"${exe}" | tee run.log
+        x "${runner}" "${bin}" | tee run.log
         if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
             bail
         fi
@@ -920,22 +932,10 @@ case "${RUST_TARGET}" in
                     arm*) ldso_arch=arm ;;
                     hexagon-*) ldso_arch=hexagon ;;
                     i*86-*) ldso_arch=i386 ;;
-                    mips-*)
-                        # TODO(clang,mips-musl-sf):
-                        case "${cc}" in
-                            clang) ldso_arch=mips ;;
-                            *) ldso_arch=mips-sf ;;
-                        esac
-                        ;;
+                    mips-*) ldso_arch=mips-sf ;;
                     mips64-*) ldso_arch=mips64 ;;
                     mips64el-*) ldso_arch=mips64el ;;
-                    mipsel-*)
-                        # TODO(clang,mips-musl-sf):
-                        case "${cc}" in
-                            clang) ldso_arch=mipsel ;;
-                            *) ldso_arch=mipsel-sf ;;
-                        esac
-                        ;;
+                    mipsel-*) ldso_arch=mipsel-sf ;;
                     powerpc-*) ldso_arch=powerpc ;;
                     powerpc64-*) ldso_arch=powerpc64 ;;
                     powerpc64le-*) ldso_arch=powerpc64le ;;
@@ -947,20 +947,7 @@ case "${RUST_TARGET}" in
                 esac
                 file_info_pat+=("interpreter /lib/ld-musl-${ldso_arch}\\.so\\.1")
                 ;;
-            *-linux-uclibc*)
-                case "${cc}" in
-                    clang)
-                        # TODO(clang,uclibc): should be /lib/ld-uClibc.so.0
-                        case "${RUST_TARGET}" in
-                            armv5te-*) file_info_pat+=('interpreter /lib/ld-linux\.so\.3') ;;
-                            armv7-*) file_info_pat+=('interpreter /lib/ld-linux-armhf\.so\.3') ;;
-                            mips-* | mipsel-*) file_info_pat+=('interpreter /lib/ld\.so\.1') ;;
-                            *) bail "unrecognized target '${RUST_TARGET}'" ;;
-                        esac
-                        ;;
-                    *) file_info_pat+=('interpreter /lib/ld-uClibc\.so\.0') ;;
-                esac
-                ;;
+            *-linux-uclibc*) file_info_pat+=('interpreter /lib/ld-uClibc\.so\.0') ;;
             *-android*)
                 case "${RUST_TARGET}" in
                     aarch64-* | x86_64-*) file_info_pat+=('interpreter /system/bin/linker64') ;;
@@ -983,9 +970,9 @@ case "${RUST_TARGET}" in
                 for bin in "${out_dir}"/*; do
                     if [[ -x "${bin}" ]]; then
                         assert_file_info "for NetBSD ${NETBSD_VERSION}\\.[0-9]+" "${bin}"
-                        # /usr/libexec/ld.elf_so is symbolic link to /libexec/ld.elf_so.
+                        # TODO(clang,netbsd): /usr/libexec/ld.elf_so is symbolic link to /libexec/ld.elf_so.
                         case "${cc}" in
-                            clang) assert_file_info 'interpreter /libexec/ld\.elf_so' "${bin}" ;;
+                            clang) assert_file_info 'interpreter (/usr)?/libexec/ld\.elf_so' "${bin}" ;;
                             *) assert_file_info 'interpreter /usr/libexec/ld\.elf_so' "${bin}" ;;
                         esac
                         case "${RUST_TARGET}" in

@@ -1,6 +1,5 @@
 #!/bin/false
-# not executable
-# shellcheck shell=bash
+# shellcheck shell=bash # not executable
 # shellcheck disable=SC2034
 
 # Linux (GNU)

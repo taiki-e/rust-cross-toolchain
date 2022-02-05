@@ -102,9 +102,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| uClibc-ng 1.0.34 | 10.2.0 | host [1] | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-
-[1] It is not recommended to use clang for these targets at this time due to some bugs.
+| uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
 
 ([Dockerfile](docker/linux-uclibc.Dockerfile))
 

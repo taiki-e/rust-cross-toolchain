@@ -1,12 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 IFS=$'\n\t'
+cd "$(dirname "$0")"/..
 
 # USAGE:
 #    ./tools/build-docker.sh [TARGET]...
 #    ./tools/build-docker.sh target-list
-
-cd "$(cd "$(dirname "$0")" && pwd)"/..
 
 x() {
     local cmd="$1"

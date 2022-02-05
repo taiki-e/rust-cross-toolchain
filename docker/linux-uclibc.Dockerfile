@@ -61,16 +61,6 @@ EOF
 COPY /base/common.sh /
 RUN /common.sh
 
-# TODO(clang,uclibc): needed for clang
-RUN <<EOF
-cd "${SYSROOT_DIR}/lib"
-case "${RUST_TARGET}" in
-    armv5te-*) ln -s ld-uClibc.so.0 ld-linux.so.3 ;;
-    armv7-*hf) ln -s ld-uClibc.so.0 ld-linux-armhf.so.3 ;;
-    mips-* | mipsel-*) ln -s ld-uClibc.so.0 ld.so.1 ;;
-esac
-EOF
-
 COPY /clang-cross.sh /
 ARG GCC_VERSION
 RUN CC_TARGET="$(</CC_TARGET)" \

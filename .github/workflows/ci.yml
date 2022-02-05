@@ -58,7 +58,6 @@ jobs:
           buildkitd-flags: --debug
           driver-opts: |
             env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
-            image=moby/buildkit:latest
             network=host
       - run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
@@ -102,7 +101,7 @@ jobs:
         if: always()
       - run: clang-format -i $(git ls-files '*.cpp')
         if: always()
-      - run: git diff --exit-code
+      - run: git add -N . && git diff --exit-code
         if: always()
       - run: shellcheck $(git ls-files '*.sh')
         if: always()
