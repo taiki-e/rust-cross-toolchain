@@ -25,7 +25,7 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
     if [[ -e "${bin_dir}" ]]; then
         set +x
         for path in "${bin_dir}"/*; do
-            if file "${path}" | grep -E 'not stripped' >/dev/null; then
+            if file "${path}" | grep -Eq 'not stripped'; then
                 strip "${path}"
             fi
         done
@@ -34,7 +34,7 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
         case "${RUST_TARGET}" in
             hexagon-unknown-linux-musl) ;;
             *-linux-musl*)
-                if file "${toolchain_dir}/bin"/* | grep -E 'dynamically linked' >/dev/null; then
+                if file "${toolchain_dir}/bin"/* | grep -Eq 'dynamically linked'; then
                     echo >&2 "binaries must be statically linked"
                     exit 1
                 fi

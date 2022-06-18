@@ -54,6 +54,7 @@ linux_musl_targets=(
     i586-unknown-linux-musl
     i686-unknown-linux-musl
     mips-unknown-linux-musl
+    # mips64-openwrt-linux-musl # tier3, https://github.com/rust-lang/rust/pull/92300
     mips64-unknown-linux-muslabi64
     mips64el-unknown-linux-muslabi64
     mipsel-unknown-linux-musl
@@ -70,6 +71,7 @@ linux_musl_targets=(
 # rustc --print target-list | grep -e '-linux-uclibc'
 linux_uclibc_targets=(
     armv5te-unknown-linux-uclibceabi # tier3
+    # armv7-unknown-linux-uclibceabi   # tier3, As of 2022-06-13, bootlin doesn't seem to provide toolchain for this target
     armv7-unknown-linux-uclibceabihf # tier3
     mips-unknown-linux-uclibc        # tier3
     mipsel-unknown-linux-uclibc      # tier3
@@ -305,6 +307,7 @@ cuda_targets=(
 # rustc --print target-list | grep -e '-none'
 no_std_targets=(
     aarch64-unknown-none
+    # aarch64-unknown-none-hermitkernel # tier3
     aarch64-unknown-none-softfloat
     armebv7r-none-eabi
     armebv7r-none-eabihf
@@ -317,6 +320,7 @@ no_std_targets=(
     # mipsel-unknown-none # tier3
     # msp430-none-elf     # tier3
     riscv32i-unknown-none-elf
+    # riscv32im-unknown-none-elf # tier3, https://github.com/rust-lang/rust/pull/93749
     riscv32imac-unknown-none-elf
     riscv32imc-unknown-none-elf
     riscv64gc-unknown-none-elf

@@ -12,7 +12,7 @@ fn main() {
         }
     };
 
-    // NOTE: `starts_with("thumb")` is not enough because arch such as thumbv7neon-, thumbv7a- means armv7a.
+    // Note: `starts_with("thumb")` is not enough because arch such as thumbv7neon-, thumbv7a- means armv7a.
     if target.starts_with("thumbv6m")
         || target.starts_with("thumbv7em")
         || target.starts_with("thumbv7m")

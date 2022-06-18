@@ -69,7 +69,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| musl 1.1.24 [1] [2] / 1.2.2 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (any libc) |
+| musl 1.1.24 [1] [2] / 1.2.3 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (any libc) |
 
 [1] Default (see [libc#1848] for details)<br>
 [2] With a patch that fixes CVE-2020-28928<br>
@@ -134,7 +134,7 @@
 | `thumbv7neon-linux-androideabi` | 14 (default), 21 |
 | `x86_64-linux-android` | 21 |
 
-[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1d01550f7ea9fce1cf625128fefc73b9da3c1508/src/bootstrap/cc_detect.rs#L174) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
+[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1.61.0/src/bootstrap/cc_detect.rs#L174) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
 
 ### FreeBSD
 
@@ -260,10 +260,10 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| wasi-sdk 14 (wasi-libc ad51334) | N/A | 13.0.0 | ? (libc++) | ✓ (wasmtime) | x86_64 linux (glibc 2.27+) |
+| wasi-sdk 16 (wasi-libc 30094b6) | N/A | 13.0.0 | ? (libc++) | ✓ (wasmtime) | x86_64 linux (glibc 2.31+) |
 
 <!--
-wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-14/src
+wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-16/src
 -->
 
 ([Dockerfile](docker/wasi.Dockerfile))

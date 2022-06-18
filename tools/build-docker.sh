@@ -170,7 +170,7 @@ for target in "${targets[@]}"; do
                     ;;
             esac
             case "${arch}" in
-                # NOTE: gcc-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
+                # Note: gcc-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
                 x86_64)
                     case "${target}" in
                         # g++-mipsisa(32|64)r6(el)-linux-gnu(abi64) is not available in ubuntu 18.04.
@@ -200,11 +200,11 @@ for target in "${targets[@]}"; do
                 # When updating this, the reminder to update docker/base/build-docker.sh.
                 musl_versions=("1.1" "1.2")
             fi
-            default_musl_version=1.1
+            default_musl_version="1.1"
             for musl_version in "${musl_versions[@]}"; do
                 case "${target}" in
                     hexagon-*)
-                        default_musl_version=1.2
+                        default_musl_version="1.2"
                         if [[ "${musl_version}" != "${default_musl_version}" ]]; then
                             continue
                         fi
@@ -219,14 +219,14 @@ for target in "${targets[@]}"; do
             ;;
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
         *-android*)
-            # https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
+            # https://github.com/rust-lang/rust/blob/1.61.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
             case "${target}" in
                 aarch64-* | x86_64-*)
-                    default_ndk_version=21
+                    default_ndk_version="21"
                     ndk_versions=("21")
                     ;;
                 arm* | thumb* | i686-*)
-                    default_ndk_version=14
+                    default_ndk_version="14"
                     ndk_versions=("14" "21")
                     ;;
                 *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -265,14 +265,14 @@ for target in "${targets[@]}"; do
                 # Supported releases: https://www.freebsd.org/security/#sup
                 # FreeBSD 11 was EoL on 2021-9-30.
                 # https://www.freebsd.org/security/unsupported
-                # TODO: update 12.2 to 12.3 on 2022-4: 12.2 will be EoL on 2022-3-31
-                freebsd_versions=("12.2" "13.0")
+                # TODO: update 13.0 to 13.1 on 2022-9: 13.0 will be EoL on 2022-8-31
+                freebsd_versions=("12.3" "13.0")
             fi
-            default_freebsd_version=12
+            default_freebsd_version="12"
             for freebsd_version in "${freebsd_versions[@]}"; do
                 case "${target}" in
                     powerpc-* | powerpc64-* | powerpc64le-* | riscv64gc-*)
-                        default_freebsd_version=13
+                        default_freebsd_version="13"
                         if [[ "${freebsd_version}" == "12"* ]]; then
                             continue
                         fi
@@ -297,11 +297,11 @@ for target in "${targets[@]}"; do
                 # https://www.netbsd.org/releases/formal.html
                 netbsd_versions=("8" "9")
             fi
-            default_netbsd_version=8
+            default_netbsd_version="8"
             for netbsd_version in "${netbsd_versions[@]}"; do
                 case "${target}" in
                     aarch64-*)
-                        default_netbsd_version=9
+                        default_netbsd_version="9"
                         if [[ "${netbsd_version}" == "8"* ]]; then
                             continue
                         fi
@@ -322,26 +322,33 @@ for target in "${targets[@]}"; do
                     esac
                     ;;
             esac
-            # OpenBSD does not have binary compatibility with previous releases.
-            # For now, we select the oldest supported version as default version.
-            # However, we don't support OpenBSD 6.9, because there is no
-            # libexecinfo.* in binary distribution sets.
-            # https://github.com/rust-lang/libc/issues/570
-            # https://github.com/golang/go/issues/15227
-            # https://github.com/golang/go/wiki/OpenBSD
-            # https://github.com/golang/go/wiki/MinimumRequirements#openbsd
-            # The latest two releases are supported.
-            # https://www.openbsd.org/faq/faq5.html#Flavors
-            # https://en.wikipedia.org/wiki/OpenBSD#Releases
-            openbsd_version="${OPENBSD_VERSION:-"7.0"}"
+            if [[ -n "${OPENBSD_VERSION:-}" ]]; then
+                openbsd_versions=("${OPENBSD_VERSION}")
+            else
+                # OpenBSD does not have binary compatibility with previous releases.
+                # For now, we select the oldest supported version as default version.
+                # However, we don't support OpenBSD 6.9, because there is no
+                # libexecinfo.* in binary distribution sets.
+                # https://github.com/rust-lang/libc/issues/570
+                # https://github.com/golang/go/issues/15227
+                # https://github.com/golang/go/wiki/OpenBSD
+                # https://github.com/golang/go/wiki/MinimumRequirements#openbsd
+                # The latest two releases are supported.
+                # https://www.openbsd.org/faq/faq5.html#Flavors
+                # https://en.wikipedia.org/wiki/OpenBSD#Releases
+                openbsd_versions=("7.0" "7.1")
+            fi
             default_openbsd_version="7.0"
-            build "openbsd" "${target}" "${openbsd_version}" "${default_openbsd_version}" \
-                --build-arg "OPENBSD_VERSION=${openbsd_version}"
+            for openbsd_version in "${openbsd_versions[@]}"; do
+                build "openbsd" "${target}" "${openbsd_version}" "${default_openbsd_version}" \
+                    --build-arg "OPENBSD_VERSION=${openbsd_version}"
+            done
+
             ;;
         *-dragonfly*)
             # https://mirror-master.dragonflybsd.org/iso-images
             dragonfly_version="${DRAGONFLY_VERSION:-"6.0.1"}"
-            default_dragonfly_version=6
+            default_dragonfly_version="6"
             build "dragonfly" "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}" \
                 --build-arg "DRAGONFLY_VERSION=${dragonfly_version}"
             ;;

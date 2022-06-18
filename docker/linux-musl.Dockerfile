@@ -3,7 +3,7 @@
 # Refs:
 # - https://github.com/richfelker/musl-cross-make
 # - https://musl.cc
-# - https://github.com/rust-lang/rust/blob/55ccbd090d96ec3bb28dbcb383e65bbfa3c293ff/src/ci/docker/scripts/musl-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.57.0/src/ci/docker/scripts/musl-toolchain.sh
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04

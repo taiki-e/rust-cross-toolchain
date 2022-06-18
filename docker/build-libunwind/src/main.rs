@@ -1,4 +1,4 @@
-// Adapted from https://github.com/rust-lang/rust/blob/ed08a67566d7d1d9dd2ad928ff21c23e841a4345/src/bootstrap/native.rs#L964-L1113
+// Adapted from https://github.com/rust-lang/rust/blob/1.58.1/src/bootstrap/native.rs#L964-L1113
 
 use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 
@@ -160,7 +160,7 @@ fn main() -> Result<()> {
 
     cpp_cfg.compile("unwind-cpp");
 
-    // FIXME: https://github.com/alexcrichton/cc-rs/issues/545#issuecomment-679242845
+    // FIXME: https://github.com/rust-lang/cc-rs/issues/545#issuecomment-679242845
     let mut count = 0;
     for entry in fs::read_dir(&out_dir)? {
         let file = fs::canonicalize(entry?.path())?;

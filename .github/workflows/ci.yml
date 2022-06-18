@@ -9,7 +9,7 @@ on:
   push:
     branches:
       - main
-      # - dev
+      - dev
     tags:
       - '[0-9]+-[0-9]+-[0-9]+'
   schedule:
@@ -22,31 +22,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: linux-gnu
-          - target: linux-gnu
-            host: aarch64
-          - target: linux-musl
-            musl: '1.1'
-          - target: linux-musl
-            musl: '1.2'
+          # - target: linux-gnu
+          # - target: linux-gnu
+          #   host: aarch64
+          # - target: linux-musl
+          #   musl: '1.1'
+          # - target: linux-musl
+          #   musl: '1.2'
           - target: linux-uclibc
-          - target: android
-          - target: freebsd
-          - target: netbsd
-          - target: openbsd
-          - target: dragonfly
-          - target: solaris
-          - target: illumos
-          - target: redox
-          # - target: fuchsia
-          - target: wasi
-          - target: emscripten
-          - target: windows-gnu
-          - target: windows-gnu
-            host: aarch64
-          - target: none
-          - target: none
-            host: aarch64
+          # - target: android
+          # - target: freebsd
+          # - target: netbsd
+          # - target: openbsd
+          # - target: dragonfly
+          # - target: solaris
+          # - target: illumos
+          # - target: redox
+          # # - target: fuchsia
+          # - target: wasi
+          # - target: emscripten
+          # - target: windows-gnu
+          # - target: windows-gnu
+          #   host: aarch64
+          # - target: none
+          # - target: none
+          #   host: aarch64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
