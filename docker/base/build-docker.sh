@@ -99,7 +99,7 @@ case "${target}" in
             musl_versions=("${MUSL_VERSION}")
         else
             # See tools/build-docker.sh for more.
-            musl_versions=("1.1.24" "1.2.2")
+            musl_versions=("1.1.24" "1.2.3")
         fi
         for musl_version in "${musl_versions[@]}"; do
             build "linux-musl" "${target}" "${musl_version%.*}" \

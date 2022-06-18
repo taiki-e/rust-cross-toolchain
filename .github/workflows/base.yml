@@ -7,9 +7,9 @@ permissions:
 on:
   # pull_request:
   push:
-    # branches:
+    branches:
     #   - main
-    #   - dev
+      - dev
     tags:
       - 'base-[0-9]+-[0-9]+-[0-9]+'
   schedule:

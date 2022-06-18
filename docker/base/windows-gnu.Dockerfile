@@ -9,6 +9,7 @@ RUN <<EOF
 sed -i 's/# deb-src/deb-src/g' /etc/apt/sources.list
 apt-get -o Acquire::Retries=10 update -qq
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+    autoconf \
     dpkg-dev
 EOF
 
@@ -26,7 +27,7 @@ apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends -
     | grep 'mingw')
 EOF
 COPY /windows-gnu* /
-# Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/mingw.sh
+# Adapted from https://github.com/cross-rs/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/mingw.sh
 # Ubuntu mingw packages for i686 uses sjlj exceptions, but rust target
 # i686-pc-windows-gnu uses dwarf exceptions. So we build mingw packages
 # that are compatible with rust.
