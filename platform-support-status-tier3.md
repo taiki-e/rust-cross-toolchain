@@ -9,7 +9,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 
 - [ ] aarch64-apple-ios-macabi
 - [ ] aarch64-apple-tvos
-- [x] aarch64-apple-watchos-sim
+- [ ] aarch64-apple-watchos-sim
 - [ ] aarch64-kmc-solid_asp3
 - [ ] aarch64-nintendo-switch-freestanding
 - [ ] aarch64-pc-windows-gnullvm
@@ -24,7 +24,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-wrs-vxworks
 - [x] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
-- [x] arm64_32-apple-watchos
+- [ ] arm64_32-apple-watchos
 - [ ] armeb-unknown-linux-gnueabi
 - [ ] armv4t-none-eabi
 - [ ] armv4t-unknown-linux-gnueabi
@@ -42,7 +42,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv7a-kmc-solid_asp3-eabi
 - [ ] armv7a-kmc-solid_asp3-eabihf
 - [x] armv7a-none-eabihf
-- [x] armv7k-apple-watchos
+- [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
 - [ ] avr-unknown-gnu-atmega328
 - [ ] bpfeb-unknown-none
@@ -75,7 +75,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] powerpc-unknown-openbsd
 - [ ] powerpc-wrs-vxworks
 - [ ] powerpc-wrs-vxworks-spe
-- [x] powerpc64-ibm-aix
+- [ ] powerpc64-ibm-aix
 - [x] powerpc64-unknown-freebsd
 - [ ] powerpc64-unknown-linux-musl
 - [x] powerpc64-unknown-openbsd
@@ -102,7 +102,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos
-- [x] x86_64-apple-watchos-sim
+- [ ] x86_64-apple-watchos-sim
 - [ ] x86_64-pc-nto-qnx710
 - [ ] x86_64-pc-windows-gnullvm
 - [x] x86_64-unknown-dragonfly

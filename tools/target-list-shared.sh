@@ -118,10 +118,10 @@ tvos_targets=(
 # watchOS
 # rustc --print target-list | grep -e '-watchos'
 watchos_targets=(
-    aarch64-apple-watchos-sim # tier3
-    arm64_32-apple-watchos    # tier3
-    armv7k-apple-watchos      # tier3
-    x86_64-apple-watchos-sim  # tier3
+    # aarch64-apple-watchos-sim # tier3
+    # arm64_32-apple-watchos    # tier3
+    # armv7k-apple-watchos      # tier3
+    # x86_64-apple-watchos-sim  # tier3
 )
 # FreeBSD
 # rustup target list | grep -e '-freebsd'
@@ -227,7 +227,7 @@ wasm_targets=(
 # AIX
 # rustc --print target-list | grep -e '-aix'
 aix_targets=(
-    powerpc64-ibm-aix # tier3
+    # powerpc64-ibm-aix # tier3
 )
 # CUDA
 # rustup target list | grep -e '-cuda'
