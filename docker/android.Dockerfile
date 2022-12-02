@@ -4,8 +4,8 @@
 # - https://developer.android.com/ndk
 # - https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md
 # - https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
-# - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-android/Dockerfile
-# - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/scripts/android-ndk.sh
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/host-x86_64/dist-android/Dockerfile
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/android-ndk.sh
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04
@@ -102,10 +102,10 @@ FROM test-base as test-relocated
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-ARG NETBSD_VERSION
+ARG NDK_VERSION
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh gcc
-# TODO(arm-linux-androideabi):　 By default, arm-linux-androideabi-clang targets armv7a.
+# TODO(arm-linux-androideabi): By default, arm-linux-androideabi-clang targets armv7a.
 RUN <<EOF
 case "${RUST_TARGET}" in
     arm-*) ;;
@@ -118,12 +118,12 @@ FROM test-base as test
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-ARG NETBSD_VERSION
+ARG NDK_VERSION
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
 RUN /test/test.sh gcc
-# TODO(arm-linux-androideabi):　 By default, arm-linux-androideabi-clang targets armv7a.
+# TODO(arm-linux-androideabi): By default, arm-linux-androideabi-clang targets armv7a.
 RUN <<EOF
 case "${RUST_TARGET}" in
     arm-*) ;;

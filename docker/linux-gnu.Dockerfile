@@ -118,7 +118,7 @@ FROM test-base as test-relocated
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-# NOTE: currently works only on this location
+# Note: currently works only on this location
 COPY --from=builder /"${RUST_TARGET}"/. /usr/
 RUN /test/test.sh gcc
 # TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'

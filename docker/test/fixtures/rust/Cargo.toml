@@ -10,4 +10,5 @@ cpp = []
 
 [build-dependencies]
 cc = "1"
-cmake = "0.1"
+# TODO: 0.1.49 fails for android
+cmake = "=0.1.48"

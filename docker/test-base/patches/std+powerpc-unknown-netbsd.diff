@@ -1,0 +1,13 @@
+diff --git a/src/sys/unix/thread_parker/mod.rs b/src/sys/unix/thread_parker/mod.rs
+index 35f1e68..9c2007b 100644
+--- a/src/sys/unix/thread_parker/mod.rs
++++ b/src/sys/unix/thread_parker/mod.rs
+@@ -22,7 +22,7 @@
+     ))] {
+         mod darwin;
+         pub use darwin::Parker;
+-    } else if #[cfg(target_os = "netbsd")] {
++    } else if #[cfg(all(target_os = "netbsd", target_pointer_width = "64"))] {
+         mod netbsd;
+         pub use netbsd::Parker;
+     } else {

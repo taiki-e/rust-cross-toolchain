@@ -3,7 +3,6 @@
 #![warn(rust_2018_idioms, unsafe_op_in_unsafe_fn)]
 
 use core::fmt::Write;
-use core::panic::PanicInfo;
 use cortex_m::asm;
 use cortex_m_rt::entry;
 use cortex_m_semihosting as semihosting;
@@ -33,7 +32,7 @@ fn main() -> ! {
 
 #[inline(never)]
 #[panic_handler]
-fn panic(_info: &PanicInfo<'_>) -> ! {
+fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
     // atomic::compiler_fence is no longer needed: https://github.com/korken89/panic-halt/issues/3
     loop {}
 }

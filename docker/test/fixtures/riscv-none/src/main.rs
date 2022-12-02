@@ -2,7 +2,6 @@
 #![no_std]
 #![warn(rust_2018_idioms, unsafe_op_in_unsafe_fn)]
 
-use core::panic::PanicInfo;
 use riscv_rt::entry;
 
 #[cfg(feature = "c")]
@@ -24,7 +23,7 @@ fn main() -> ! {
 
 #[inline(never)]
 #[panic_handler]
-fn panic(_info: &PanicInfo<'_>) -> ! {
+fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
     // atomic::compiler_fence is no longer needed: https://github.com/korken89/panic-halt/issues/3
     loop {}
 }

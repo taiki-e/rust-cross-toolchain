@@ -2,10 +2,12 @@
 
 # Refs:
 # - https://www.uclibc-ng.org
-# - https://github.com/rust-lang/rust/blob/3d71e749a244890cd370d49963e747cf92f4a037/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabihf.md
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabihf.md
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabi.md
 
 ARG UBUNTU_VERSION=18.04
 
+# TODO: update to 2021.11-1
 # https://toolchains.bootlin.com/releases_armv7-eabihf.html
 # GCC 10.2.0, GDB 9.2, Linux headers 5.4.61, uClibc 1.0.34, binutils 2.34
 ARG TOOLCHAIN_VERSION=2020.08-1
@@ -20,6 +22,7 @@ RUN <<EOF
 case "${RUST_TARGET}" in
     armv5te-*) arch=armv5-eabi ;;
     armv7-*hf) arch=armv7-eabihf ;;
+    armv7-*) arch=armv7-eabi ;;
     mips-*) arch=mips32 ;;
     mipsel-*) arch=mips32el ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -40,6 +43,7 @@ RUN <<EOF
 case "${RUST_TARGET}" in
     armv5te-*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
     armv7-*hf) cc_target=arm-buildroot-linux-uclibcgnueabihf ;;
+    armv7-*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
     mips-*) cc_target=mips-buildroot-linux-uclibc ;;
     mipsel-*) cc_target=mipsel-buildroot-linux-uclibc ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;

@@ -1,4 +1,4 @@
-// Adapted from https://github.com/rust-lang/rust/blob/ed08a67566d7d1d9dd2ad928ff21c23e841a4345/src/bootstrap/native.rs#L964-L1113
+// Adapted from https://github.com/rust-lang/rust/blame/1.65.0/src/bootstrap/native.rs#L1257-L1410
 
 use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 
@@ -31,12 +31,13 @@ fn main() -> Result<()> {
         }
     }
     let target = &target.unwrap_or_else(usage);
-    let target_lower = &target.replace('.', "_").replace('-', "_");
+    let target_lower = &target.replace(['-', '.'], "_");
     let out_dir = &out_dir.unwrap_or_else(usage);
+    let rustc = &env::var_os("RUSTC").unwrap_or_else(|| "rustc".into());
     let host = &match host {
         Some(host) => host,
         None => {
-            let output = Command::new("rustc").arg("-Vv").output()?;
+            let output = Command::new(rustc).arg("-Vv").output()?;
             assert!(output.status.success());
             String::from_utf8(output.stdout)?
                 .lines()
@@ -48,20 +49,17 @@ fn main() -> Result<()> {
     let sysroot = &match sysroot {
         Some(sysroot) => PathBuf::from(sysroot),
         None => {
-            let output = Command::new("rustc")
-                .arg("--print")
-                .arg("sysroot")
-                .output()?;
+            let output = Command::new(rustc).arg("--print").arg("sysroot").output()?;
             assert!(output.status.success());
             String::from_utf8(output.stdout)?.trim_end().into()
         }
     };
     let root = &sysroot.join("lib/rustlib/src/rust/src/llvm-project/libunwind");
 
-    let target_cc = env::var_os(&format!("CC_{target_lower}")).unwrap();
-    let target_cxx = env::var_os(&format!("CXX_{target_lower}"));
-    let target_ar = env::var_os(&format!("AR_{target_lower}"));
-    fs::create_dir_all(&out_dir)?;
+    let target_cc = env::var_os(format!("CC_{target_lower}")).unwrap();
+    let target_cxx = env::var_os(format!("CXX_{target_lower}"));
+    let target_ar = env::var_os(format!("AR_{target_lower}"));
+    fs::create_dir_all(out_dir)?;
 
     let mut cc_cfg = cc::Build::new();
     let mut cpp_cfg = cc::Build::new();
@@ -89,7 +87,7 @@ fn main() -> Result<()> {
         cfg.define("_LIBUNWIND_DISABLE_VISIBILITY_ANNOTATIONS", None);
         cfg.include(root.join("include"));
         cfg.cargo_metadata(false);
-        cfg.out_dir(&out_dir);
+        cfg.out_dir(out_dir);
 
         if target.contains("x86_64-fortanix-unknown-sgx") {
             cfg.static_flag(true);
@@ -106,6 +104,10 @@ fn main() -> Result<()> {
             cfg.define("_LIBUNWIND_IS_BAREMETAL", None);
             cfg.define("__LIBUNWIND_IS_NATIVE_ONLY", None);
             cfg.define("NDEBUG", None);
+        }
+        if target.contains("windows") {
+            cfg.define("_LIBUNWIND_HIDE_SYMBOLS", "1");
+            cfg.define("_LIBUNWIND_IS_NATIVE_ONLY", "1");
         }
     }
 
@@ -160,9 +162,9 @@ fn main() -> Result<()> {
 
     cpp_cfg.compile("unwind-cpp");
 
-    // FIXME: https://github.com/alexcrichton/cc-rs/issues/545#issuecomment-679242845
+    // FIXME: https://github.com/rust-lang/cc-rs/issues/545#issuecomment-679242845
     let mut count = 0;
-    for entry in fs::read_dir(&out_dir)? {
+    for entry in fs::read_dir(out_dir)? {
         let file = fs::canonicalize(entry?.path())?;
         if file.is_file() && file.extension() == Some(OsStr::new("o")) {
             // file name starts with "Unwind-EHABI", "Unwind-seh" or "libunwind"

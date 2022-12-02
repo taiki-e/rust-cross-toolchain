@@ -132,13 +132,14 @@ for target in "${targets[@]}"; do
             if [[ -n "${MUSL_VERSION:-}" ]]; then
                 musl_versions=("${MUSL_VERSION}")
             else
+                # See tools/build-docker.sh for more.
                 musl_versions=("1.1" "1.2")
             fi
-            default_musl_version=1.1
+            default_musl_version="1.1"
             for musl_version in "${musl_versions[@]}"; do
                 case "${target}" in
                     hexagon-*)
-                        default_musl_version=1.2
+                        default_musl_version="1.2"
                         if [[ "${musl_version}" != "${default_musl_version}" ]]; then
                             continue
                         fi
@@ -152,14 +153,14 @@ for target in "${targets[@]}"; do
             ;;
         *-linux-uclibc*) docker_manifest "${target}" ;;
         *-android*)
-            # https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
+            # See tools/build-docker.sh for more.
             case "${target}" in
                 aarch64-* | x86_64-*)
-                    default_ndk_version=21
+                    default_ndk_version="21"
                     ndk_versions=("21")
                     ;;
                 arm* | thumb* | i686-*)
-                    default_ndk_version=14
+                    default_ndk_version="14"
                     ndk_versions=("14" "21")
                     ;;
                 *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -183,13 +184,14 @@ for target in "${targets[@]}"; do
             if [[ -n "${FREEBSD_VERSION:-}" ]]; then
                 freebsd_versions=("${FREEBSD_VERSION}")
             else
-                freebsd_versions=("12.2" "13.0")
+                # See tools/build-docker.sh for more.
+                freebsd_versions=("12.3" "13.1")
             fi
-            default_freebsd_version=12
+            default_freebsd_version="12"
             for freebsd_version in "${freebsd_versions[@]}"; do
                 case "${target}" in
                     powerpc-* | powerpc64-* | powerpc64le-* | riscv64gc-*)
-                        default_freebsd_version=13
+                        default_freebsd_version="13"
                         if [[ "${freebsd_version}" == "12"* ]]; then
                             continue
                         fi
@@ -202,13 +204,14 @@ for target in "${targets[@]}"; do
             if [[ -n "${NETBSD_VERSION:-}" ]]; then
                 netbsd_versions=("${NETBSD_VERSION}")
             else
+                # See tools/build-docker.sh for more.
                 netbsd_versions=("8" "9")
             fi
-            default_netbsd_version=8
+            default_netbsd_version="8"
             for netbsd_version in "${netbsd_versions[@]}"; do
                 case "${target}" in
                     aarch64-*)
-                        default_netbsd_version=9
+                        default_netbsd_version="9"
                         if [[ "${netbsd_version}" == "8"* ]]; then
                             continue
                         fi
@@ -224,14 +227,21 @@ for target in "${targets[@]}"; do
                     arches=(amd64)
                     ;;
             esac
-            openbsd_version="${OPENBSD_VERSION:-"7.0"}"
-            default_openbsd_version="7.0"
-            docker_manifest "${target}" "${openbsd_version}" "${default_openbsd_version}"
+            if [[ -n "${OPENBSD_VERSION:-}" ]]; then
+                openbsd_versions=("${OPENBSD_VERSION}")
+            else
+                # See tools/build-docker.sh for more.
+                openbsd_versions=("7.1" "7.2")
+            fi
+            default_openbsd_version="7.1"
+            for openbsd_version in "${openbsd_versions[@]}"; do
+                docker_manifest "${target}" "${openbsd_version}" "${default_openbsd_version}"
+            done
             ;;
         *-dragonfly*)
-            # https://mirror-master.dragonflybsd.org/iso-images
-            dragonfly_version="${DRAGONFLY_VERSION:-"6.0.1"}"
-            default_dragonfly_version=6
+            # See tools/build-docker.sh for more.
+            dragonfly_version="${DRAGONFLY_VERSION:-"6.2.2"}"
+            default_dragonfly_version="6"
             docker_manifest "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}"
             ;;
         *-solaris*) docker_manifest "${target}" ;;

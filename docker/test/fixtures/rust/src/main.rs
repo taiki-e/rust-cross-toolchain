@@ -18,7 +18,7 @@ fn main() {
         let output = hello_cmake(input);
         assert_eq!(output, 8);
         println!("Hello Cmake from Rust!");
-        println!("{} * 2 = {}", input, output);
+        println!("{input} * 2 = {output}");
     }
 }
 

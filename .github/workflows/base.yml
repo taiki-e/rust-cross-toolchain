@@ -63,7 +63,7 @@ jobs:
           - target: x86_64-unknown-illumos
 
           # Windows (GNU)
-          - target: i686-pc-windows-gnu
+          # - target: i686-pc-windows-gnu # TODO
           - target: x86_64-pc-windows-gnu
           - target: x86_64-pc-windows-gnu
             host: aarch64

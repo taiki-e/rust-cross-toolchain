@@ -15,7 +15,7 @@ common_flags_last=""
 case "${RUST_TARGET}" in
     # The --target option is last because the cross-build of LLVM uses
     # --target without an OS version.
-    # https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/scripts/freebsd-toolchain.sh#L70-L75
+    # https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/freebsd-toolchain.sh#L70-L75
     *-freebsd* | *-openbsd*) common_flags_last=" --target=${cc_target}" ;;
     *) common_flags=" --target=${cc_target}" ;;
 esac

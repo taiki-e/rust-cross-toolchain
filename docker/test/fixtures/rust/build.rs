@@ -1,10 +1,13 @@
 use std::env;
 
 fn main() {
-    let target = &*env::var("TARGET").unwrap();
+    let target = &*env::var("TARGET").expect("TARGET not set");
+    let target_os = &*env::var("CARGO_CFG_TARGET_OS").expect("CARGO_CFG_TARGET_OS not set");
+    let target_env = &*env::var("CARGO_CFG_TARGET_ENV").expect("CARGO_CFG_TARGET_ENV not set");
 
     cc::Build::new().file("hello_c.c").compile("hello_c");
-    if !target.contains("-windows-gnu") && !target.contains("-openbsd") {
+    if target_os == "openbsd" || target_os == "windows" && target_env == "gnu" {
+    } else {
         // Make sure that the link with libc works.
         println!("cargo:rustc-link-lib=c");
     }

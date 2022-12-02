@@ -60,7 +60,7 @@ RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 
 # To install the latest wine: https://wiki.winehq.org/Ubuntu
 # RUN <<EOF
 # curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
-# codename="$(grep </etc/os-release '^VERSION_CODENAME=' | sed 's/^VERSION_CODENAME=//')"
+# codename="$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')"
 # echo "deb https://dl.winehq.org/wine-builds/ubuntu/ ${codename} main" >/etc/apt/sources.list.d/winehq.list
 # EOF
 # # Use winehq-devel instead of winehq-stable (6.0.2), because mio needs wine 6.11+.

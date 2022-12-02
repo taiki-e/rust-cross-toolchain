@@ -12,6 +12,7 @@ linux_gnu_targets=(
     # aarch64_be-unknown-linux-gnu_ilp32 # tier3
     arm-unknown-linux-gnueabi
     arm-unknown-linux-gnueabihf
+    # armeb-unknown-linux-gnueabi # tier3
     # armv4t-unknown-linux-gnueabi # tier3, rustc generate code for armv5t (probably needs to pass +v4t to llvm)
     armv5te-unknown-linux-gnueabi
     armv7-unknown-linux-gnueabi
@@ -34,7 +35,7 @@ linux_gnu_targets=(
     riscv32gc-unknown-linux-gnu # tier3
     riscv64gc-unknown-linux-gnu
     s390x-unknown-linux-gnu
-    sparc-unknown-linux-gnu # tier3
+    # sparc-unknown-linux-gnu # tier3
     sparc64-unknown-linux-gnu
     thumbv7neon-unknown-linux-gnueabihf
     x86_64-unknown-linux-gnu
@@ -54,6 +55,7 @@ linux_musl_targets=(
     i586-unknown-linux-musl
     i686-unknown-linux-musl
     mips-unknown-linux-musl
+    # mips64-openwrt-linux-musl # tier3, https://github.com/rust-lang/rust/pull/92300
     mips64-unknown-linux-muslabi64
     mips64el-unknown-linux-muslabi64
     mipsel-unknown-linux-musl
@@ -70,9 +72,10 @@ linux_musl_targets=(
 # rustc --print target-list | grep -e '-linux-uclibc'
 linux_uclibc_targets=(
     armv5te-unknown-linux-uclibceabi # tier3
+    # armv7-unknown-linux-uclibceabi   # tier3, As of 2022-06-13, bootlin doesn't seem to provide toolchain for this target
     armv7-unknown-linux-uclibceabihf # tier3
-    mips-unknown-linux-uclibc        # tier3
-    mipsel-unknown-linux-uclibc      # tier3
+    # mips-unknown-linux-uclibc        # tier3, error: Undefined temporary symbol $BB6_15
+    # mipsel-unknown-linux-uclibc      # tier3, error: Undefined temporary symbol $BB6_15
 )
 # Android
 # rustup target list | grep -e '-android'
@@ -86,16 +89,16 @@ android_targets=(
     x86_64-linux-android
 )
 # macOS
-# rustup target list | grep -e '-apple-darwin'
-# rustc --print target-list | grep -e '-apple-darwin'
+# rustup target list | grep -e '-darwin'
+# rustc --print target-list | grep -e '-darwin'
 macos_targets=(
     # aarch64-apple-darwin
     # # i686-apple-darwin # tier3
     # x86_64-apple-darwin
 )
 # iOS
-# rustup target list | grep -e '-apple-ios'
-# rustc --print target-list | grep -e '-apple-ios'
+# rustup target list | grep -e '-ios'
+# rustc --print target-list | grep -e '-ios'
 ios_targets=(
     # aarch64-apple-ios
     # # aarch64-apple-ios-macabi # tier3
@@ -107,10 +110,18 @@ ios_targets=(
     # # x86_64-apple-ios-macabi # tier3
 )
 # tvOS
-# rustc --print target-list | grep -e '-apple-tvos'
+# rustc --print target-list | grep -e '-tvos'
 tvos_targets=(
     # aarch64-apple-tvos # tier3
     # x86_64-apple-tvos # tier3
+)
+# watchOS
+# rustc --print target-list | grep -e '-watchos'
+watchos_targets=(
+    aarch64-apple-watchos-sim # tier3
+    arm64_32-apple-watchos    # tier3
+    armv7k-apple-watchos      # tier3
+    x86_64-apple-watchos-sim  # tier3
 )
 # FreeBSD
 # rustup target list | grep -e '-freebsd'
@@ -141,11 +152,13 @@ netbsd_targets=(
 # OpenBSD
 # rustc --print target-list | grep -e '-openbsd'
 openbsd_targets=(
-    aarch64-unknown-openbsd # tier3
-    i686-unknown-openbsd    # tier3
-    powerpc-unknown-openbsd # tier3
-    sparc64-unknown-openbsd # tier3
-    x86_64-unknown-openbsd  # tier3
+    aarch64-unknown-openbsd   # tier3
+    i686-unknown-openbsd      # tier3
+    powerpc-unknown-openbsd   # tier3
+    powerpc64-unknown-openbsd # tier3
+    riscv64gc-unknown-openbsd # tier3
+    sparc64-unknown-openbsd   # tier3
+    x86_64-unknown-openbsd    # tier3
 )
 # DragonFly BSD
 # rustc --print target-list | grep -e '-dragonfly'
@@ -166,51 +179,30 @@ solaris_targets=(
 illumos_targets=(
     x86_64-unknown-illumos
 )
-# Haiku
-# rustc --print target-list | grep -e '-haiku'
-haiku_targets=(
-    # i686-unknown-haiku # tier3
-    # x86_64-unknown-haiku # tier3
+# Windows (MSVC)
+# rustup target list | grep -e '-windows-msvc'
+# rustc --print target-list | grep -e '-windows-msvc'
+windows_msvc_targets=(
+    # aarch64-pc-windows-msvc
+    # aarch64-uwp-windows-msvc # tier3
+    # i586-pc-windows-msvc
+    # i686-pc-windows-msvc
+    # i686-uwp-windows-msvc # tier3
+    # thumbv7a-pc-windows-msvc # tier3
+    # thumbv7a-uwp-windows-msvc # tier3
+    # x86_64-pc-windows-msvc
+    # x86_64-uwp-windows-msvc # tier3
 )
-# L4Re
-# rustc --print target-list | grep -e '-l4re'
-l4re_targets=(
-    # x86_64-unknown-l4re-uclibc # tier3
-)
-# VxWorks
-# rustc --print target-list | grep -e '-vxworks'
-vxworks_targets=(
-    # aarch64-wrs-vxworks # tier3
-    # armv7-wrs-vxworks-eabihf # tier3
-    # i686-wrs-vxworks # tier3
-    # powerpc-wrs-vxworks # tier3
-    # powerpc-wrs-vxworks-spe # tier3
-    # powerpc64-wrs-vxworks # tier3
-    # x86_64-wrs-vxworks # tier3
-)
-# ESP-IDF
-# rustc --print target-list | grep -e '-espidf'
-espidf_targets=(
-    # riscv32imc-esp-espidf # tier3
-)
-# Horizon
-# rustc --print target-list | grep -e '-nintendo'
-horizon_targets=(
-    # armv6k-nintendo-3ds # tier3
-)
-# Redox
-# rustup target list | grep -e '-redox'
-# rustc --print target-list | grep -e '-redox'
-redox_targets=(
-    # aarch64-unknown-redox # tier3
-    x86_64-unknown-redox
-)
-# Fuchsia
-# rustup target list | grep -e '-fuchsia'
-# rustc --print target-list | grep -e '-fuchsia'
-fuchsia_targets=(
-    # aarch64-fuchsia
-    # x86_64-fuchsia
+# Windows (GNU)
+# rustup target list | grep -e '-windows-gnu'
+# rustc --print target-list | grep -e '-windows-gnu'
+windows_gnu_targets=(
+    # aarch64-pc-windows-gnullvm # tier3
+    i686-pc-windows-gnu
+    # i686-uwp-windows-gnu # tier3
+    x86_64-pc-windows-gnu
+    # x86_64-pc-windows-gnullvm # tier3
+    # x86_64-uwp-windows-gnu # tier3
 )
 # WASI
 # rustup target list | grep -e '-wasi'
@@ -232,36 +224,34 @@ wasm_targets=(
     # wasm32-unknown-unknown
     # wasm64-unknown-unknown # tier3
 )
-# Windows (MSVC)
-# rustup target list | grep -e '-pc-windows-msvc'
-# rustc --print target-list | grep -e '-pc-windows-msvc'
-windows_msvc_targets=(
-    # aarch64-pc-windows-msvc
-    # i586-pc-windows-msvc
-    # i686-pc-windows-msvc
-    # thumbv7a-pc-windows-msvc # tier3
-    # x86_64-pc-windows-msvc
+# AIX
+# rustc --print target-list | grep -e '-aix'
+aix_targets=(
+    powerpc64-ibm-aix # tier3
 )
-# Windows (GNU)
-# rustup target list | grep -e '-pc-windows-gnu'
-# rustc --print target-list | grep -e '-pc-windows-gnu'
-windows_gnu_targets=(
-    i686-pc-windows-gnu
-    x86_64-pc-windows-gnu
+# CUDA
+# rustup target list | grep -e '-cuda'
+# rustc --print target-list | grep -e '-cuda'
+cuda_targets=(
+    # nvptx64-nvidia-cuda
 )
-# UWP (MSVC)
-# rustc --print target-list | grep -e '-uwp-windows-msvc'
-uwp_msvc_targets=(
-    # aarch64-uwp-windows-msvc # tier3
-    # i686-uwp-windows-msvc # tier3
-    # thumbv7a-uwp-windows-msvc # tier3
-    # x86_64-uwp-windows-msvc # tier3
+# ESP-IDF
+# rustc --print target-list | grep -e '-espidf'
+espidf_targets=(
+    # riscv32imc-esp-espidf # tier3
 )
-# UWP (GNU)
-# rustc --print target-list | grep -e '-uwp-windows-gnu'
-uwp_gnu_targets=(
-    # i686-uwp-windows-gnu # tier3
-    # x86_64-uwp-windows-gnu # tier3
+# Fuchsia
+# rustup target list | grep -e '-fuchsia'
+# rustc --print target-list | grep -e '-fuchsia'
+fuchsia_targets=(
+    # aarch64-fuchsia
+    # x86_64-fuchsia
+)
+# Haiku
+# rustc --print target-list | grep -e '-haiku'
+haiku_targets=(
+    # i686-unknown-haiku # tier3
+    # x86_64-unknown-haiku # tier3
 )
 # Hermit
 # rustc --print target-list | grep -e '-unknown-hermit'
@@ -269,23 +259,51 @@ hermit_targets=(
     # aarch64-unknown-hermit # tier3
     # x86_64-unknown-hermit # tier3
 )
-# SOLID
-# rustc --print target-list | grep -e '-solid_asp3'
-solid_targets=(
-    # aarch64-kmc-solid_asp3 # tier3
-    # armv7a-kmc-solid_asp3-eabi # tier3
-    # armv7a-kmc-solid_asp3-eabihf # tier3
+# Horizon
+# rustc --print target-list | grep -e '-nintendo'
+horizon_targets=(
+    # armv6k-nintendo-3ds # tier3
+)
+# L4Re
+# rustc --print target-list | grep -e '-l4re'
+l4re_targets=(
+    # x86_64-unknown-l4re-uclibc # tier3
+)
+# QNX Neutrino
+# rustc --print target-list | grep -e '-nto'
+nto_targets=(
+    # aarch64-unknown-nto-qnx710 # tier3
+    # x86_64-pc-nto-qnx710 # tier3
 )
 # PSP
 # rustc --print target-list | grep -e '-psp'
 psp_targets=(
     # mipsel-sony-psp # tier3
 )
+# PSP
+# rustc --print target-list | grep -e '-psx'
+psx_targets=(
+    # mipsel-sony-psx # tier3
+)
+# Redox
+# rustup target list | grep -e '-redox'
+# rustc --print target-list | grep -e '-redox'
+redox_targets=(
+    # aarch64-unknown-redox # tier3
+    x86_64-unknown-redox
+)
 # SGX
 # rustup target list | grep -e '-sgx'
 # rustc --print target-list | grep -e '-sgx'
 sgx_targets=(
     # x86_64-fortanix-unknown-sgx
+)
+# SOLID
+# rustc --print target-list | grep -e '-solid_asp3'
+solid_asp3_targets=(
+    # aarch64-kmc-solid_asp3 # tier3
+    # armv7a-kmc-solid_asp3-eabi # tier3
+    # armv7a-kmc-solid_asp3-eabihf # tier3
 )
 # UEFI
 # rustc --print target-list | grep -e '-uefi'
@@ -294,34 +312,48 @@ uefi_targets=(
     # i686-unknown-uefi # tier3
     # x86_64-unknown-uefi # tier3
 )
-# CUDA
-# rustup target list | grep -e '-cuda'
-# rustc --print target-list | grep -e '-cuda'
-cuda_targets=(
-    # nvptx64-nvidia-cuda
+# VxWorks
+# rustc --print target-list | grep -e '-vxworks'
+vxworks_targets=(
+    # aarch64-wrs-vxworks # tier3
+    # armv7-wrs-vxworks-eabihf # tier3
+    # i686-wrs-vxworks # tier3
+    # powerpc-wrs-vxworks # tier3
+    # powerpc-wrs-vxworks-spe # tier3
+    # powerpc64-wrs-vxworks # tier3
+    # x86_64-wrs-vxworks # tier3
+)
+xous_targets=(
+    # riscv32imac-unknown-xous-elf # tier3
 )
 # no-std
 # rustup target list | grep -e '-none'
 # rustc --print target-list | grep -e '-none'
-no_std_targets=(
+none_targets=(
     aarch64-unknown-none
+    # aarch64-unknown-none-hermitkernel # tier3
     aarch64-unknown-none-softfloat
     armebv7r-none-eabi
     armebv7r-none-eabihf
+    # armv4t-none-eabi # tier3
+    # armv5te-none-eabi # tier3
     armv7a-none-eabi
     armv7a-none-eabihf # tier3
     armv7r-none-eabi
     armv7r-none-eabihf
-    # bpfeb-unknown-none  # tier3
-    # bpfel-unknown-none  # tier3
+    # avr-unknown-gnu-atmega328 # tier3
+    # bpfeb-unknown-none # tier3
+    # bpfel-unknown-none # tier3
     # mipsel-unknown-none # tier3
-    # msp430-none-elf     # tier3
+    # msp430-none-elf # tier3
     riscv32i-unknown-none-elf
+    riscv32im-unknown-none-elf # tier3
     riscv32imac-unknown-none-elf
     riscv32imc-unknown-none-elf
     riscv64gc-unknown-none-elf
     riscv64imac-unknown-none-elf
     # thumbv4t-none-eabi # tier3
+    # thumbv5te-none-eabi # tier3
     thumbv6m-none-eabi
     thumbv7em-none-eabi
     thumbv7em-none-eabihf
@@ -329,11 +361,8 @@ no_std_targets=(
     thumbv8m.base-none-eabi
     thumbv8m.main-none-eabi
     thumbv8m.main-none-eabihf
-    # x86_64-unknown-none              # tier3
-    # x86_64-unknown-none-hermitkernel # tier3
-    # x86_64-unknown-none-linuxkernel  # tier3
+    # x86_64-unknown-none # tier3
 )
-
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
@@ -342,31 +371,34 @@ targets=(
     ${macos_targets[@]+"${macos_targets[@]}"}
     ${ios_targets[@]+"${ios_targets[@]}"}
     ${tvos_targets[@]+"${tvos_targets[@]}"}
+    ${watchos_targets[@]+"${watchos_targets[@]}"}
     ${freebsd_targets[@]+"${freebsd_targets[@]}"}
     ${netbsd_targets[@]+"${netbsd_targets[@]}"}
     ${openbsd_targets[@]+"${openbsd_targets[@]}"}
     ${dragonfly_targets[@]+"${dragonfly_targets[@]}"}
     ${solaris_targets[@]+"${solaris_targets[@]}"}
     ${illumos_targets[@]+"${illumos_targets[@]}"}
-    ${haiku_targets[@]+"${haiku_targets[@]}"}
-    ${l4re_targets[@]+"${l4re_targets[@]}"}
-    ${vxworks_targets[@]+"${vxworks_targets[@]}"}
-    ${espidf_targets[@]+"${espidf_targets[@]}"}
-    ${horizon_targets[@]+"${horizon_targets[@]}"}
-    ${redox_targets[@]+"${redox_targets[@]}"}
-    ${fuchsia_targets[@]+"${fuchsia_targets[@]}"}
-    ${wasi_targets[@]+"${wasi_targets[@]}"}
-    ${emscripten_targets[@]+"${emscripten_targets[@]}"}
-    ${wasm_targets[@]+"${wasm_targets[@]}"}
     ${windows_msvc_targets[@]+"${windows_msvc_targets[@]}"}
     ${windows_gnu_targets[@]+"${windows_gnu_targets[@]}"}
-    ${uwp_msvc_targets[@]+"${uwp_msvc_targets[@]}"}
-    ${uwp_gnu_targets[@]+"${uwp_gnu_targets[@]}"}
-    ${hermit_targets[@]+"${hermit_targets[@]}"}
-    ${solid_targets[@]+"${solid_targets[@]}"}
-    ${psp_targets[@]+"${psp_targets[@]}"}
-    ${sgx_targets[@]+"${sgx_targets[@]}"}
-    ${uefi_targets[@]+"${uefi_targets[@]}"}
+    ${wasi_targets[@]+"${wasi_targets[@]}"}
+    ${emscripten_targets[@]+"${emscripten_targets[@]}"}
+    ${wasm_unknown_targets[@]+"${wasm_unknown_targets[@]}"}
+    ${aix_targets[@]+"${aix_targets[@]}"}
     ${cuda_targets[@]+"${cuda_targets[@]}"}
-    ${no_std_targets[@]+"${no_std_targets[@]}"}
+    ${espidf_targets[@]+"${espidf_targets[@]}"}
+    ${fuchsia_targets[@]+"${fuchsia_targets[@]}"}
+    ${haiku_targets[@]+"${haiku_targets[@]}"}
+    ${hermit_targets[@]+"${hermit_targets[@]}"}
+    ${horizon_targets[@]+"${horizon_targets[@]}"}
+    ${l4re_targets[@]+"${l4re_targets[@]}"}
+    ${nto_targets[@]+"${nto_targets[@]}"}
+    ${psp_targets[@]+"${psp_targets[@]}"}
+    ${psx_targets[@]+"${psx_targets[@]}"}
+    ${redox_targets[@]+"${redox_targets[@]}"}
+    ${sgx_targets[@]+"${sgx_targets[@]}"}
+    ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
+    ${uefi_targets[@]+"${uefi_targets[@]}"}
+    ${vxworks_targets[@]+"${vxworks_targets[@]}"}
+    ${xous_targets[@]+"${xous_targets[@]}"}
+    ${none_targets[@]+"${none_targets[@]}"}
 )

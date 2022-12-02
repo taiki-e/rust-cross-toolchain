@@ -26,7 +26,7 @@
 | glibc [1] | [1] | host [3] | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
 
 [1] See target list below for details<br>
-[2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, sparc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
+[2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
 [3] Except for sparc-unknown-linux-gnu<br>
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
@@ -59,7 +59,6 @@
 | `riscv32gc-unknown-linux-gnu` (tier3) | 2.33 | 11.1.0 | x86_64 linux (glibc 2.27+) |
 | `riscv64gc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `s390x-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `sparc-unknown-linux-gnu` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `sparc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 linux (glibc 2.27+) |
@@ -69,7 +68,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| musl 1.1.24 [1] [2] / 1.2.2 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (any libc) |
+| musl 1.1.24 [1] [2] / 1.2.3 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (any libc) |
 
 [1] Default (see [libc#1848] for details)<br>
 [2] With a patch that fixes CVE-2020-28928<br>
@@ -110,8 +109,6 @@
 
 - `armv5te-unknown-linux-uclibceabi` (tier3)
 - `armv7-unknown-linux-uclibceabihf` (tier3)
-- `mips-unknown-linux-uclibc` (tier3)
-- `mipsel-unknown-linux-uclibc` (tier3)
 
 ### Android
 
@@ -134,7 +131,7 @@
 | `thumbv7neon-linux-androideabi` | 14 (default), 21 |
 | `x86_64-linux-android` | 21 |
 
-[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1d01550f7ea9fce1cf625128fefc73b9da3c1508/src/bootstrap/cc_detect.rs#L174) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
+[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1.65.0/src/bootstrap/cc_detect.rs#L175) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
 
 ### FreeBSD
 
@@ -150,13 +147,13 @@
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-freebsd` (tier3) | 12.2 (default), 13.0 | linux (any arch, any libc) |
-| `i686-unknown-freebsd` | 12.2 (default), 13.0 | linux (any arch, any libc) |
-| `powerpc-unknown-freebsd` (tier3) | 13.0 | linux (any arch, any libc) |
-| `powerpc64-unknown-freebsd` (tier3) | 13.0 | linux (any arch, any libc) |
-| `powerpc64le-unknown-freebsd` (tier3) | 13.0 | linux (any arch, any libc) |
-| `riscv64gc-unknown-freebsd` (tier3) | 13.0 | x86_64 linux (glibc 2.27+) |
-| `x86_64-unknown-freebsd` | 12.2 (default), 13.0 | linux (any arch, any libc) |
+| `aarch64-unknown-freebsd` (tier3) | 12.2 (default), 13.1 | linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 12.2 (default), 13.1 | linux (any arch, any libc) |
+| `powerpc-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
+| `powerpc64-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
+| `powerpc64le-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.1 | x86_64 linux (glibc 2.27+) |
+| `x86_64-unknown-freebsd` | 12.2 (default), 13.1 | linux (any arch, any libc) |
 
 ### NetBSD
 
@@ -195,11 +192,13 @@
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
-| `i686-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
-| `powerpc-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.0 | x86_64 linux (glibc 2.27+) |
-| `x86_64-unknown-openbsd` (tier3) | 7.0 | linux (any arch, any libc) |
+| `aarch64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
+| `powerpc64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
+| `riscv64gc-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | x86_64 linux (glibc 2.27+) |
+| `x86_64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
 
 ### DragonFly BSD
 
@@ -260,10 +259,10 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| wasi-sdk 14 (wasi-libc ad51334) | N/A | 13.0.0 | ? (libc++) | ✓ (wasmtime) | x86_64 linux (glibc 2.27+) |
+| wasi-sdk 16 (wasi-libc 30094b6) | N/A | 14.0.4 | ? (libc++) | ✓ (wasmtime) | x86_64 linux (glibc 2.31+) |
 
 <!--
-wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-14/src
+clang version and wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-16/src
 -->
 
 ([Dockerfile](docker/wasi.Dockerfile))
@@ -330,6 +329,7 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 | `armv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `riscv32i-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `riscv32im-unknown-none-elf` (tier3) | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
 | `riscv32imac-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
 | `riscv32imc-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
 | `riscv64gc-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |

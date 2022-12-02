@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1.3-labs
 
-ARG UBUNTU_VERSION=18.04
+# Refs:
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/doc/rustc/src/platform-support/openbsd.md
+
+ARG UBUNTU_VERSION=20.04
 
 # See tools/build-docker.sh
 ARG OPENBSD_VERSION
@@ -50,7 +53,10 @@ ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${TOOLCHAIN_DIR}"
 ARG OPENBSD_VERSION
 RUN <<EOF
-cc_target="${RUST_TARGET}${OPENBSD_VERSION}"
+case "${RUST_TARGET}" in
+    riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc/}${OPENBSD_VERSION}" ;;
+    *) cc_target="${RUST_TARGET}${OPENBSD_VERSION}" ;;
+esac
 echo "${cc_target}" >/CC_TARGET
 cd "${TOOLCHAIN_DIR}"
 mkdir -p "${cc_target}"

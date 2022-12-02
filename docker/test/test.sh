@@ -42,12 +42,16 @@ run_cargo() {
 assert_file_info() {
     local pat="$1"
     shift
+    local res
     for bin in "$@"; do
         echo -n "info: checking file info pattern '${pat}' in ${bin} ..."
-        if ! file "${bin}" | grep -E "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)" >/dev/null; then
+        res=$(file "${bin}")
+        if ! grep <<<"${res}" -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
+            echo "-----------------------"
             x file "${bin}"
+            echo "-----------------------"
             exit 1
         fi
         echo "ok"
@@ -56,12 +60,16 @@ assert_file_info() {
 assert_not_file_info() {
     local pat="$1"
     shift
+    local res
     for bin in "$@"; do
         echo -n "info: checking file info pattern (not) '${pat}' in ${bin} ..."
-        if ! file "${bin}" | grep -v "${pat}" >/dev/null; then
+        res=$(file "${bin}")
+        if ! grep <<<"${res}" -q -v "${pat}"; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
+            echo "-----------------------"
             x file "${bin}"
+            echo "-----------------------"
             exit 1
         fi
         echo "ok"
@@ -70,12 +78,16 @@ assert_not_file_info() {
 assert_file_header() {
     local pat="$1"
     shift
+    local res
     for bin in "$@"; do
         echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
-        if ! readelf --file-header "${bin}" | grep -E "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)" >/dev/null; then
+        res=$(readelf --file-header "${bin}")
+        if ! grep <<<"${res}" -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
+            echo "-----------------------"
             x readelf --file-header "${bin}"
+            echo "-----------------------"
             exit 1
         fi
         echo "ok"
@@ -84,12 +96,16 @@ assert_file_header() {
 assert_not_file_header() {
     local pat="$1"
     shift
+    local res
     for bin in "$@"; do
         echo -n "info: checking file header pattern (not) '${pat}' in ${bin} ..."
-        if ! readelf --file-header "${bin}" | grep -v "${pat}" >/dev/null; then
+        res=$(readelf --file-header "${bin}")
+        if ! grep <<<"${res}" -q -v "${pat}"; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
+            echo "-----------------------"
             x readelf --file-header "${bin}"
+            echo "-----------------------"
             exit 1
         fi
         echo "ok"
@@ -98,12 +114,16 @@ assert_not_file_header() {
 assert_arch_specific() {
     local pat="$1"
     shift
+    local res
     for bin in "$@"; do
-        echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
-        if ! readelf --arch-specific "${bin}" | grep -E "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)" >/dev/null; then
+        echo -n "info: checking arch specific pattern '${pat}' in ${bin} ..."
+        res=$(readelf --arch-specific "${bin}")
+        if ! grep <<<"${res}" -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
+            echo "-----------------------"
             x readelf --arch-specific "${bin}"
+            echo "-----------------------"
             exit 1
         fi
         echo "ok"
@@ -112,12 +132,16 @@ assert_arch_specific() {
 assert_not_arch_specific() {
     local pat="$1"
     shift
+    local res
     for bin in "$@"; do
-        echo -n "info: checking file header pattern (not) '${pat}' in ${bin} ..."
-        if ! readelf --arch-specific "${bin}" | grep -v "${pat}" >/dev/null; then
+        echo -n "info: checking arch specific pattern (not) '${pat}' in ${bin} ..."
+        res=$(readelf --arch-specific "${bin}")
+        if ! grep <<<"${res}" -q -v "${pat}"; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
+            echo "-----------------------"
             x readelf --arch-specific "${bin}"
+            echo "-----------------------"
             exit 1
         fi
         echo "ok"
@@ -185,7 +209,6 @@ if [[ -n "${NO_RUN:-}" ]]; then
 fi
 
 export CARGO_NET_RETRY=10
-export CARGO_NET_OFFLINE=true
 export RUST_BACKTRACE=1
 export RUSTUP_MAX_RETRIES=10
 export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
@@ -204,7 +227,7 @@ case "${RUST_TARGET}" in
 esac
 no_std=""
 case "${RUST_TARGET}" in
-    *-none* | *-cuda*) no_std=1 ;;
+    *-none* | *-cuda* | avr-* | *-esp-espidf) no_std=1 ;;
 esac
 no_cc_bin=""
 case "${RUST_TARGET}" in
@@ -276,7 +299,7 @@ if [[ -z "${no_std}" ]]; then
             amd64)
                 case "${RUST_TARGET}" in
                     *-windows-gnu*)
-                        # Adapted from https://github.com/rust-embedded/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
+                        # Adapted from https://github.com/cross-rs/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
                         export HOME=/tmp/home
                         mkdir -p "${HOME}"
                         # Initialize the wine prefix (virtual windows installation)
@@ -304,13 +327,10 @@ if [[ -z "${no_std}" ]]; then
             self_contained="${rustlib}/lib/self-contained"
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
-                    # llvm libunwind does not support s390x, powerpc
-                    # https://github.com/llvm/llvm-project/blob/54405a49d868444958d1ee51eef8b943aaebebdc/libunwind/src/libunwind.cpp#L48-L77
-                    powerpc-* | s390x-*) ;;
+                    # TODO(powerpc-unknown-linux-musl)
                     # TODO(riscv64gc-unknown-linux-musl)
-                    riscv64gc-*) ;;
                     # TODO(hexagon-unknown-linux-musl)
-                    hexagon-*) ;;
+                    powerpc-* | riscv64gc-* | hexagon-*) ;;
                     *)
                         rm -rf "${rustlib}"
                         mkdir -p "${self_contained}"
@@ -336,8 +356,8 @@ EOF
                         cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
                         popd >/dev/null
 
-                        # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/src/bootstrap/compile.rs#L201-L231
-                        # https://github.com/rust-lang/rust/blob/0b42deaccc2cbe17a68067aa5fdb76104369e1fd/compiler/rustc_target/src/spec/crt_objects.rs
+                        # https://github.com/rust-lang/rust/blob/1.65.0/src/bootstrap/compile.rs#L231-L263
+                        # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/crt_objects.rs
                         # Only recent nightly has libc.a in self-contained.
                         # https://github.com/rust-lang/rust/pull/90527
                         # Additionally, there is a vulnerability in the version of libc.a
@@ -397,13 +417,11 @@ EOF
     case "${RUST_TARGET}" in
         *-linux-musl*)
             case "${RUST_TARGET}" in
-                # llvm libunwind does not support s390x, powerpc
-                # https://github.com/llvm/llvm-project/blob/54405a49d868444958d1ee51eef8b943aaebebdc/libunwind/src/libunwind.cpp#L48-L77
-                powerpc-* | s390x-*) ;;
-                # TODO(riscv64gc-unknown-linux-musl)
-                riscv64gc-*) ;;
                 # TODO(hexagon-unknown-linux-musl)
-                hexagon-*) ;;
+                # TODO(powerpc-unknown-linux-musl)
+                # TODO(riscv64gc-unknown-linux-musl)
+                # TODO(s390x-unknown-linux-musl)
+                hexagon-* | powerpc-* | riscv64gc-* | s390x-*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
@@ -411,10 +429,10 @@ EOF
                     cp "$(pwd)/target/${RUST_TARGET}/debug/rust-test${exe}" "${bin}"
                     if [[ -n "${runner}" ]]; then
                         x "${runner}" "${bin}" | tee run.log
-                        if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
+                        if ! grep -Eq '^Hello Rust!' run.log; then
                             bail
                         fi
-                        if ! grep <run.log -E '^Hello C from Rust!' >/dev/null; then
+                        if ! grep -Eq '^Hello C from Rust!' run.log; then
                             bail
                         fi
                     fi
@@ -436,28 +454,26 @@ EOF
     if [[ -z "${no_rust_cpp}" ]]; then
         cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_cpp.o "${out_dir}"
     fi
-    case "${RUST_TARGET}" in
-        *-redox* | *-windows-*) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" ;;
-        *) cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}" ;;
-    esac
+    cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
+        || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
     bin="$(pwd)/target/${RUST_TARGET}/debug/rust${rust_bin_separator}test${exe}"
     if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
         x "${runner}" "${bin}" | tee run.log
-        if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
+        if ! grep -Eq '^Hello Rust!' run.log; then
             bail
         fi
-        if ! grep <run.log -E '^Hello C from Rust!' >/dev/null; then
+        if ! grep -Eq '^Hello C from Rust!' run.log; then
             bail
         fi
         if [[ -z "${no_rust_cpp}" ]]; then
-            if ! grep <run.log -E '^Hello C\+\+ from Rust!' >/dev/null; then
+            if ! grep -Eq '^Hello C\+\+ from Rust!' run.log; then
                 bail
             fi
         fi
-        if ! grep <run.log -E '^Hello Cmake from Rust!' >/dev/null; then
+        if ! grep -Eq '^Hello Cmake from Rust!' run.log; then
             bail
         fi
-        if ! grep <run.log -E '^4 \* 2 = 8' >/dev/null; then
+        if ! grep -Eq '^4 \* 2 = 8' run.log; then
             bail
         fi
     fi
@@ -491,8 +507,8 @@ else
         "${RUST_TARGET}-gcc"
     )
     for linker in "${linkers[@]}"; do
-        # https://github.com/rust-embedded/cortex-m-rt/blob/b145dadc8ea934a10a828e27be0d7079b2c76b20/ci/script.sh
-        # https://github.com/rust-lang/rust/blob/83b32f27fc6c34b0b411f47be31ab4ae07eafed4/src/test/run-make/thumb-none-qemu/example/.cargo/config
+        # https://github.com/rust-embedded/cortex-m/blob/e6c7249982841a8a39ada0bc80e6d0e492a560c3/cortex-m-rt/ci/script.sh
+        # https://github.com/rust-lang/rust/blob/1.65.0/src/test/run-make/thumb-none-qemu/example/.cargo/config
         case "${linker}" in
             rust-lld) flag="" ;;
             *-gcc) flag="-C linker=${linker} -C link-arg=-nostartfiles" ;;
@@ -559,16 +575,16 @@ else
                         cp "${bin}" "${out_dir}/cortex-m-test-${linker}"
                         if [[ -n "${runner}" ]]; then
                             x "${RUST_TARGET}-runner-qemu-system" "${bin}" | tee run.log
-                            if ! grep <run.log -E '^Hello Rust!' >/dev/null; then
+                            if ! grep -Eq '^Hello Rust!' run.log; then
                                 bail
                             fi
                             case "${linker}" in
                                 rust-lld | *-ld) ;;
                                 *)
-                                    if ! grep <run.log -E '^x = 5' >/dev/null; then
+                                    if ! grep -Eq '^x = 5' run.log; then
                                         bail
                                     fi
-                                    if ! grep <run.log -E '^y = 6' >/dev/null; then
+                                    if ! grep -Eq '^y = 6' run.log; then
                                         bail
                                     fi
                                     ;;
@@ -642,7 +658,7 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         case "${RUST_TARGET}" in
-            aarch64-* | aarch64_be-*)
+            aarch64* | arm64*)
                 file_info_pat+=('ARM aarch64')
                 file_header_pat+=('Machine:\s+AArch64')
                 ;;
@@ -744,11 +760,11 @@ case "${RUST_TARGET}" in
                         case "${RUST_TARGET}" in
                             # TODO: This should be VFPv3-D16
                             # https://developer.android.com/ndk/guides/abis
-                            # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
+                            # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
                             # https://github.com/rust-lang/rust/pull/33414
-                            # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
+                            # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
                             *-android* | *-netbsd*) fp_arch='(VFPv3|VFPv3-D16)' ;;
-                            # https://github.com/rust-lang/rust/blob/5fa94f3c57e27a339bc73336cd260cd875026bd1/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
+                            # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
                             thumbv7em-*) fp_arch=VFPv4-D16 ;;
                             *) fp_arch=VFPv3-D16 ;;
                         esac
@@ -824,7 +840,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('64-bit PowerPC or cisco 7500')
                 file_header_pat+=('Machine:\s+PowerPC64')
                 case "${RUST_TARGET}" in
-                    powerpc64le-* | *-linux-musl* | *-freebsd*)
+                    powerpc64le-* | *-linux-musl* | *-freebsd* | *-openbsd*)
                         file_info_pat+=('(OpenPOWER ELF V2 ABI)?')
                         file_header_pat+=('Flags:.*abiv2')
                         ;;
@@ -843,7 +859,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('UCB RISC-V')
                 file_header_pat+=('Machine:\s+RISC-V')
                 case "${RUST_TARGET}" in
-                    riscv*i-*) file_header_pat+=('Flags:\s+0x0') ;;
+                    riscv*i-* | riscv*im-*) file_header_pat+=('Flags:\s+0x0') ;;
                     riscv*imac-* | riscv*imc-*) file_header_pat+=('Flags:\s+0x1, RVC, soft-float ABI') ;;
                     riscv*gc-*) file_header_pat+=('Flags:\s+0x5, RVC, double-float ABI') ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
@@ -1004,7 +1020,7 @@ case "${RUST_TARGET}" in
                 for bin in "${out_dir}"/*; do
                     if [[ -x "${bin}" ]]; then
                         assert_file_info 'interpreter /usr/libexec/ld-elf\.so\.2' "${bin}"
-                        assert_file_info "for DragonFly ${DRAGONFLY_VERSION%.*}\\.[0-9]+" "${bin}"
+                        assert_file_info "for DragonFly ${DRAGONFLY_VERSION%%.*}\\.[0-9]+\\.[0-9]+" "${bin}"
                     fi
                 done
                 ;;

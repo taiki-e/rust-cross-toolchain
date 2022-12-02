@@ -2,7 +2,7 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# https://github.com/rust-lang/rust/blob/3c857f48ce12d1f98f3ea6d48eb9e33d8d60c985/src/ci/docker/scripts/emscripten.sh#L23
+# https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/emscripten.sh#L23
 ARG EMSCRIPTEN_VERSION=1.39.20
 ARG NODE_VERSION=12.18.1
 
@@ -38,7 +38,7 @@ ENV EMSDK="/usr/local/${RUST_TARGET}"
 ENV EM_CACHE="${EMSDK}/upstream/emscripten/cache"
 ENV EMSDK_NODE="${EMSDK}/node/${NODE_VERSION}_64bit/bin/node"
 ENV PATH="${EMSDK}:${EMSDK}/upstream/emscripten:${EMSDK}/node/${NODE_VERSION}_64bit/bin:$PATH"
-# NOTE: `/"${RUST_TARGET}"/. /usr/local/` doesn't work
+# Note: `/"${RUST_TARGET}"/. /usr/local/` doesn't work
 COPY --from=builder /"${RUST_TARGET}" /usr/local/"${RUST_TARGET}"
 RUN /test/test.sh emcc
 RUN touch /DONE

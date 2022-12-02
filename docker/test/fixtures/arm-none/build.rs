@@ -1,18 +1,9 @@
 use std::env;
 
 fn main() {
-    let target = match env::var("TARGET") {
-        Ok(target) => target,
-        Err(e) => {
-            println!(
-                "cargo:warning={}: unable to get TARGET environment variable: {e}",
-                env!("CARGO_PKG_NAME"),
-            );
-            return;
-        }
-    };
+    let target = &*env::var("TARGET").expect("TARGET not set");
 
-    // NOTE: `starts_with("thumb")` is not enough because arch such as thumbv7neon-, thumbv7a- means armv7a.
+    // Note: `starts_with("thumb")` is not enough because arch such as thumbv7neon-, thumbv7a- means armv7a.
     if target.starts_with("thumbv6m")
         || target.starts_with("thumbv7em")
         || target.starts_with("thumbv7m")

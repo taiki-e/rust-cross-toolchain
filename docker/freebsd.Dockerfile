@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/scripts/freebsd-toolchain.sh.
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/freebsd-toolchain.sh
 
 ARG UBUNTU_VERSION=18.04
 
@@ -68,7 +68,7 @@ EOF
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 # libc refers freebsd-version command.
 # This is currently only enabled for their test, but may change in the future.
-# https://github.com/rust-lang/libc/blob/720652a95b9b5b9ee0f12563c55badf50bd0bdab/build.rs#L134
+# https://github.com/rust-lang/libc/blob/0.2.119/build.rs#L134
 # https://github.com/rust-lang/libc/issues/2061
 # https://github.com/rust-lang/libc/issues/570
 # https://github.com/rust-lang/libc/pull/2581

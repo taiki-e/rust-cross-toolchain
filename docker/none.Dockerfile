@@ -89,6 +89,7 @@ cc_target=riscv32-unknown-elf
 echo "${cc_target}" >/CC_TARGET
 EOF
 FROM riscv32-toolchain as riscv32i-unknown-none-elf
+FROM riscv32-toolchain as riscv32im-unknown-none-elf
 FROM riscv32-toolchain as riscv32imac-unknown-none-elf
 FROM riscv32-toolchain as riscv32imc-unknown-none-elf
 
@@ -126,7 +127,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # https://launchpad.net/~canonical-server/+archive/ubuntu/server-backports/+packages
 RUN <<EOF
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 94E187AD53A59D1847E4880F8A295C4FB8B190B7
-codename="$(grep </etc/os-release '^VERSION_CODENAME=' | sed 's/^VERSION_CODENAME=//')"
+codename="$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')"
 echo "deb http://ppa.launchpad.net/canonical-server/server-backports/ubuntu ${codename} main" >/etc/apt/sources.list.d/server-backports.list
 apt-get -o Acquire::Retries=10 update -qq
 # libpython2.7 is needed for GDB
