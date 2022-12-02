@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/27143a9094b55a00d5f440b05b0cb4233b300d33/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
 
 ARG UBUNTU_VERSION=18.04
 
@@ -42,10 +42,14 @@ dpkg --add-architecture "${dpkg_arch}"
 apt-get -o Acquire::Retries=10 update -qq
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
     "libc:${dpkg_arch}" \
+    "liblgrp-dev:${dpkg_arch}" \
+    "liblgrp:${dpkg_arch}" \
     "libm-dev:${dpkg_arch}" \
     "libpthread:${dpkg_arch}" \
     "libresolv:${dpkg_arch}" \
     "librt:${dpkg_arch}" \
+    "libsendfile-dev:${dpkg_arch}" \
+    "libsendfile:${dpkg_arch}" \
     "libsocket:${dpkg_arch}" \
     "system-crt:${dpkg_arch}" \
     "system-header:${dpkg_arch}" \

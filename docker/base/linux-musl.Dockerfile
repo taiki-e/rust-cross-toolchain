@@ -3,15 +3,17 @@
 # Refs:
 # - https://github.com/richfelker/musl-cross-make
 # - https://musl.cc
-# - https://github.com/rust-lang/rust/blob/55ccbd090d96ec3bb28dbcb383e65bbfa3c293ff/src/ci/docker/scripts/musl-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/musl-toolchain.sh
+
+# TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 
 ARG UBUNTU_VERSION=18.04
 ARG ALPINE_VERSION=3.15
 
 # Use the version that contains a patch that fixes CVE-2020-28928.
-ARG MUSL_CROSS_MAKE_REV=8a2a27ef69b10c526a17281475553be7ca50ab5c
-# Available versions: https://github.com/richfelker/musl-cross-make/tree/HEAD/hashes
-# Default: https://github.com/richfelker/musl-cross-make/blob/HEAD/Makefile
+ARG MUSL_CROSS_MAKE_REV=1a82fddcaeedbe6d93cea76d044f22fc1024d036
+# Available versions: https://github.com/richfelker/musl-cross-make/tree/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/hashes
+# Default: https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/Makefile
 ARG BINUTILS_VERSION=2.33.1
 ARG GCC_VERSION=9.4.0
 ARG MUSL_VERSION
@@ -49,9 +51,9 @@ ARG GCC_VERSION
 ARG MUSL_VERSION
 ARG LINUX_VERSION
 # https://gcc.gnu.org/install/configure.html
-# https://github.com/richfelker/musl-cross-make/blob/HEAD/config.mak.dist
+# https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/config.mak.dist
 # https://conf.musl.cc/plain_20210301_10-2-1.txt
-# See also cc-rs for target flags: https://github.com/alexcrichton/cc-rs/blob/b2f6b146b75299c444e05bbde50d03705c7c4b6e/src/lib.rs#L1606.
+# See also cc-rs for target flags: https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1649
 RUN <<EOF
 cc_target="$(</CC_TARGET)"
 cd musl-cross-make
@@ -83,10 +85,9 @@ case "${RUST_TARGET}" in
     mips64-*) common_config="--with-arch=mips64r2" ;;
     mips64el-*) common_config="--with-arch=mips64r2" ;;
     mipsel-*) common_config="--with-arch=mips32r2" ;;
-    # https://github.com/buildroot/buildroot/blob/51682c03a8b99d42c1b4e253da80c127d9146c9f/package/gcc/gcc.mk#L228-L230
+    # https://github.com/buildroot/buildroot/blob/2022.02/package/gcc/gcc.mk#L229-L234
     powerpc-*) common_config="--without-long-double-128 --enable-secureplt" ;;
-    # https://github.com/buildroot/buildroot/blob/51682c03a8b99d42c1b4e253da80c127d9146c9f/package/gcc/gcc.mk#L235-L238
-    # https://github.com/void-linux/void-packages/blob/7a0bd8af2d95bcfcd2f95ad71f53ed52ef9048e6/srcpkgs/cross-powerpc64-linux-musl/template
+    # https://github.com/buildroot/buildroot/blob/2022.02/package/gcc/gcc.mk#L229-L244
     powerpc64-*) common_config="--with-abi=elfv2 --without-long-double-128 --enable-secureplt" ;;
     powerpc64le-*) common_config="--with-abi=elfv2 --without-long-double-128 --enable-secureplt" ;;
     riscv32gc-*) common_config="--with-arch=rv32gc --with-abi=ilp32d --with-cmodel=medany" ;;
