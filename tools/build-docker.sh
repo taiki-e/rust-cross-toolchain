@@ -259,9 +259,11 @@ for target in "${targets[@]}"; do
                 # See also https://www.freebsd.org/releases/13.0R/announce.
                 #
                 # Supported releases: https://www.freebsd.org/security/#sup
-                # FreeBSD 11 was EoL on 2021-9-30.
+                # FreeBSD 11 was EoL on 2021-09-30.
                 # https://www.freebsd.org/security/unsupported
+                # https://endoflife.date/freebsd
                 # When updating this, the reminder to update tools/docker-manifest.sh.
+                # TODO: update to 12.4 on 2023-03-05 which is eol of 12.3.
                 freebsd_versions=("12.3" "13.1")
             fi
             default_freebsd_version="12"
@@ -289,8 +291,9 @@ for target in "${targets[@]}"; do
                 # See also https://www.netbsd.org/releases/formal-9/NetBSD-9.0.html.
                 #
                 # Supported releases: https://www.netbsd.org/releases
-                # NetBSD 7 was EoL on 2020-6-30.
+                # NetBSD 7 was EoL on 2020-06-30.
                 # https://www.netbsd.org/releases/formal.html
+                # https://endoflife.date/netbsd
                 # When updating this, the reminder to update docker/base/build-docker.sh and tools/docker-manifest.sh.
                 netbsd_versions=("8" "9")
             fi
@@ -324,8 +327,6 @@ for target in "${targets[@]}"; do
             else
                 # OpenBSD does not have binary compatibility with previous releases.
                 # For now, we select the oldest supported version as default version.
-                # However, we don't support OpenBSD 6.9, because there is no
-                # libexecinfo.* in binary distribution sets.
                 # https://github.com/rust-lang/libc/issues/570
                 # https://github.com/golang/go/issues/15227
                 # https://github.com/golang/go/wiki/OpenBSD
@@ -333,6 +334,7 @@ for target in "${targets[@]}"; do
                 # The latest two releases are supported.
                 # https://www.openbsd.org/faq/faq5.html#Flavors
                 # https://en.wikipedia.org/wiki/OpenBSD#Releases
+                # https://endoflife.date/openbsd
                 # When updating this, the reminder to update tools/docker-manifest.sh.
                 openbsd_versions=("7.1" "7.2")
             fi
