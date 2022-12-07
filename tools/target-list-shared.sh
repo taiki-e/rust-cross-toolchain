@@ -331,7 +331,6 @@ xous_targets=(
 # rustc --print target-list | grep -e '-none'
 none_targets=(
     aarch64-unknown-none
-    # aarch64-unknown-none-hermitkernel # tier3
     aarch64-unknown-none-softfloat
     armebv7r-none-eabi
     armebv7r-none-eabihf
@@ -361,7 +360,7 @@ none_targets=(
     thumbv8m.base-none-eabi
     thumbv8m.main-none-eabi
     thumbv8m.main-none-eabihf
-    # x86_64-unknown-none # tier3
+    # x86_64-unknown-none
 )
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
