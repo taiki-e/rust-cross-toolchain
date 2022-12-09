@@ -2,7 +2,10 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
-rm -rf "${TOOLCHAIN_DIR}"/share/{doc,lintian,locale,man}
+# shellcheck disable=SC2154
+trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+
+rm -rf "${TOOLCHAIN_DIR:?}"/share/{doc,lintian,locale,man}
 
 if [[ -f /CC_TARGET ]]; then
     if [[ -f /APT_TARGET ]]; then

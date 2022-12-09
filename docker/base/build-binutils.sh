@@ -2,6 +2,9 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
+# shellcheck disable=SC2154
+trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+
 export CFLAGS="-g0 -O2 -fPIC ${CFLAGS:-}"
 export CXXFLAGS="-g0 -O2 -fPIC ${CXXFLAGS:-}"
 

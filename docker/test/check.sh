@@ -2,6 +2,9 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
+# shellcheck disable=SC2154
+trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+
 # Check the toolchain.
 # This does not include building the source code and checking its output.
 
