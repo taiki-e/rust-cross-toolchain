@@ -1,6 +1,11 @@
 use std::env;
 
 fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=hello_c.c");
+    println!("cargo:rerun-if-changed=hello_cpp.cpp");
+    println!("cargo:rerun-if-changed=libhello_cmake");
+
     let target = &*env::var("TARGET").expect("TARGET not set");
     let target_os = &*env::var("CARGO_CFG_TARGET_OS").expect("CARGO_CFG_TARGET_OS not set");
     let target_env = &*env::var("CARGO_CFG_TARGET_ENV").expect("CARGO_CFG_TARGET_ENV not set");
