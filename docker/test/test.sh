@@ -42,16 +42,14 @@ run_cargo() {
 assert_file_info() {
     local pat="$1"
     shift
-    local res
     for bin in "$@"; do
         echo -n "info: checking file info pattern '${pat}' in ${bin} ..."
-        res=$(file "${bin}")
-        if ! grep <<<"${res}" -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
+        if ! (file "${bin}" || true) | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
-            echo "-----------------------"
-            x file "${bin}"
-            echo "-----------------------"
+            echo "======================================="
+            x file "${bin}" || true
+            echo "======================================="
             exit 1
         fi
         echo "ok"
@@ -60,16 +58,14 @@ assert_file_info() {
 assert_not_file_info() {
     local pat="$1"
     shift
-    local res
     for bin in "$@"; do
         echo -n "info: checking file info pattern (not) '${pat}' in ${bin} ..."
-        res=$(file "${bin}")
-        if ! grep <<<"${res}" -q -v "${pat}"; then
+        if ! (file "${bin}" || true) | grep -q -v "${pat}"; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
-            echo "-----------------------"
-            x file "${bin}"
-            echo "-----------------------"
+            echo "======================================="
+            x file "${bin}" || true
+            echo "======================================="
             exit 1
         fi
         echo "ok"
@@ -78,16 +74,14 @@ assert_not_file_info() {
 assert_file_header() {
     local pat="$1"
     shift
-    local res
     for bin in "$@"; do
         echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
-        res=$(readelf --file-header "${bin}")
-        if ! grep <<<"${res}" -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
+        if ! (readelf --file-header "${bin}" || true) | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
-            echo "-----------------------"
-            x readelf --file-header "${bin}"
-            echo "-----------------------"
+            echo "======================================="
+            x readelf --file-header "${bin}" || true
+            echo "======================================="
             exit 1
         fi
         echo "ok"
@@ -96,16 +90,14 @@ assert_file_header() {
 assert_not_file_header() {
     local pat="$1"
     shift
-    local res
     for bin in "$@"; do
         echo -n "info: checking file header pattern (not) '${pat}' in ${bin} ..."
-        res=$(readelf --file-header "${bin}")
-        if ! grep <<<"${res}" -q -v "${pat}"; then
+        if ! (readelf --file-header "${bin}" || true) | grep -q -v "${pat}"; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
-            echo "-----------------------"
-            x readelf --file-header "${bin}"
-            echo "-----------------------"
+            echo "======================================="
+            x readelf --file-header "${bin}" || true
+            echo "======================================="
             exit 1
         fi
         echo "ok"
@@ -114,16 +106,14 @@ assert_not_file_header() {
 assert_arch_specific() {
     local pat="$1"
     shift
-    local res
     for bin in "$@"; do
         echo -n "info: checking arch specific pattern '${pat}' in ${bin} ..."
-        res=$(readelf --arch-specific "${bin}")
-        if ! grep <<<"${res}" -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
+        if ! (readelf --arch-specific "${bin}" || true) | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
             echo "failed"
             echo "error: expected '${pat}' in ${bin}, actually:"
-            echo "-----------------------"
-            x readelf --arch-specific "${bin}"
-            echo "-----------------------"
+            echo "======================================="
+            x readelf --arch-specific "${bin}" || true
+            echo "======================================="
             exit 1
         fi
         echo "ok"
@@ -132,16 +122,14 @@ assert_arch_specific() {
 assert_not_arch_specific() {
     local pat="$1"
     shift
-    local res
     for bin in "$@"; do
         echo -n "info: checking arch specific pattern (not) '${pat}' in ${bin} ..."
-        res=$(readelf --arch-specific "${bin}")
-        if ! grep <<<"${res}" -q -v "${pat}"; then
+        if ! (readelf --arch-specific "${bin}" || true) | grep -q -v "${pat}"; then
             echo "failed"
             echo "error: unexpected '${pat}' in ${bin}:"
-            echo "-----------------------"
-            x readelf --arch-specific "${bin}"
-            echo "-----------------------"
+            echo "======================================="
+            x readelf --arch-specific "${bin}" || true
+            echo "======================================="
             exit 1
         fi
         echo "ok"
@@ -626,8 +614,8 @@ x file "${out_dir}"/*
 case "${RUST_TARGET}" in
     wasm* | asmjs-* | *-windows-*) ;;
     *)
-        x readelf --file-header "${out_dir}"/*
-        x readelf --arch-specific "${out_dir}"/*
+        x readelf --file-header "${out_dir}"/* || true
+        x readelf --arch-specific "${out_dir}"/* || true
         ;;
 esac
 file_info_pat=()         # file
@@ -1067,7 +1055,7 @@ for bin in "${out_dir}"/*; do
             *) assert_file_info "statically linked" "${bin}" ;;
         esac
         assert_not_file_info "interpreter" "${bin}"
-        if readelf -d "${bin}" | grep 'NEEDED'; then
+        if (readelf -d "${bin}" || true) | grep 'NEEDED'; then
             bail
         fi
     fi
