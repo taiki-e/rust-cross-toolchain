@@ -315,10 +315,13 @@ if [[ -z "${no_std}" ]]; then
             self_contained="${rustlib}/lib/self-contained"
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
-                    # TODO(powerpc-unknown-linux-musl)
-                    # TODO(riscv64gc-unknown-linux-musl)
                     # TODO(hexagon-unknown-linux-musl)
-                    powerpc-* | riscv64gc-* | hexagon-*) ;;
+                    # TODO(powerpc-unknown-linux-musl)
+                    # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
+                    # TODO(riscv64gc-unknown-linux-musl)
+                    # TODO(s390x-unknown-linux-musl): libunwind build issue since around 2022-12-16
+                    # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
+                    hexagon-* | powerpc-* | powerpc64le-* | riscv64gc-* | s390x-* | thumbv7neon-*) ;;
                     *)
                         rm -rf "${rustlib}"
                         mkdir -p "${self_contained}"
@@ -402,14 +405,17 @@ EOF
 
     # Build Rust with C/C++
     pushd rust >/dev/null
+    # Static linking
     case "${RUST_TARGET}" in
         *-linux-musl*)
             case "${RUST_TARGET}" in
                 # TODO(hexagon-unknown-linux-musl)
                 # TODO(powerpc-unknown-linux-musl)
+                # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
                 # TODO(riscv64gc-unknown-linux-musl)
                 # TODO(s390x-unknown-linux-musl)
-                hexagon-* | powerpc-* | riscv64gc-* | s390x-*) ;;
+                # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
+                hexagon-* | powerpc-* | powerpc64le-* | riscv64gc-* | s390x-* | thumbv7neon-*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
@@ -429,6 +435,7 @@ EOF
             esac
             ;;
     esac
+    # Dynamic linking
     case "${RUST_TARGET}" in
         *-linux-musl* | *-redox*)
             # disable static linking to check interpreter
