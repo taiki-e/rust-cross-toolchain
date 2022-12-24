@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
@@ -7,6 +7,8 @@ trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 
 # Check the toolchain.
 # This does not include building the source code and checking its output.
+
+set -x
 
 toolchain_dir="/${RUST_TARGET}"
 

@@ -1,11 +1,13 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
 trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
 
 # Set up tools to test the toolchain. (target-independent)
+
+set -x
 
 dpkg_arch="$(dpkg --print-architecture)"
 case "${dpkg_arch##*-}" in

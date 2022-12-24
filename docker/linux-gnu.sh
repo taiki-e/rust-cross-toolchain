@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
@@ -15,6 +15,8 @@ trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 # - https://wiki.debian.org/RISC-V/32
 # - https://wiki.debian.org/Sparc32
 # - https://wiki.debian.org/Sparc64
+
+set -x
 
 dpkg_arch="$(dpkg --print-architecture)"
 case "${RUST_TARGET}" in

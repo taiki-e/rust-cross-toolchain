@@ -1,9 +1,11 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
 trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+
+set -x
 
 rm -rf "${TOOLCHAIN_DIR:?}"/share/{doc,lintian,locale,man}
 

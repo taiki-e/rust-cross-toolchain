@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
@@ -8,6 +8,8 @@ trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 # Refs:
 # - https://clang.llvm.org/docs/CrossCompilation.html
 # - https://mcilloni.ovh/2021/02/09/cxx-cross-clang
+
+set -x
 
 case "${RUST_TARGET}" in
     *-linux-musl* | *-linux-gnu* | *-freebsd* | *-netbsd* | *-openbsd*) cc_target="${CC_TARGET:-"$(</CC_TARGET)"}" ;;
