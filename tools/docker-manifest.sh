@@ -80,7 +80,7 @@ docker_manifest() {
             fi
             tags+=("${tag}-${github_tag}")
         fi
-        local tag="${tag}${sys_version}"
+        tag+="${sys_version}"
     fi
     if [[ -n "${is_release}" ]]; then
         tags+=("${tag}")

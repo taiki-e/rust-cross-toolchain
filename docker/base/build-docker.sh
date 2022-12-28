@@ -84,10 +84,10 @@ build() {
     if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
         local sys_version="$1"
         shift
-        local tag="${tag}${sys_version}"
-        log_dir="${log_dir}${sys_version}"
+        tag+="${sys_version}"
+        log_dir+="${sys_version}"
     fi
-    local tag="${tag}-base-${github_tag}-${docker_arch}"
+    tag+="-base-${github_tag}-${docker_arch}"
     build_args+=(--tag "${tag}")
 
     mkdir -p "${log_dir}"

@@ -511,8 +511,8 @@ else
         esac
         case "${linker}" in
             # If the linker contains a dot, rustc will misinterpret the linker flavor.
-            thumbv8m.*-ld) flag="${flag} -C linker-flavor=ld" ;;
-            thumbv8m.*-gcc) flag="${flag} -C linker-flavor=gcc" ;;
+            thumbv8m.*-ld) flag+=" -C linker-flavor=ld" ;;
+            thumbv8m.*-gcc) flag+=" -C linker-flavor=gcc" ;;
         esac
         case "${RUST_TARGET}" in
             aarch64-unknown-none* | arm*-none-eabi* | thumb*-none-eabi*)
@@ -521,8 +521,8 @@ else
                         case "${linker}" in
                             # TODO: lld doesn't support big-endian arm https://groups.google.com/g/clang-built-linux/c/XkHn49b_TnI/m/S-3yh7H1BgAJ
                             rust-lld) continue ;;
-                            *-ld) flag="${flag} -C link-arg=-EB" ;;
-                            *-gcc) flag="${flag} -C link-arg=-mbig-endian" ;;
+                            *-ld) flag+=" -C link-arg=-EB" ;;
+                            *-gcc) flag+=" -C link-arg=-mbig-endian" ;;
                         esac
                         ;;
                 esac

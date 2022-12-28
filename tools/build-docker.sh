@@ -139,13 +139,13 @@ build() {
             fi
             build_args+=(--tag "${tag}-${github_tag}-${docker_arch}")
         fi
-        local tag="${tag}${sys_version}"
-        log_dir="${log_dir}${sys_version}"
+        tag+="${sys_version}"
+        log_dir+="${sys_version}"
     fi
     if [[ -n "${is_release}" ]]; then
         build_args+=(--tag "${tag}-${docker_arch}")
     fi
-    local tag="${tag}-${github_tag}-${docker_arch}"
+    tag+="-${github_tag}-${docker_arch}"
     build_args+=(--tag "${tag}")
 
     mkdir -p "${log_dir}"

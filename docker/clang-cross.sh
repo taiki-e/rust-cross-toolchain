@@ -21,37 +21,37 @@ case "${RUST_TARGET}" in
     # The --target option is last because the cross-build of LLVM uses
     # --target without an OS version.
     # https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/freebsd-toolchain.sh#L70-L75
-    *-freebsd* | *-openbsd*) common_flags_last=" --target=${cc_target}" ;;
-    *) common_flags=" --target=${cc_target}" ;;
+    *-freebsd* | *-openbsd*) common_flags_last+=" --target=${cc_target}" ;;
+    *) common_flags+=" --target=${cc_target}" ;;
 esac
 
 case "${RUST_TARGET}" in
     *-unknown-linux-*)
         case "${RUST_TARGET}" in
-            arm-*hf) common_flags="${common_flags} -march=armv6 -marm -mfpu=vfp -mfloat-abi=hard" ;;
-            arm-*) common_flags="${common_flags} -march=armv6 -marm -mfloat-abi=soft" ;;
-            armv4t-*) common_flags="${common_flags} -march=armv4t -marm -mfloat-abi=soft" ;;
-            armv5te-*) common_flags="${common_flags} -march=armv5te -marm -mfloat-abi=soft" ;;
-            armv7-*hf) common_flags="${common_flags} -march=armv7-a -mthumb -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
-            armv7-*) common_flags="${common_flags} -march=armv7-a -mthumb -mfloat-abi=softfp" ;;
+            arm-*hf) common_flags+=" -march=armv6 -marm -mfpu=vfp -mfloat-abi=hard" ;;
+            arm-*) common_flags+=" -march=armv6 -marm -mfloat-abi=soft" ;;
+            armv4t-*) common_flags+=" -march=armv4t -marm -mfloat-abi=soft" ;;
+            armv5te-*) common_flags+=" -march=armv5te -marm -mfloat-abi=soft" ;;
+            armv7-*hf) common_flags+=" -march=armv7-a -mthumb -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
+            armv7-*) common_flags+=" -march=armv7-a -mthumb -mfloat-abi=softfp" ;;
             mips-* | mipsel-*)
-                common_flags="${common_flags} -march=mips32r2"
+                common_flags+=" -march=mips32r2"
                 case "${RUST_TARGET}" in
-                    *-linux-musl*) common_flags="${common_flags} -mfloat-abi=soft" ;;
+                    *-linux-musl*) common_flags+=" -mfloat-abi=soft" ;;
                 esac
                 ;;
-            thumbv7neon-*) common_flags="${common_flags} -march=armv7-a -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard" ;;
+            thumbv7neon-*) common_flags+=" -march=armv7-a -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard" ;;
         esac
         ;;
-    powerpc64-unknown-freebsd) common_flags="${common_flags} -mabi=elfv2" ;;
+    powerpc64-unknown-freebsd) common_flags+=" -mabi=elfv2" ;;
 esac
 case "${SYSROOT:-}" in
     none) ;;
-    "") common_flags="${common_flags} --sysroot=\"\${toolchain_dir}\"/${RUST_TARGET}" ;;
-    *) common_flags="${common_flags} --sysroot=${SYSROOT}" ;;
+    "") common_flags+=" --sysroot=\"\${toolchain_dir}\"/${RUST_TARGET}" ;;
+    *) common_flags+=" --sysroot=${SYSROOT}" ;;
 esac
-common_flags="${common_flags}${COMMON_FLAGS:+" ${COMMON_FLAGS}"}"
-common_flags_last="${common_flags_last}${COMMON_FLAGS_LAST:+" ${COMMON_FLAGS_LAST}"}"
+common_flags+="${COMMON_FLAGS:+" ${COMMON_FLAGS}"}"
+common_flags_last+="${COMMON_FLAGS_LAST:+" ${COMMON_FLAGS_LAST}"}"
 
 cflags="${common_flags}${CFLAGS:+" ${CFLAGS}"}"
 cflags_last="${common_flags_last}${CFLAGS_LAST:+" ${CFLAGS_LAST}"}"
