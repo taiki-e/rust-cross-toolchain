@@ -546,10 +546,15 @@ else
                     case "${RUST_TARGET}" in
                         armv7a-*) x "${RUST_TARGET}-runner-qemu-system" "${bin}" ;;
                     esac
-                    x "${RUST_TARGET}-runner-qemu-user" "${bin}"
+                    # TODO(none,cortex-m)
+                    case "${RUST_TARGET}" in
+                        thumbv6m-* | thumbv7m-* | thumbv7em-* | thumbv8m.*) ;;
+                        *) x "${RUST_TARGET}-runner-qemu-user" "${bin}" ;;
+                    esac
                 fi
                 popd >/dev/null
                 case "${RUST_TARGET}" in
+                    aarch64* | arm*) ;;
                     thumb*)
                         pushd cortex-m >/dev/null
                         # To link to pre-compiled C libraries provided by a C
@@ -587,6 +592,7 @@ else
                         fi
                         popd >/dev/null
                         ;;
+                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
             riscv*-unknown-none-elf)
