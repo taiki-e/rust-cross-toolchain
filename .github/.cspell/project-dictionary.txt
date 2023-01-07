@@ -164,7 +164,6 @@ sysroot
 SYSV
 Tlink
 Tmemory
-toolchains
 TOOLDIR
 uclibcgnueabi
 uclibcgnueabihf
