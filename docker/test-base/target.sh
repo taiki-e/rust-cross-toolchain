@@ -52,6 +52,7 @@ esac
 sysroot=$(rustc --print sysroot)
 libc_version=0.2.135
 for patch in /test-base/patches/*.diff; do
+    set +x
     t="$(basename "${patch}")"
     t="${t%.diff}"
     target="${t#*+}"
@@ -59,6 +60,7 @@ for patch in /test-base/patches/*.diff; do
     if [[ "${RUST_TARGET}" != "${target}" ]]; then
         continue
     fi
+    set -x
 
     if [[ -d "${sysroot}/lib/rustlib/src/rust/library/${lib}" ]]; then
         pushd "${sysroot}/lib/rustlib/src/rust/library/${lib}"
