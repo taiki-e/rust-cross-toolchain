@@ -10,9 +10,9 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] aarch64-apple-darwin
 - [ ] aarch64-apple-ios
 - [ ] aarch64-apple-ios-sim
-- [ ] aarch64-fuchsia
 - [x] aarch64-linux-android
 - [ ] aarch64-pc-windows-msvc
+- [ ] aarch64-unknown-fuchsia
 - [x] aarch64-unknown-linux-gnu
 - [x] aarch64-unknown-linux-musl
 - [x] aarch64-unknown-none
@@ -82,13 +82,13 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] x86_64-apple-darwin
 - [ ] x86_64-apple-ios
 - [ ] x86_64-fortanix-unknown-sgx
-- [ ] x86_64-fuchsia
 - [x] x86_64-linux-android
 - [x] x86_64-pc-solaris
 - [x] x86_64-pc-windows-gnu
 - [ ] x86_64-pc-windows-msvc
 - [x] x86_64-sun-solaris
 - [x] x86_64-unknown-freebsd
+- [ ] x86_64-unknown-fuchsia
 - [x] x86_64-unknown-illumos
 - [x] x86_64-unknown-linux-gnu
 - [x] x86_64-unknown-linux-gnux32

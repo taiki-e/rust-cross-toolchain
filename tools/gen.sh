@@ -56,6 +56,7 @@ known_target_group=(
     sgx
     solid_asp3
     uefi
+    vita
     vxworks
     xous
     none
