@@ -10,6 +10,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-apple-ios-macabi
 - [ ] aarch64-apple-tvos
 - [ ] aarch64-apple-watchos-sim
+- [ ] aarch64-fuchsia
 - [ ] aarch64-kmc-solid_asp3
 - [ ] aarch64-nintendo-switch-freestanding
 - [ ] aarch64-pc-windows-gnullvm
@@ -104,6 +105,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
+- [ ] x86_64-fuchsia
 - [ ] x86_64-pc-nto-qnx710
 - [ ] x86_64-pc-windows-gnullvm
 - [x] x86_64-unknown-dragonfly
