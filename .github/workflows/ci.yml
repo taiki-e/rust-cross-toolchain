@@ -18,7 +18,7 @@ on:
 
 jobs:
   tidy:
-    uses: taiki-e/workflows/.github/workflows/tidy-rust.yml@main
+    uses: taiki-e/workflows/.github/workflows/tidy.yml@main
 
   build:
     strategy:
