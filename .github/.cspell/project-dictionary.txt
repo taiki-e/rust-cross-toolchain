@@ -14,7 +14,6 @@ buildkitd
 buildpackage
 buildroot
 buildx
-builtins
 cmodel
 CROSSCOMPILING
 crtbegin
@@ -33,7 +32,6 @@ devel
 dilos
 distro
 DLLVM
-dpkg
 earmv
 EHABI
 elfv
@@ -127,12 +125,9 @@ netbsdelf
 newlib
 nofp
 nographic
-nomem
 nosimd
-nostack
 nostartfiles
 nostdinc
-nproc
 objcopy
 objdump
 octeon
