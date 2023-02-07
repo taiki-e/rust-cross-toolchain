@@ -129,7 +129,6 @@ nosimd
 nostartfiles
 nostdinc
 objcopy
-objdump
 octeon
 pkgconfig
 posix
@@ -137,11 +136,9 @@ powerpcspe
 ranlib
 raspi
 rcrt
-readelf
 rlib
 rtti
 RUNTIMES
-rustlib
 Scrt
 secureplt
 shellcheck
@@ -154,7 +151,6 @@ solarish
 stdarch
 stdlib
 subcmd
-sysroot
 SYSV
 Tlink
 Tmemory
