@@ -144,7 +144,6 @@ RUNTIMES
 rustlib
 Scrt
 secureplt
-semihosting
 shellcheck
 shfmt
 SIGILL
