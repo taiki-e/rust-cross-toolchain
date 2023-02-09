@@ -243,7 +243,7 @@ for target in "${targets[@]}"; do
             ;;
         *-dragonfly*)
             # See tools/build-docker.sh for more.
-            dragonfly_version="${DRAGONFLY_VERSION:-"6.2.2"}"
+            dragonfly_version="${DRAGONFLY_VERSION:-"6.4.0"}"
             default_dragonfly_version="6"
             docker_manifest "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}"
             ;;

@@ -204,7 +204,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| dragonfly 6.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | linux (any arch, any libc) |
+| dragonfly 6.4.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | linux (any arch, any libc) |
 
 ([Dockerfile](docker/dragonfly.Dockerfile))
 
