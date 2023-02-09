@@ -215,7 +215,7 @@ case "${RUST_TARGET}" in
 esac
 no_std=""
 case "${RUST_TARGET}" in
-    *-none* | *-cuda* | avr-* | *-esp-espidf) no_std=1 ;;
+    *-none* | *-uefi* | *-cuda* | avr-* | *-esp-espidf) no_std=1 ;;
 esac
 no_cc_bin=""
 case "${RUST_TARGET}" in
@@ -347,8 +347,8 @@ EOF
                         cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
                         popd >/dev/null
 
-                        # https://github.com/rust-lang/rust/blob/1.65.0/src/bootstrap/compile.rs#L231-L263
-                        # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/crt_objects.rs
+                        # https://github.com/rust-lang/rust/blob/1.67.0/src/bootstrap/compile.rs#L230-L262
+                        # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/crt_objects.rs
                         # Only recent nightly has libc.a in self-contained.
                         # https://github.com/rust-lang/rust/pull/90527
                         # Additionally, there is a vulnerability in the version of libc.a
@@ -503,7 +503,7 @@ else
     )
     for linker in "${linkers[@]}"; do
         # https://github.com/rust-embedded/cortex-m/blob/e6c7249982841a8a39ada0bc80e6d0e492a560c3/cortex-m-rt/ci/script.sh
-        # https://github.com/rust-lang/rust/blob/1.65.0/src/test/run-make/thumb-none-qemu/example/.cargo/config
+        # https://github.com/rust-lang/rust/blob/1.67.0/src/test/run-make/thumb-none-qemu/example/.cargo/config
         case "${linker}" in
             rust-lld) flag="" ;;
             *-gcc) flag="-C linker=${linker} -C link-arg=-nostartfiles" ;;
@@ -761,11 +761,11 @@ case "${RUST_TARGET}" in
                         case "${RUST_TARGET}" in
                             # TODO: This should be VFPv3-D16
                             # https://developer.android.com/ndk/guides/abis
-                            # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
+                            # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
                             # https://github.com/rust-lang/rust/pull/33414
-                            # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
+                            # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
                             *-android* | *-netbsd*) fp_arch='(VFPv3|VFPv3-D16)' ;;
-                            # https://github.com/rust-lang/rust/blob/1.65.0/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
+                            # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
                             thumbv7em-*) fp_arch=VFPv4-D16 ;;
                             *) fp_arch=VFPv3-D16 ;;
                         esac

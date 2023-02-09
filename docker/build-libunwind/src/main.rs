@@ -1,4 +1,4 @@
-// Adapted from https://github.com/rust-lang/rust/blame/1.65.0/src/bootstrap/native.rs#L1257-L1410
+// Adapted from https://github.com/rust-lang/rust/blob/1.67.0/src/bootstrap/native.rs#L1215-L1368
 
 use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 

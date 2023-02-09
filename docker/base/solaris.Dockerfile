@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
 
 ARG UBUNTU_VERSION=18.04
 

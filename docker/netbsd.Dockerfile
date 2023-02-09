@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.66.0/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
 
 # When using clang:
 # - aarch64, i686, and x86_64 work without gnu binutils.

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.65.0/src/doc/rustc/src/platform-support/openbsd.md
+# - https://github.com/rust-lang/rust/blob/1.67.0/src/doc/rustc/src/platform-support/openbsd.md
 
 ARG UBUNTU_VERSION=20.04
 

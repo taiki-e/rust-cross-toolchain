@@ -131,7 +131,7 @@
 | `thumbv7neon-linux-androideabi` | 14 (default), 21 |
 | `x86_64-linux-android` | 21 |
 
-[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1.65.0/src/bootstrap/cc_detect.rs#L175) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
+[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1.67.0/src/bootstrap/cc_detect.rs#L227) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
 
 ### FreeBSD
 

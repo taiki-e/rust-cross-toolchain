@@ -4,8 +4,8 @@
 # - https://developer.android.com/ndk
 # - https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md
 # - https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
-# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/host-x86_64/dist-android/Dockerfile
-# - https://github.com/rust-lang/rust/blob/1.65.0/src/ci/docker/scripts/android-ndk.sh
+# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-android/Dockerfile
+# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/scripts/android-ndk.sh
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04
