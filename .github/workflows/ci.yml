@@ -33,7 +33,8 @@ jobs:
           - target: linux-musl
             musl: '1.2'
           - target: linux-uclibc
-          - target: android
+          # TODO(android): https://github.com/rust-lang/rust/issues/103673
+          # - target: android
           - target: freebsd
           - target: netbsd
           - target: openbsd
@@ -42,7 +43,17 @@ jobs:
           - target: illumos
           - target: redox
           # - target: fuchsia
-          - target: wasi
+          # TODO(wasi):
+          # = note: clang-15: error: unsupported option '--export'
+          #         clang-15: error: unsupported option '--stack-first'
+          #         clang-15: error: unsupported option '--allow-undefined'
+          #         clang-15: error: unsupported option '--fatal-warnings'
+          #         clang-15: error: unsupported option '--no-demangle'
+          #         clang-15: error: unsupported option '--gc-sections'
+          #         clang-15: error: unknown argument: '-flavor'
+          #         clang-15: error: no such file or directory: 'wasm'
+          #         clang-15: error: no such file or directory: '__main_void'
+          # - target: wasi
           - target: emscripten
           - target: windows-gnu
           - target: windows-gnu
