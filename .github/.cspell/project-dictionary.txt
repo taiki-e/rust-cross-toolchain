@@ -28,6 +28,7 @@ DCMAKE
 DCOMPILER
 debuginfo
 defconfig
+demangle
 devel
 dilos
 distro
