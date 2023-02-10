@@ -58,11 +58,11 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        x docker buildx build --push "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
-        x docker pull "${tag}" --platform "${platform}"
+        x docker buildx build --provenance=false --push "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker pull "${tag}"
         x docker history "${tag}"
     else
-        x docker buildx build --load "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --provenance=false --load "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker history "${tag}"
     fi
 }
