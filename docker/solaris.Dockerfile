@@ -18,10 +18,10 @@ COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 # ARG SOLARIS_VERSION=2.11
 # ARG GCC_VERSION=8.5.0
 # TODO: unrecognized option '-C' from ld
-# COPY /clang-cross.sh /
-# RUN COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
+# RUN --mount=type=bind,target=/docker \
+#     COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
 #     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
-#     /clang-cross.sh
+#     /docker/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

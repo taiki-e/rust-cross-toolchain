@@ -52,24 +52,23 @@ esac
 echo "${cc_target}" >/CC_TARGET
 EOF
 
-COPY /clang-cross.sh /
 ARG GCC_VERSION
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 export COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\""
 case "${RUST_TARGET}" in
     hexagon-unknown-linux-musl) ;;
     riscv64gc-unknown-linux-musl)
         COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
     aarch64-* | mips64-* | mips64el-* | powerpc64-* | powerpc64le-* | s390x-* | x86_64-*)
-        /clang-cross.sh
+        /docker/clang-cross.sh
         ;;
     *)
         COMMON_FLAGS="${COMMON_FLAGS} -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
 esac
 EOF

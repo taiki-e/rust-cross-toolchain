@@ -63,8 +63,8 @@ ln -s "${cc_target}" "${RUST_TARGET}"
 EOF
 
 COPY --from=binutils-src /binutils-src /tmp/binutils-src
-COPY /build-binutils.sh /
-RUN CC_TARGET="$(</CC_TARGET)" /build-binutils.sh
+RUN --mount=type=bind,target=/base \
+    CC_TARGET="$(</CC_TARGET)" /base/build-binutils.sh
 
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
@@ -105,8 +105,8 @@ make -p "${TOOLCHAIN_DIR}" &>build.log || (tail <build.log -5000 && exit 1)
 make install &>build.log || (tail <build.log -5000 && exit 1)
 EOF
 
-COPY /common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/base \
+    /base/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

@@ -99,8 +99,8 @@ cat ./config.mak
 make install -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
 EOF
 
-COPY /common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/base \
+    /base/common.sh
 
 # Default ld-musl-*.so.1 is broken symbolic link to /lib/libc.so.
 RUN <<EOF

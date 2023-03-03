@@ -58,10 +58,9 @@ EOF
 
 # riscv64gc: ld.lld: error: hello.c:(.text+0x0): relocation R_RISCV_ALIGN requires unimplemented linker relaxation; recompile with -mno-relax
 COPY --from=binutils-src /binutils-src /tmp/binutils-src
-COPY /base/build-binutils.sh /
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
-    riscv64gc-*) CC_TARGET="$(</CC_TARGET)" /build-binutils.sh ;;
+    riscv64gc-*) CC_TARGET="$(</CC_TARGET)" /docker/base/build-binutils.sh ;;
 esac
 EOF
 
@@ -74,16 +73,15 @@ COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 # https://github.com/rust-lang/libc/pull/2581
 RUN mv "${SYSROOT_DIR}/bin" "${TOOLCHAIN_DIR}/bin"
 
-COPY /clang-cross.sh /
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
     riscv64gc-*)
         COMMON_FLAGS="--ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
     *)
         COMMON_FLAGS="-fuse-ld=lld" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
 esac
 EOF

@@ -11,8 +11,8 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 
-COPY /linux-gnu.sh /
-RUN /linux-gnu.sh
+RUN --mount=type=bind,target=/docker \
+    /docker/linux-gnu.sh
 # fd -t d '\b(doc|lintian|locale|i18n|man)\b'
 RUN <<EOF
 apt_target="$(</APT_TARGET)"
@@ -66,12 +66,11 @@ EOF2
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
 EOF
 
-COPY /base/common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/docker \
+    /docker/base/common.sh
 
 # TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
-COPY /clang-cross.sh /
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 gcc_version="$(</GCC_VERSION)"
 if [[ "${gcc_version}" == "host" ]]; then
     exit 0
@@ -81,13 +80,13 @@ case "${RUST_TARGET}" in
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
     riscv32gc-*)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -I\"\${toolchain_dir}\"/sysroot/usr/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
     sparc-*) ;;
     *)
@@ -95,7 +94,7 @@ case "${RUST_TARGET}" in
             CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version%%.*}/${RUST_TARGET}" \
             SYSROOT=none \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
 esac
 EOF

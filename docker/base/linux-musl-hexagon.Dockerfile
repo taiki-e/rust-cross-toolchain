@@ -186,8 +186,8 @@ cd "${SYSROOT_DIR}/lib"
 ln -sf ../usr/lib/ld-musl-hexagon.so.1
 EOF
 
-COPY /common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/base \
+    /base/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

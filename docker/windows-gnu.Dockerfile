@@ -29,14 +29,13 @@ for tool in "${RUST_TARGET}"-*-posix "$(</CC_TARGET)"-*-posix; do
 done
 EOF
 
-COPY /clang-cross.sh /
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 gcc_version="${GCC_VERSION:-"$(gcc --version | sed -n '1 s/^.*) //p')"}"
 COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" -B\"\${toolchain_dir}\"/${RUST_TARGET}/bin -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L${TOOLCHAIN_DIR}/lib/gcc-cross/${RUST_TARGET}/${gcc_version%%.*}" \
     CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version%%.*}/${RUST_TARGET}" \
     SYSROOT=none \
-    /clang-cross.sh
+    /docker/clang-cross.sh
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base

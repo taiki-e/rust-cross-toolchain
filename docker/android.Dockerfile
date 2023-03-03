@@ -59,8 +59,8 @@ esac
 echo "${cc_target}" >/CC_TARGET
 EOF
 
-COPY /base/common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/docker \
+    /docker/base/common.sh
 
 # TODO: libc++_shared.so is not installed by make_standalone_toolchain.py
 # RUN <<EOF
@@ -75,14 +75,13 @@ RUN /common.sh
 # esac
 # EOF
 
-# COPY /clang-cross.sh /
-# RUN <<EOF
+# RUN --mount=type=bind,target=/docker <<EOF
 # case "${RUST_TARGET}" in
 #     arm-*)
 #         COMMON_FLAGS="-march=armv5te -mthumb -mfloat-abi=soft -D__ANDROID_API__=${NDK_VERSION} -D__ARM_ARCH_5TE__" \
 #             CLANG="\$(dirname \$0)/clang50"
 #             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
-#             /clang-cross.sh
+#             /docker/clang-cross.sh
 #         ;;
 # esac
 # EOF

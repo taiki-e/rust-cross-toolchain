@@ -20,14 +20,14 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain /toolchain "${TOOLCHAIN_DIR}"
 
-COPY /base/common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/docker \
+    /docker/base/common.sh
 
-COPY /clang-cross.sh /
 ARG GCC_VERSION=8.2.0
-RUN CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
+RUN --mount=type=bind,target=/docker \
+    CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
     CXXFLAGS="-std=c++14 -isystem\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
-    /clang-cross.sh
+    /docker/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

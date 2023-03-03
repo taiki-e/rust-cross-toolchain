@@ -30,12 +30,12 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=wasi-sdk /wasi-sdk "${TOOLCHAIN_DIR}"
 
-COPY /base/common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/docker \
+    /docker/base/common.sh
 
-COPY /clang-cross.sh /
-RUN COMMON_FLAGS="-L\"\${toolchain_dir}\"/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/${RUST_TARGET}" \
-    /clang-cross.sh
+RUN --mount=type=bind,target=/docker \
+    COMMON_FLAGS="-L\"\${toolchain_dir}\"/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/${RUST_TARGET}" \
+    /docker/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

@@ -62,15 +62,15 @@ cp -r "${orig_sysroot_dir}"/usr/lib/. "${dest_sysroot_dir}"/usr/lib/
 cp -r "${orig_sysroot_dir}"/lib/. "${dest_sysroot_dir}"/lib/
 EOF
 
-COPY /base/common.sh /
-RUN /common.sh
+RUN --mount=type=bind,target=/docker \
+    /docker/base/common.sh
 
-COPY /clang-cross.sh /
 ARG GCC_VERSION
-RUN CC_TARGET="$(</CC_TARGET)" \
+RUN --mount=type=bind,target=/docker \
+    CC_TARGET="$(</CC_TARGET)" \
     COMMON_FLAGS="-B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
-    /clang-cross.sh
+    /docker/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

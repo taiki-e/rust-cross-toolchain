@@ -41,15 +41,14 @@ esac
 echo "${cc_target}" >/CC_TARGET
 EOF
 
-COPY /clang-cross.sh /
 ARG NETBSD_VERSION
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 export CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++"
 if [[ "${NETBSD_VERSION}" == "8"* ]]; then
     export CXXFLAGS="-std=c++14 ${CXXFLAGS}"
 fi
 export COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib"
-/clang-cross.sh
+/docker/clang-cross.sh
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base

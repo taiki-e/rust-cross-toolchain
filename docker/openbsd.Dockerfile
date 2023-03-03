@@ -66,17 +66,15 @@ EOF
 # sparc64: ld.lld: error: relocation R_SPARC_64 cannot be used against local symbol; recompile with -fPIC
 #          maybe https://bugs.llvm.org/show_bug.cgi?id=42446
 COPY --from=binutils-src /binutils-src /tmp/binutils-src
-COPY /base/build-binutils.sh /
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
-    sparc64-*) CC_TARGET="$(</CC_TARGET)" /build-binutils.sh ;;
+    sparc64-*) CC_TARGET="$(</CC_TARGET)" /docker/base/build-binutils.sh ;;
 esac
 EOF
 
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
-COPY /clang-cross.sh /
-RUN <<EOF
+RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
     sparc64-*)
         # sparc64-unknown-openbsd uses libstdc++ and libgcc (https://github.com/rust-lang/rust/pull/63595)
@@ -85,11 +83,11 @@ case "${RUST_TARGET}" in
         # export CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++ -I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++/${RUST_TARGET}${OPENBSD_VERSION}"
         # export CXXFLAGS_LAST="-stdlib=libstdc++ -lstdc++ -lgcc"
         COMMON_FLAGS="--ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc-lib/${RUST_TARGET}${OPENBSD_VERSION}/${gcc_version} -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc-lib/${RUST_TARGET}${OPENBSD_VERSION}/${gcc_version}" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
     *)
         COMMON_FLAGS="-fuse-ld=lld -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib" \
-            /clang-cross.sh
+            /docker/clang-cross.sh
         ;;
 esac
 EOF
