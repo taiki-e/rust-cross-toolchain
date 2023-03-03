@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.3-labs
+# syntax=docker/dockerfile:1.4
 
 # Refs:
 # - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-various-1/install-x86_64-redox.sh
