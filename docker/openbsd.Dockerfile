@@ -35,7 +35,7 @@ case "${RUST_TARGET}" in
     powerpc64-*) openbsd_arch=powerpc64 ;;
     riscv64gc-*) openbsd_arch=riscv64 ;;
     sparc64-*) openbsd_arch=sparc64 ;;
-    x86_64-*) openbsd_arch=amd64 ;;
+    x86_64*) openbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${openbsd_arch}/base${OPENBSD_VERSION/./}.tgz" \

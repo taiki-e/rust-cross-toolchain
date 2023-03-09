@@ -32,7 +32,7 @@ EOF
 # that are compatible with rust.
 RUN --mount=type=bind,target=/base <<EOF
 case "${RUST_TARGET}" in
-    x86_64-*) exit 0 ;;
+    x86_64*) exit 0 ;;
     i686-*) ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac

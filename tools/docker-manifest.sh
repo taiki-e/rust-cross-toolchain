@@ -158,7 +158,7 @@ for target in "${targets[@]}"; do
         *-android*)
             # See tools/build-docker.sh for more.
             case "${target}" in
-                aarch64-* | x86_64-*)
+                aarch64-* | x86_64*)
                     default_ndk_version="21"
                     ndk_versions=("21")
                     ;;

@@ -32,7 +32,7 @@ RUN mkdir -p /tmp/sysroot
 WORKDIR /tmp/sysroot
 RUN <<EOF
 case "${RUST_TARGET}" in
-    x86_64-*) dpkg_arch=solaris-i386 ;;
+    x86_64*) dpkg_arch=solaris-i386 ;;
     sparcv9-*) dpkg_arch=solaris-sparc ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
@@ -73,7 +73,7 @@ done
 EOF
 RUN <<EOF
 case "${RUST_TARGET}" in
-    x86_64-*) lib_arch=amd64 ;;
+    x86_64*) lib_arch=amd64 ;;
     sparcv9-*) lib_arch=sparcv9 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac

@@ -644,11 +644,11 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('ELF 32-bit MSB')
                 file_header_pat+=('Class:\s+ELF32' 'big endian')
                 ;;
-            arm* | hexagon-* | i*86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64-*x32)
+            arm* | hexagon-* | i*86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
                 file_info_pat+=('ELF 32-bit LSB')
                 file_header_pat+=('Class:\s+ELF32' 'little endian')
                 ;;
-            aarch64-* | mips64el-* | mipsisa64r6el-* | powerpc64le-* | riscv64* | x86_64-*)
+            aarch64-* | mips64el-* | mipsisa64r6el-* | powerpc64le-* | riscv64* | x86_64*)
                 file_info_pat+=('ELF 64-bit LSB')
                 file_header_pat+=('Class:\s+ELF64' 'little endian')
                 ;;
@@ -883,7 +883,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('SPARC V9')
                 file_header_pat+=('Machine:\s+Sparc v9')
                 ;;
-            x86_64-*)
+            x86_64*)
                 file_info_pat+=('x86-64')
                 file_header_pat+=('Machine:\s+Advanced Micro Devices X86-64')
                 ;;
@@ -931,8 +931,8 @@ case "${RUST_TARGET}" in
                     s390x-*) ldso='/lib/ld64\.so\.1' ;;
                     sparc-*) ldso='/lib/ld-linux\.so\.2' ;;
                     sparc64-*) ldso='/lib64/ld-linux\.so\.2' ;;
-                    x86_64-*x32) ldso='/libx32/ld-linux-x32\.so\.2' ;;
-                    x86_64-*) ldso='/lib64/ld-linux-x86-64\.so\.2' ;;
+                    x86_64*x32) ldso='/libx32/ld-linux-x32\.so\.2' ;;
+                    x86_64*) ldso='/lib64/ld-linux-x86-64\.so\.2' ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 for bin in "${out_dir}"/*; do
@@ -959,7 +959,7 @@ case "${RUST_TARGET}" in
                     riscv32gc-*) ldso_arch=riscv32 ;;
                     riscv64gc-*) ldso_arch=riscv64 ;;
                     s390x-*) ldso_arch=s390x ;;
-                    x86_64-*) ldso_arch=x86_64 ;;
+                    x86_64*) ldso_arch=x86_64 ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 file_info_pat+=("interpreter /lib/ld-musl-${ldso_arch}\\.so\\.1")
@@ -967,7 +967,7 @@ case "${RUST_TARGET}" in
             *-linux-uclibc*) file_info_pat+=('interpreter /lib/ld-uClibc\.so\.0') ;;
             *-android*)
                 case "${RUST_TARGET}" in
-                    aarch64-* | x86_64-*) file_info_pat+=('interpreter /system/bin/linker64') ;;
+                    aarch64-* | x86_64*) file_info_pat+=('interpreter /system/bin/linker64') ;;
                     *) file_info_pat+=('interpreter /system/bin/linker') ;;
                 esac
                 ;;
@@ -1028,7 +1028,7 @@ case "${RUST_TARGET}" in
             *-solaris* | *-illumos*)
                 case "${RUST_TARGET}" in
                     sparcv9-*) file_info_pat+=('interpreter /usr/lib/sparcv9/ld\.so\.1') ;;
-                    x86_64-*) file_info_pat+=('interpreter /lib/amd64/ld\.so\.1') ;;
+                    x86_64*) file_info_pat+=('interpreter /lib/amd64/ld\.so\.1') ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
@@ -1046,14 +1046,14 @@ case "${RUST_TARGET}" in
             if [[ -x "${bin}" ]]; then
                 case "${RUST_TARGET}" in
                     i686-*) assert_file_info 'PE32 executable \(console\) Intel 80386' "${bin}" ;;
-                    x86_64-*) assert_file_info 'PE32\+ executable \(console\) x86-64' "${bin}" ;;
+                    x86_64*) assert_file_info 'PE32\+ executable \(console\) x86-64' "${bin}" ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 assert_file_info 'for MS Windows' "${bin}"
             else
                 case "${RUST_TARGET}" in
                     i686-*) assert_file_info 'Intel 80386 COFF object file' "${bin}" ;;
-                    x86_64-*) assert_file_info 'Intel amd64 COFF object file' "${bin}" ;;
+                    x86_64*) assert_file_info 'Intel amd64 COFF object file' "${bin}" ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
             fi

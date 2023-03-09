@@ -33,7 +33,7 @@ case "${RUST_TARGET}" in
     i686-*) freebsd_arch=i386/i386 ;;
     powerpc*) freebsd_arch="powerpc/${RUST_TARGET%%-*}" ;;
     riscv64gc-*) freebsd_arch="riscv/riscv64" ;;
-    x86_64-*) freebsd_arch=amd64/amd64 ;;
+    x86_64*) freebsd_arch=amd64/amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://download.freebsd.org/ftp/releases/${freebsd_arch}/${FREEBSD_VERSION}-RELEASE/base.txz" \

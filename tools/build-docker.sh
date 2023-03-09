@@ -220,7 +220,7 @@ for target in "${targets[@]}"; do
             # https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
             # When updating this, the reminder to update tools/docker-manifest.sh.
             case "${target}" in
-                aarch64-* | x86_64-*)
+                aarch64-* | x86_64*)
                     default_ndk_version="21"
                     ndk_versions=("21")
                     ;;

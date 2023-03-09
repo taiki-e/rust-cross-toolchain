@@ -39,13 +39,13 @@ case "${RUST_TARGET}" in
     i686-*) netbsd_arch=i386 ;;
     powerpc-*) netbsd_arch=evbppc ;;
     sparc64-*) netbsd_arch=sparc64 ;;
-    x86_64-*) netbsd_arch=amd64 ;;
+    x86_64*) netbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 ext=.tgz
 cmd=xzf
 case "${RUST_TARGET}" in
-    sparc64-* | x86_64-*)
+    sparc64-* | x86_64*)
         if [[ "${NETBSD_VERSION}" != "8"* ]]; then
             ext=.tar.xz
             cmd=xJf
@@ -79,7 +79,7 @@ case "${RUST_TARGET}" in
     i686-*) cc_target=i486--netbsdelf ;;
     powerpc-*) cc_target=powerpc--netbsd ;;
     sparc64-*) cc_target=sparc64--netbsd ;;
-    x86_64-*) cc_target=x86_64--netbsd ;;
+    x86_64*) cc_target=x86_64--netbsd ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 echo "${cc_target}" >/CC_TARGET
@@ -101,7 +101,7 @@ case "${RUST_TARGET}" in
     i686-*) args=(-m i386) ;;
     powerpc-*) args=(-m evbppc) ;;
     sparc64-*) args=(-m sparc64) ;;
-    x86_64-*) args=(-m amd64) ;;
+    x86_64*) args=(-m amd64) ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 MKUNPRIVED=yes TOOLDIR="${TOOLCHAIN_DIR}" \

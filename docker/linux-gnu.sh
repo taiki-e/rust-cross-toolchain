@@ -112,8 +112,8 @@ case "${RUST_TARGET}" in
     powerpc64le-*) lib_arch=ppc64el ;;
     riscv64gc-*) lib_arch="${RUST_TARGET%gc-unknown*}" ;;
     sparc-*) lib_arch=sparc64 ;;
-    x86_64-*x32) lib_arch=x32 ;;
-    x86_64-*) lib_arch=amd64 ;;
+    x86_64*x32) lib_arch=x32 ;;
+    x86_64*) lib_arch=amd64 ;;
 esac
 apt_target="${apt_target:-"${cc_target/i586/i686}"}"
 echo "${cc_target}" >/CC_TARGET

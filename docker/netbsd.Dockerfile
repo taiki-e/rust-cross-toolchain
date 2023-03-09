@@ -35,7 +35,7 @@ case "${RUST_TARGET}" in
     i686-*) cc_target=i486--netbsdelf ;;
     powerpc-*) cc_target=powerpc--netbsd ;;
     sparc64-*) cc_target=sparc64--netbsd ;;
-    x86_64-*) cc_target=x86_64--netbsd ;;
+    x86_64*) cc_target=x86_64--netbsd ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 echo "${cc_target}" >/CC_TARGET

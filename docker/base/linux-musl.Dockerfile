@@ -120,7 +120,7 @@ case "${RUST_TARGET}" in
     riscv32gc-*) ldso_arch=riscv32 ;;
     riscv64gc-*) ldso_arch=riscv64 ;;
     s390x-*) ldso_arch=s390x ;;
-    x86_64-*) ldso_arch=x86_64 ;;
+    x86_64*) ldso_arch=x86_64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 cd "${SYSROOT_DIR}/lib"

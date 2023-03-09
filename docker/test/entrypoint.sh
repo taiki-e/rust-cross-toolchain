@@ -318,7 +318,7 @@ case "${RUST_TARGET}" in
             s390x-*) qemu_arch=s390x ;;
             sparc-*) qemu_arch=sparc32plus ;;
             sparc64-*) qemu_arch=sparc64 ;;
-            x86_64-*)
+            x86_64*)
                 qemu_arch=x86_64
                 # qemu does not seem to support emulating x86_64 CPU features on x86_64 hosts.
                 # > qemu-x86_64: warning: TCG doesn't support requested feature
@@ -420,7 +420,7 @@ EOF
             mipsel-*) qemu_arch=mipsel ;;
             riscv32*) qemu_arch=riscv32 ;;
             riscv64*) qemu_arch=riscv64 ;;
-            x86_64-*) qemu_arch=x86_64 ;;
+            x86_64*) qemu_arch=x86_64 ;;
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         if [[ -n "${qemu_cpu:-}" ]]; then

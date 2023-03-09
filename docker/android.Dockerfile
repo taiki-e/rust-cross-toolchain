@@ -41,7 +41,7 @@ case "${RUST_TARGET}" in
     aarch64-*) android_arch=arm64 ;;
     arm* | thumb*) android_arch=arm ;;
     i686-*) android_arch=x86 ;;
-    x86_64-*) android_arch=x86_64 ;;
+    x86_64*) android_arch=x86_64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 # See https://developer.android.com/ndk/guides/standalone_toolchain
@@ -70,7 +70,7 @@ RUN --mount=type=bind,target=/docker \
 #     arm-*) cp /ndk/sources/cxx-stl/llvm-libc++/libs/armeabi/* "${TOOLCHAIN_DIR}"/sysroot/usr/lib/ ;;
 #     armv7-* | thumbv7*) cp /ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/* "${TOOLCHAIN_DIR}"/sysroot/usr/lib/ ;;
 #     i686-*) cp /ndk/sources/cxx-stl/llvm-libc++/libs/x86/* "${TOOLCHAIN_DIR}"/sysroot/usr/lib/ ;;
-#     x86_64-*) cp /ndk/sources/cxx-stl/llvm-libc++/libs/x86_64/* "${TOOLCHAIN_DIR}"/sysroot/usr/lib/ ;;
+#     x86_64*) cp /ndk/sources/cxx-stl/llvm-libc++/libs/x86_64/* "${TOOLCHAIN_DIR}"/sysroot/usr/lib/ ;;
 #     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 # esac
 # EOF
