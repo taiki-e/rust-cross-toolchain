@@ -1,5 +1,4 @@
-.dockerignore
-**/Dockerfile
-**/*.Dockerfile
+**/.dockerignore
+**/*Dockerfile
 
-build-docker.sh
+**/build-docker.sh
