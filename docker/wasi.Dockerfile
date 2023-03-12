@@ -33,9 +33,10 @@ COPY --from=wasi-sdk /wasi-sdk "${TOOLCHAIN_DIR}"
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
-RUN --mount=type=bind,target=/docker \
-    COMMON_FLAGS="-L\"\${toolchain_dir}\"/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/${RUST_TARGET}" \
-    /docker/clang-cross.sh
+# Do not use prefixed clang: https://github.com/taiki-e/setup-cross-toolchain-action/commit/fd352f3ffabd00daf2759ab4a3276729e52eeb10
+# RUN --mount=type=bind,target=/docker \
+#     COMMON_FLAGS="-L\"\${toolchain_dir}\"/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/${RUST_TARGET}" \
+#     /docker/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

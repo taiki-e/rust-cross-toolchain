@@ -50,17 +50,7 @@ jobs:
           - target: illumos
           - target: redox
           # - target: fuchsia
-          # TODO(wasi):
-          # = note: clang-15: error: unsupported option '--export'
-          #         clang-15: error: unsupported option '--stack-first'
-          #         clang-15: error: unsupported option '--allow-undefined'
-          #         clang-15: error: unsupported option '--fatal-warnings'
-          #         clang-15: error: unsupported option '--no-demangle'
-          #         clang-15: error: unsupported option '--gc-sections'
-          #         clang-15: error: unknown argument: '-flavor'
-          #         clang-15: error: no such file or directory: 'wasm'
-          #         clang-15: error: no such file or directory: '__main_void'
-          # - target: wasi
+          - target: wasi
           - target: emscripten
           - target: windows-gnu
           - target: windows-gnu
