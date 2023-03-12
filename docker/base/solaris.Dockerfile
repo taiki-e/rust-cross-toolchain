@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/542ed2bf72b232b245ece058fc11aebb1ca507d7/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
 
 ARG UBUNTU_VERSION=18.04
 
@@ -40,26 +40,24 @@ apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 74DA7924C
 echo "deb https://apt.dilos.org/dilos dilos2 main" >/etc/apt/sources.list.d/dilos.list
 dpkg --add-architecture "${dpkg_arch}"
 apt-get -o Acquire::Retries=10 update -qq
-apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
+apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --download-only --no-install-recommends \
     "libc:${dpkg_arch}" \
-    "liblgrp-dev:${dpkg_arch}" \
     "liblgrp:${dpkg_arch}" \
     "libm-dev:${dpkg_arch}" \
     "libpthread:${dpkg_arch}" \
     "libresolv:${dpkg_arch}" \
     "librt:${dpkg_arch}" \
-    "libsendfile-dev:${dpkg_arch}" \
     "libsendfile:${dpkg_arch}" \
     "libsocket:${dpkg_arch}" \
     "system-crt:${dpkg_arch}" \
-    "system-header:${dpkg_arch}" \
-    | grep '^\w')
-ls
+    "system-header:${dpkg_arch}"
+ls /var/cache/apt/archives/
 set +x
-for deb in *"${dpkg_arch}.deb"; do
+for deb in /var/cache/apt/archives/*"${dpkg_arch}.deb"; do
     dpkg -x "${deb}" .
     rm "${deb}"
 done
+apt-get clean
 EOF
 # The -dev packages are not available from the apt repository we're using.
 # However, those packages are just symlinks from *.so to *.so.<version>.
