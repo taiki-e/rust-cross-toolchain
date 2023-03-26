@@ -187,6 +187,7 @@ espidf_targets=(
 fuchsia_targets=(
     aarch64-fuchsia # tier3
     aarch64-unknown-fuchsia
+    riscv64gc-unknown-fuchsia # tier3
     x86_64-fuchsia # tier3
     x86_64-unknown-fuchsia
 )

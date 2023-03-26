@@ -90,6 +90,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imac-unknown-xous-elf
 - [ ] riscv32imc-esp-espidf
 - [x] riscv64gc-unknown-freebsd
+- [ ] riscv64gc-unknown-fuchsia
 - [x] riscv64gc-unknown-linux-musl
 - [x] riscv64gc-unknown-openbsd
 - [x] s390x-unknown-linux-musl
