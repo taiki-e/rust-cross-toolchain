@@ -1,8 +1,6 @@
 abiv
 archiver
 armeabi
-armel
-armhf
 backports
 BAREMETAL
 bkpt
