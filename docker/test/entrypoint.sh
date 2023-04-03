@@ -82,6 +82,7 @@ case "${cc}" in
         if type -P "${RUST_TARGET}-ar"; then
             cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=${RUST_TARGET}-ar
+export RANLIB_${rust_target_lower}=${RUST_TARGET}-ranlib
 export STRIP=${RUST_TARGET}-strip
 export OBJDUMP=${RUST_TARGET}-objdump
 EOF
@@ -99,6 +100,7 @@ EOF
         # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
         cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=llvm-ar
+export RANLIB_${rust_target_lower}=llvm-ranlib
 export AR=llvm-ar
 export NM=llvm-nm
 export STRIP=llvm-strip
