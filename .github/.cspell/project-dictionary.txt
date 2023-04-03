@@ -131,7 +131,6 @@ octeon
 pkgconfig
 posix
 powerpcspe
-ranlib
 raspi
 rcrt
 rlib
