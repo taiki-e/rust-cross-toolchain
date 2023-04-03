@@ -281,6 +281,10 @@ none_targets=(
     thumbv8m.main-none-eabihf
     x86_64-unknown-none
 )
+linux_ohos_targets=(
+    aarch64-unknown-linux-ohos # tier3
+    armv7-unknown-linux-ohos # tier3
+)
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
@@ -320,4 +324,5 @@ targets=(
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}
     ${xous_targets[@]+"${xous_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
+    ${linux_ohos_targets[@]+"${linux_ohos_targets[@]}"}
 )

@@ -17,6 +17,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] aarch64-unknown-freebsd
 - [ ] aarch64-unknown-hermit
 - [ ] aarch64-unknown-linux-gnu_ilp32
+- [ ] aarch64-unknown-linux-ohos
 - [x] aarch64-unknown-netbsd
 - [ ] aarch64-unknown-nto-qnx710
 - [x] aarch64-unknown-openbsd
@@ -37,6 +38,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv7-apple-ios
 - [ ] armv7-sony-vita-newlibeabihf
 - [ ] armv7-unknown-freebsd
+- [ ] armv7-unknown-linux-ohos
 - [ ] armv7-unknown-linux-uclibceabi
 - [x] armv7-unknown-linux-uclibceabihf
 - [x] armv7-unknown-netbsd-eabihf
