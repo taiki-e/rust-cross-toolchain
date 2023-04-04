@@ -324,16 +324,18 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 | `aarch64-unknown-none-softfloat` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armebv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armebv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `armv5te-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armv7a-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armv7a-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `armv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `riscv32i-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
-| `riscv32im-unknown-none-elf` (tier3) | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
-| `riscv32imac-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
-| `riscv32imc-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
-| `riscv64gc-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
-| `riscv64imac-unknown-none-elf` | 11.1.0 | ? | x86_64 linux (glibc 2.27+) |
+| `riscv32i-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| `riscv32im-unknown-none-elf` (tier3) | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| `riscv32imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| `riscv32imc-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| `riscv64gc-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| `riscv64imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| `thumbv5te-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `thumbv6m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `thumbv7em-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
 | `thumbv7em-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |

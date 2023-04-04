@@ -128,6 +128,7 @@ nostartfiles
 nostdinc
 objcopy
 octeon
+opensbi
 pkgconfig
 posix
 powerpcspe
@@ -153,12 +154,15 @@ Tmemory
 TOOLDIR
 uclibcgnueabi
 uclibcgnueabihf
+versatilepb
 vexpress
 vfpv
 Vger
+virt
 wasmtime
 WINEBOOT
 winehq
 WINEPATH
 WINEPREFIX
 Znwm
+zynq

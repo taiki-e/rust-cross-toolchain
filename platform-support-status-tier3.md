@@ -30,7 +30,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armeb-unknown-linux-gnueabi
 - [ ] armv4t-none-eabi
 - [ ] armv4t-unknown-linux-gnueabi
-- [ ] armv5te-none-eabi
+- [x] armv5te-none-eabi
 - [x] armv5te-unknown-linux-uclibceabi
 - [ ] armv6-unknown-freebsd
 - [x] armv6-unknown-netbsd-eabihf
@@ -100,7 +100,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] sparc64-unknown-netbsd
 - [x] sparc64-unknown-openbsd
 - [ ] thumbv4t-none-eabi
-- [ ] thumbv5te-none-eabi
+- [x] thumbv5te-none-eabi
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
 - [x] thumbv7neon-unknown-linux-musleabihf

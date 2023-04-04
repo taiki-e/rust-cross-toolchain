@@ -67,12 +67,14 @@ case "${RUST_TARGET}" in
         ;;
 esac
 EOF
+FROM arm-toolchain as armv5te-none-eabi
 FROM arm-toolchain as armebv7r-none-eabi
 FROM arm-toolchain as armebv7r-none-eabihf
 FROM arm-toolchain as armv7a-none-eabi
 FROM arm-toolchain as armv7a-none-eabihf
 FROM arm-toolchain as armv7r-none-eabi
 FROM arm-toolchain as armv7r-none-eabihf
+FROM arm-toolchain as thumbv5te-none-eabi
 FROM arm-toolchain as thumbv6m-none-eabi
 FROM arm-toolchain as thumbv7em-none-eabi
 FROM arm-toolchain as thumbv7em-none-eabihf
@@ -135,6 +137,13 @@ apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recomm
     libpython2.7 \
     qemu-system-arm \
     qemu-system-misc
+# APT's qemu package doesn't provide firmware for riscv32: https://packages.ubuntu.com/en/jammy/all/qemu-system-data/filelist
+OPENSBI_VERSION=1.2
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/riscv-software-src/opensbi/releases/download/v${OPENSBI_VERSION}/opensbi-${OPENSBI_VERSION}-rv-bin.tar.xz" \
+| tar xJf -
+mv "opensbi-${OPENSBI_VERSION}-rv-bin/share/opensbi/ilp32/generic/firmware/fw_dynamic.bin" /usr/share/qemu/opensbi-riscv32-generic-fw_dynamic.bin
+mv "opensbi-${OPENSBI_VERSION}-rv-bin/share/opensbi/ilp32/generic/firmware/fw_dynamic.elf" /usr/share/qemu/opensbi-riscv32-generic-fw_dynamic.elf
+rm -rf "opensbi-${OPENSBI_VERSION}-rv-bin"
 EOF
 COPY /test-base.sh /
 RUN /test-base.sh none

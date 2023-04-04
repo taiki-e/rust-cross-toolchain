@@ -180,6 +180,12 @@ export CFLAGS_${rust_target_lower}="-march=mips32r2 \${CFLAGS_${rust_target_lowe
 export CXXFLAGS_${rust_target_lower}="-march=mips32r2 \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
+    armv5te-none-eabi | thumbv5te-none-eabi)
+        cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-march=armv5te \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=armv5te \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+        ;;
     armv7a-none-eabi)
         # https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L160-L163
         cat >>"${env_path}" <<EOF
@@ -361,26 +367,28 @@ EOF
         cat "${toolchain_dir}/bin/${runner}"
         ;;
     *-none*)
+        # https://github.com/taiki-e/semihosting/blob/HEAD/tools/qemu-system-runner.sh
         case "${RUST_TARGET}" in
             aarch64* | arm64*)
-                qemu_arch="${RUST_TARGET%%-*}"
+                qemu_system_arch=aarch64
+                qemu_user_arch="${RUST_TARGET%%-*}"
                 case "${RUST_TARGET}" in
-                    arm64*be*) qemu_arch=aarch64_be ;;
-                    arm64*) qemu_arch=aarch64 ;;
+                    arm64*be*) qemu_user_arch=aarch64_be ;;
+                    arm64*) qemu_user_arch=aarch64 ;;
                 esac
-                qemu_cpu=cortex-a72
-                qemu_machine=raspi3
+                qemu_machine=raspi3b
                 ;;
             arm* | thumb*)
+                qemu_system_arch=arm
+                qemu_user_arch=arm
                 case "${RUST_TARGET}" in
-                    armeb* | thumbeb*) qemu_arch=armeb ;;
-                    *) qemu_arch=arm ;;
+                    armeb* | thumbeb*) qemu_user_arch=armeb ;;
                 esac
                 case "${RUST_TARGET}" in
-                    # ARMv7-A+NEONv2
+                    # ARMv7-A
                     # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv7a_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv7a_none_eabihf.rs
-                    armv7a-none-eabi | armv7a-none-eabihf) qemu_cpu=cortex-a15 ;;
+                    armv7a-none-eabi | armv7a-none-eabihf) qemu_cpu=cortex-a9 ;;
                     # Cortex-R4/Cortex-R5 (ARMv7-R)
                     # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv7r_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armebv7r_none_eabi.rs
@@ -391,7 +399,10 @@ EOF
                     armv7r-none-eabihf | armebv7r-none-eabihf) qemu_cpu=cortex-r5f ;;
                     # TODO: https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv4t_none_eabi.rs
                     # TODO: https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/thumbv4t_none_eabi.rs
-                    armv4t-none-eabi | thumbv4t-none-eabi) ;;
+                    armv4t-none-eabi | thumbv4t-none-eabi) ;; # TODO
+                    # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/armv5te_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/thumbv5te_none_eabi.rs
+                    armv5te-none-eabi | thumbv5te-none-eabi) qemu_cpu=arm926 ;;
                     # Cortex-M0/Cortex-M0+/Cortex-M1 (ARMv6-M): https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/thumbv6m_none_eabi.rs
                     thumbv6m-none-eabi) qemu_cpu=cortex-m0 ;;
                     # Cortex-M4/Cortex-M7 (ARMv7E-M):
@@ -410,19 +421,52 @@ EOF
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 case "${RUST_TARGET}" in
+                    armv5te* | thumbv5te*) qemu_machine=versatilepb ;;
                     # Cortex-m
                     thumb*) qemu_machine=lm3s6965evb ;;
                     # Cortex-a
-                    armv7a-*) qemu_machine=vexpress-a15 ;;
-                    # TODO: As of qemu 6.1, qemu-system-arm doesn't support Cortex-R machine.
+                    armv7a-*) qemu_machine=xilinx-zynq-a9 ;;
+                    # TODO: As of qemu 7.2, qemu-system-arm doesn't support Cortex-R machine.
                     arm*v7r-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
-            mipsel-*) qemu_arch=mipsel ;;
-            riscv32*) qemu_arch=riscv32 ;;
-            riscv64*) qemu_arch=riscv64 ;;
-            x86_64*) qemu_arch=x86_64 ;;
+            mips-*)
+                qemu_system_arch=mips
+                qemu_user_arch=mips
+                qemu_machine=malta
+                ;;
+            mipsel-*)
+                qemu_system_arch=mipsel
+                qemu_user_arch=mipsel
+                qemu_machine=malta
+                ;;
+            mips64-*)
+                qemu_system_arch=mips64
+                qemu_user_arch=mips64
+                qemu_cpu=MIPS64R2-generic
+                qemu_machine=malta
+                ;;
+            mips64el-*)
+                qemu_system_arch=mips64el
+                qemu_user_arch=mips64el
+                qemu_cpu=MIPS64R2-generic
+                qemu_machine=malta
+                ;;
+            riscv32*)
+                qemu_system_arch=riscv32
+                qemu_user_arch=riscv32
+                qemu_machine=virt
+                ;;
+            riscv64*)
+                qemu_system_arch=riscv64
+                qemu_user_arch=riscv64
+                qemu_machine=virt
+                ;;
+            x86_64*)
+                qemu_system_arch=x86_64
+                qemu_user_arch=x86_64
+                ;;
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         if [[ -n "${qemu_cpu:-}" ]]; then
@@ -432,26 +476,25 @@ EOF
             qemu_cpu=" --cpu \${QEMU_CPU:-${qemu_cpu}}"
         fi
         # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
-        [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
+        [[ -f "${toolchain_dir}/bin/qemu-${qemu_user_arch}" ]] || cp "$(type -P "qemu-${qemu_user_arch}")" "${toolchain_dir}/bin"
         runner_qemu_user="${RUST_TARGET}-runner-qemu-user"
         cat >"${toolchain_dir}/bin/${runner_qemu_user}" <<EOF
 #!/bin/sh
 set -eu
-exec qemu-${qemu_arch}${qemu_cpu:-} "\$@"
+exec qemu-${qemu_user_arch}${qemu_cpu:-} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner_qemu_user}"
         cat "${toolchain_dir}/bin/${runner_qemu_user}"
         case "${RUST_TARGET}" in
-            armv7a-* | thumb* | aarch64* | arm64*)
+            armv5te-* | armv7a-* | thumb* | aarch64* | arm64* | riscv*)
                 # No default runner is set.
                 runner_qemu_system="${RUST_TARGET}-runner-qemu-system"
-                # https://github.com/rust-lang/rust/blob/1.67.0/src/test/run-make/thumb-none-qemu/example/.cargo/config
                 cat >"${toolchain_dir}/bin/${runner_qemu_system}" <<EOF
 #!/bin/sh
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
 export QEMU_AUDIO_DRV="${QEMU_AUDIO_DRV:-none}"
-exec qemu-system-${qemu_arch}${qemu_cpu:-} -machine ${qemu_machine} -nographic -semihosting-config enable=on,target=native -kernel "\$@"
+exec qemu-system-${qemu_system_arch}${qemu_cpu:-} -M ${qemu_machine} -display none -semihosting -kernel "\$@"
 EOF
                 chmod +x "${toolchain_dir}/bin/${runner_qemu_system}"
                 cat "${toolchain_dir}/bin/${runner_qemu_system}"

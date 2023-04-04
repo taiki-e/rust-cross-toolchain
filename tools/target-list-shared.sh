@@ -335,7 +335,7 @@ none_targets=(
     armebv7r-none-eabi
     armebv7r-none-eabihf
     # armv4t-none-eabi # tier3
-    # armv5te-none-eabi # tier3
+    armv5te-none-eabi # tier3
     armv7a-none-eabi
     armv7a-none-eabihf # tier3
     armv7r-none-eabi
@@ -352,7 +352,7 @@ none_targets=(
     riscv64gc-unknown-none-elf
     riscv64imac-unknown-none-elf
     # thumbv4t-none-eabi # tier3
-    # thumbv5te-none-eabi # tier3
+    thumbv5te-none-eabi # tier3
     thumbv6m-none-eabi
     thumbv7em-none-eabi
     thumbv7em-none-eabihf

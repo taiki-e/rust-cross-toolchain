@@ -503,122 +503,103 @@ else
     )
     for linker in "${linkers[@]}"; do
         # https://github.com/rust-embedded/cortex-m/blob/e6c7249982841a8a39ada0bc80e6d0e492a560c3/cortex-m-rt/ci/script.sh
-        # https://github.com/rust-lang/rust/blob/1.67.0/src/test/run-make/thumb-none-qemu/example/.cargo/config
+        # https://github.com/rust-lang/rust/blob/1.68.0/tests/run-make/thumb-none-qemu/example/.cargo/config
         case "${linker}" in
-            rust-lld) flag="" ;;
-            *-gcc) flag="-C linker=${linker} -C link-arg=-nostartfiles" ;;
-            *) flag="-C linker=${linker}" ;;
+            rust-lld) target_rustflags="" ;;
+            *-gcc) target_rustflags="-C linker=${linker} -C link-arg=-nostartfiles" ;;
+            *) target_rustflags="-C linker=${linker}" ;;
         esac
         case "${linker}" in
             # If the linker contains a dot, rustc will misinterpret the linker flavor.
-            thumbv8m.*-ld) flag+=" -C linker-flavor=ld" ;;
-            thumbv8m.*-gcc) flag+=" -C linker-flavor=gcc" ;;
+            thumbv8m.*-ld) target_rustflags+=" -C linker-flavor=ld" ;;
+            thumbv8m.*-gcc) target_rustflags+=" -C linker-flavor=gcc" ;;
         esac
         case "${RUST_TARGET}" in
-            aarch64-unknown-none* | arm*-none-eabi* | thumb*-none-eabi*)
-                case "${RUST_TARGET}" in
-                    armeb*)
-                        case "${linker}" in
-                            # TODO: lld doesn't support big-endian arm https://groups.google.com/g/clang-built-linux/c/XkHn49b_TnI/m/S-3yh7H1BgAJ
-                            rust-lld) continue ;;
-                            *-ld) flag+=" -C link-arg=-EB" ;;
-                            *-gcc) flag+=" -C link-arg=-mbig-endian" ;;
-                        esac
-                        ;;
-                esac
-                pushd arm-none >/dev/null
+            armeb*)
                 case "${linker}" in
-                    rust-lld | *-ld)
-                        RUSTFLAGS="${RUSTFLAGS:-} ${flag}" \
-                            run_cargo build
-                        ;;
-                    *)
-                        RUSTFLAGS="${RUSTFLAGS:-} ${flag}" \
-                            run_cargo build --features cpp
-                        cp "$(pwd)/target/${RUST_TARGET}"/debug/build/arm-none-test-*/out/int_c.o "${out_dir}/arm-none-test-${linker}-c.o"
-                        cp "$(pwd)/target/${RUST_TARGET}"/debug/build/arm-none-test-*/out/int_cpp.o "${out_dir}/arm-none-test-${linker}-cpp.o"
-                        ;;
+                    # TODO: lld doesn't support big-endian arm https://groups.google.com/g/clang-built-linux/c/XkHn49b_TnI/m/S-3yh7H1BgAJ
+                    rust-lld) continue ;;
+                    *-ld) target_rustflags+=" -C link-arg=-EB" ;;
+                    *-gcc) target_rustflags+=" -C link-arg=-mbig-endian" ;;
                 esac
-                bin="$(pwd)/target/${RUST_TARGET}"/debug/arm-none-test
-                cp "${bin}" "${out_dir}/arm-none-test-${linker}"
-                if [[ -n "${runner}" ]]; then
-                    # TODO(none,aarch64,cortex-m,cortex-r)
+                ;;
+        esac
+        target_rustflags_backup="${target_rustflags}"
+        for _runner in qemu-system qemu-user; do
+            target_rustflags="${target_rustflags_backup}"
+            cargo_args=(build)
+            case "${_runner}" in
+                qemu-system)
+                    cargo_args+=(--features qemu-system)
                     case "${RUST_TARGET}" in
-                        armv7a-*) x "${RUST_TARGET}-runner-qemu-system" "${bin}" ;;
+                        # TODO: As of qemu 7.2, qemu-system-arm doesn't support Cortex-R machine.
+                        armv7r* | armebv7r*) continue ;;
+                        thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m*)
+                            _linker=link.x
+                            target_rustflags+=" -C link-arg=-T${_linker}"
+                            ;;
+                        aarch64*)
+                            _linker=raspi/kernel.ld
+                            target_rustflags+=" -C link-arg=-T${_linker}"
+                            ;;
+                        riscv*)
+                            case "${RUST_TARGET}" in
+                                riscv32*) _linker=riscv32.ld ;;
+                                riscv64*) _linker=riscv64.ld ;;
+                                *) bail "unrecognized target '${RUST_TARGET}'" ;;
+                            esac
+                            target_rustflags+=" -C link-arg=-T${_linker}"
+                            ;;
                     esac
+                    ;;
+                qemu-user)
+                    case "${RUST_TARGET}" in
+                        thumb*) continue ;;
+                    esac
+                    ;;
+            esac
+            pushd no-std-qemu >/dev/null
+            # To link to pre-compiled C libraries provided by a C
+            # toolchain use GCC as the linker.
+            case "${linker}" in
+                rust-lld | *-ld)
+                    RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
+                        run_cargo "${cargo_args[@]}"
+                    ;;
+                *)
+                    RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
+                        run_cargo "${cargo_args[@]}" --features cpp
+                    [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
+                    [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
+                    ;;
+            esac
+            bin="$(pwd)/target/${RUST_TARGET}"/debug/no-std-qemu-test
+            cp "${bin}" "${out_dir}/no-std-qemu-test-${linker}-${_runner}"
+            if [[ -n "${runner}" ]]; then
+                if [[ "${_runner}" == "qemu-user" ]]; then
                     # TODO(none,cortex-m)
                     case "${RUST_TARGET}" in
-                        thumbv6m-* | thumbv7m-* | thumbv7em-* | thumbv8m.*) ;;
-                        *) x "${RUST_TARGET}-runner-qemu-user" "${bin}" ;;
+                        thumbv6m-* | thumbv7m-* | thumbv7em-* | thumbv8m.*) continue ;;
                     esac
                 fi
-                popd >/dev/null
-                case "${RUST_TARGET}" in
-                    aarch64* | arm*) ;;
-                    thumb*)
-                        pushd cortex-m >/dev/null
-                        # To link to pre-compiled C libraries provided by a C
-                        # toolchain use GCC as the linker.
-                        case "${linker}" in
-                            rust-lld | *-ld)
-                                RUSTFLAGS="${RUSTFLAGS:-} ${flag} -C link-arg=-Tlink.x" \
-                                    run_cargo build
-                                ;;
-                            *)
-                                RUSTFLAGS="${RUSTFLAGS:-} ${flag} -C link-arg=-Tlink.x" \
-                                    run_cargo build --features cpp
-                                cp "$(pwd)/target/${RUST_TARGET}"/debug/build/cortex-m-test-*/out/int_c.o "${out_dir}/cortex-m-test-${linker}-c.o"
-                                cp "$(pwd)/target/${RUST_TARGET}"/debug/build/cortex-m-test-*/out/int_cpp.o "${out_dir}/cortex-m-test-${linker}-cpp.o"
-                                ;;
-                        esac
-                        bin="$(pwd)/target/${RUST_TARGET}"/debug/cortex-m-test
-                        cp "${bin}" "${out_dir}/cortex-m-test-${linker}"
-                        if [[ -n "${runner}" ]]; then
-                            x "${RUST_TARGET}-runner-qemu-system" "${bin}" | tee run.log
-                            if ! grep -Eq '^Hello Rust!' run.log; then
-                                bail
-                            fi
-                            case "${linker}" in
-                                rust-lld | *-ld) ;;
-                                *)
-                                    if ! grep -Eq '^x = 5' run.log; then
-                                        bail
-                                    fi
-                                    if ! grep -Eq '^y = 6' run.log; then
-                                        bail
-                                    fi
-                                    ;;
-                            esac
-                        fi
-                        popd >/dev/null
-                        ;;
-                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
-                esac
-                ;;
-            riscv*-unknown-none-elf)
-                pushd riscv-none >/dev/null
+                x "${RUST_TARGET}-runner-${_runner}" "${bin}" | tee run.log
+                if ! grep -Eq '^Hello Rust!' run.log; then
+                    bail
+                fi
                 case "${linker}" in
-                    rust-lld | *-ld)
-                        RUSTFLAGS="${RUSTFLAGS:-} ${flag} -C link-arg=-Tmemory.x -C link-arg=-Tlink.x" \
-                            run_cargo build
-                        ;;
+                    rust-lld | *-ld) ;;
                     *)
-                        RUSTFLAGS="${RUSTFLAGS:-} ${flag} -C link-arg=-Tmemory.x -C link-arg=-Tlink.x" \
-                            run_cargo build --features cpp
-                        cp "$(pwd)/target/${RUST_TARGET}"/debug/build/riscv-none-test-*/out/int_c.o "${out_dir}/riscv-none-test-${linker}-c.o"
-                        cp "$(pwd)/target/${RUST_TARGET}"/debug/build/riscv-none-test-*/out/int_cpp.o "${out_dir}/riscv-none-test-${linker}-cpp.o"
+                        if ! grep -Eq '^x = 5' run.log; then
+                            bail
+                        fi
+                        if ! grep -Eq '^y = 6' run.log; then
+                            bail
+                        fi
                         ;;
                 esac
-                bin="$(pwd)/target/${RUST_TARGET}/debug/riscv-none-test"
-                cp "${bin}" "${out_dir}/riscv-none-test-${linker}"
-                # TODO(none,riscv)
-                # x "${RUST_TARGET}-runner-qemu-system" "${bin}"
-                # or
-                # x "${RUST_TARGET}-runner-qemu-user" "${bin}"
-                popd >/dev/null
-                ;;
-            *) bail "unrecognized target '${RUST_TARGET}'" ;;
-        esac
+            fi
+            popd >/dev/null
+        done
     done
 fi
 
@@ -702,8 +683,8 @@ case "${RUST_TARGET}" in
                             *) arch_specific_pat+=('Tag_CPU_arch: v6') ;;
                         esac
                         ;;
-                    armv4t-*) arch_specific_pat+=('Tag_CPU_arch: v4T') ;;
-                    armv5te-*) arch_specific_pat+=('Tag_CPU_arch: v5TE(J)?') ;;
+                    armv4t-* | thumbv4t-*) arch_specific_pat+=('Tag_CPU_arch: v4T') ;;
+                    armv5te-* | thumbv5te-*) arch_specific_pat+=('Tag_CPU_arch: v5TE(J)?') ;;
                     arm*v7* | thumbv7*)
                         case "${RUST_TARGET}" in
                             thumbv7em-*) arch_specific_pat+=('Tag_CPU_arch: v7E-M') ;;
@@ -741,8 +722,8 @@ case "${RUST_TARGET}" in
                             fi
                         done
                         ;;
-                    armv4t-*) arch_specific_pat+=('Tag_THUMB_ISA_use: Thumb-1') ;;
-                    armv5te-*)
+                    armv4t-* | thumbv4t-*) arch_specific_pat+=('Tag_THUMB_ISA_use: Thumb-1') ;;
+                    armv5te-* | thumbv5te-*)
                         for bin in "${out_dir}"/*; do
                             if [[ "${RUST_TARGET}" == *"-linux-uclibc"* ]]; then
                                 assert_arch_specific 'Tag_CPU_arch: v5TE(J)?' "${bin}"
