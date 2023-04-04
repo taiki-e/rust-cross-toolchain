@@ -9,7 +9,6 @@ RUN <<EOF
 sed -i 's/# deb-src/deb-src/g' /etc/apt/sources.list
 apt-get -o Acquire::Retries=10 update -qq
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    autoconf \
     dpkg-dev
 EOF
 
