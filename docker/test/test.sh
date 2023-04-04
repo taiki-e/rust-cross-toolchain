@@ -1020,7 +1020,16 @@ case "${RUST_TARGET}" in
             *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         ;;
-    wasm*) file_info_pat+=('WebAssembly \(wasm\) binary module version 0x1 \(MVP\)') ;;
+    wasm*)
+        for bin in "${out_dir}"/*; do
+            if [[ -x "${bin}" ]] || [[ "${RUST_TARGET}" != "wasm32-unknown-emscripten" ]]; then
+                assert_file_info 'WebAssembly \(wasm\) binary module version 0x1 \(MVP\)'
+            else
+                # TODO(wasm32-unknown-emscripten): regressed in 1.39.20 -> 2.0.5 update
+                assert_file_info 'ASCII text, with very long lines'
+            fi
+        done
+        ;;
     asmjs-*) ;;
     *-windows-gnu*)
         for bin in "${out_dir}"/*; do

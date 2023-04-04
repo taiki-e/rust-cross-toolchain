@@ -214,7 +214,7 @@ wasi_targets=(
 # rustup target list | grep -e '-emscripten'
 # rustc --print target-list | grep -e '-emscripten'
 emscripten_targets=(
-    asmjs-unknown-emscripten
+    # asmjs-unknown-emscripten # TODO: wasm-validator error since around nightly-2023-03-26
     wasm32-unknown-emscripten
 )
 # WebAssembly (unknown)
