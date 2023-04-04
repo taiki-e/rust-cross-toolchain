@@ -35,7 +35,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] armv7a-none-eabi
 - [x] armv7r-none-eabi
 - [x] armv7r-none-eabihf
-- [x] asmjs-unknown-emscripten
+- [ ] asmjs-unknown-emscripten
 - [ ] i586-pc-windows-msvc
 - [x] i586-unknown-linux-gnu
 - [x] i586-unknown-linux-musl
