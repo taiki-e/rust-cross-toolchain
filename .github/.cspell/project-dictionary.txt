@@ -3,7 +3,6 @@ archiver
 armeabi
 backports
 BAREMETAL
-bkpt
 bootlin
 bsdtar
 BUILDKIT
@@ -25,7 +24,6 @@ DCMAKE
 DCOMPILER
 debuginfo
 defconfig
-demangle
 devel
 dilos
 distro
@@ -44,11 +42,9 @@ fmin
 fstrict
 funwind
 fvisibility
-hstdout
 HWCAPS
 Icelake
 INLINES
-Ireason
 isnan
 isystem
 KBUILD
@@ -74,6 +70,7 @@ liblgrp
 libm
 libmpc
 libmpfr
+libncursesw
 libpthread
 libpython
 libquadmath
@@ -122,7 +119,6 @@ NDEBUG
 netbsdelf
 newlib
 nofp
-nographic
 nosimd
 nostartfiles
 nostdinc
@@ -140,7 +136,6 @@ RUNTIMES
 Scrt
 secureplt
 shellcheck
-shfmt
 SIMD
 sjlj
 softfp
@@ -149,13 +144,10 @@ stdarch
 stdlib
 subcmd
 SYSV
-Tlink
-Tmemory
 TOOLDIR
 uclibcgnueabi
 uclibcgnueabihf
 versatilepb
-vexpress
 vfpv
 Vger
 virt
