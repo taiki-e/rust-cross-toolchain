@@ -53,6 +53,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] bpfel-unknown-none
 - [ ] hexagon-unknown-linux-musl
 - [ ] i386-apple-ios
+- [ ] i586-pc-nto-qnx700
 - [ ] i686-apple-darwin
 - [ ] i686-unknown-haiku
 - [x] i686-unknown-netbsd

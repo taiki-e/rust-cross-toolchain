@@ -127,7 +127,7 @@ for os in "${known_target_group[@]}"; do
         bail "there is no target for '${os}_targets' group"
     fi
 done
-rmdir tmp/gen/os \
+rmdir tmp/gen/os &>/dev/null \
     || for os_targets in tmp/gen/os/*; do
         os="$(basename "${os_targets}")"
         emit_targets

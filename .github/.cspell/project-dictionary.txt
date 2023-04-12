@@ -69,7 +69,6 @@ liblgrp
 libm
 libmpc
 libmpfr
-libncursesw
 libpthread
 libpython
 libquadmath
