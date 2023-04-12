@@ -33,7 +33,6 @@ EHABI
 elfv
 emcc
 EMSDK
-esac
 evbarm
 evbppc
 fexceptions
@@ -70,6 +69,7 @@ liblgrp
 libm
 libmpc
 libmpfr
+libncursesw
 libpthread
 libpython
 libquadmath
