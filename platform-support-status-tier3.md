@@ -61,6 +61,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-uwp-windows-gnu
 - [ ] i686-uwp-windows-msvc
 - [ ] i686-wrs-vxworks
+- [ ] loongarch64-unknown-linux-gnu
 - [ ] m68k-unknown-linux-gnu
 - [ ] mips-unknown-linux-uclibc
 - [ ] mips64-openwrt-linux-musl

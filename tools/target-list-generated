@@ -19,6 +19,7 @@ linux_gnu_targets=(
     armv7-unknown-linux-gnueabihf
     i586-unknown-linux-gnu
     i686-unknown-linux-gnu
+    loongarch64-unknown-linux-gnu # tier3
     m68k-unknown-linux-gnu # tier3
     mips-unknown-linux-gnu
     mips64-unknown-linux-gnuabi64
