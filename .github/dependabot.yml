@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: ''
+    labels: []
+  # crates with [workspace] table are not recognized by the above 'directory: /'
+  - package-ecosystem: cargo
+    directory: /docker/test/fixtures/no-std-qemu
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: ''
+    labels: []
