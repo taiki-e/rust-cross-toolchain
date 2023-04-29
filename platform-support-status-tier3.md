@@ -121,3 +121,4 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-uwp-windows-gnu
 - [ ] x86_64-uwp-windows-msvc
 - [ ] x86_64-wrs-vxworks
+- [ ] x86_64h-apple-darwin

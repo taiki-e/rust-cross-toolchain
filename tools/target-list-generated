@@ -85,6 +85,7 @@ macos_targets=(
     aarch64-apple-darwin
     i686-apple-darwin # tier3
     x86_64-apple-darwin
+    x86_64h-apple-darwin # tier3
 )
 ios_targets=(
     aarch64-apple-ios
