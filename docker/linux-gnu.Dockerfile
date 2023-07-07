@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 
 ARG DISTRO=ubuntu
 ARG DISTRO_VERSION=18.04

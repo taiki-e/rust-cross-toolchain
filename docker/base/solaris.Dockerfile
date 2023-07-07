@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 
 # Refs:
 # - https://github.com/rust-lang/rust/blob/542ed2bf72b232b245ece058fc11aebb1ca507d7/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh

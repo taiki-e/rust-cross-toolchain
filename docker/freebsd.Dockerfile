@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 
 # Refs:
 # - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/scripts/freebsd-toolchain.sh

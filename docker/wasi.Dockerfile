@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 
 # Refs:
 # - https://github.com/WebAssembly/wasi-sdk
