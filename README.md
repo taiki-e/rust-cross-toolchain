@@ -170,13 +170,13 @@
 
 | target | version |
 | ------ | ------- |
-| `aarch64-unknown-netbsd` (tier3) | 9.2 |
-| `armv6-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.2 |
-| `armv7-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.2 |
-| `i686-unknown-netbsd` (tier3) | 8.2 (default), 9.2 |
-| `powerpc-unknown-netbsd` (tier3) | 8.2 (default), 9.2 |
-| `sparc64-unknown-netbsd` (tier3) | 8.2 (default), 9.2 |
-| `x86_64-unknown-netbsd` | 8.2 (default), 9.2 |
+| `aarch64-unknown-netbsd` (tier3) | 9.3 |
+| `armv6-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.3 |
+| `armv7-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.3 |
+| `i686-unknown-netbsd` (tier3) | 8.2 (default), 9.3 |
+| `powerpc-unknown-netbsd` (tier3) | 8.2 (default), 9.3 |
+| `sparc64-unknown-netbsd` (tier3) | 8.2 (default), 9.3 |
+| `x86_64-unknown-netbsd` | 8.2 (default), 9.3 |
 
 ### OpenBSD
 
