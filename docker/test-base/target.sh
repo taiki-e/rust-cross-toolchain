@@ -50,8 +50,10 @@ case "${RUST_TARGET}" in
         ;;
 esac
 
+# https://github.com/rust-lang/rust/blob/HEAD/Cargo.lock
+libc_version=0.2.147
+compiler_builtins_version=0.1.95
 sysroot=$(rustc --print sysroot)
-libc_version=0.2.135
 for patch in /test-base/patches/*.diff; do
     set +x
     t="$(basename "${patch}")"
@@ -68,24 +70,24 @@ for patch in /test-base/patches/*.diff; do
     elif [[ -d "${sysroot}/lib/rustlib/src/rust/library/stdarch/crates/${lib}" ]]; then
         pushd "${sysroot}/lib/rustlib/src/rust/library/stdarch/crates/${lib}"
     else
-        case "${lib}" in
-            libc)
-                rm -rf /tmp/fetch
-                mkdir -p /tmp/fetch/src
-                pushd /tmp/fetch >/dev/null
-                touch src/lib.rs
-                cat >Cargo.toml <<EOF
+        rm -rf /tmp/fetch
+        mkdir -p /tmp/fetch/src
+        pushd /tmp/fetch >/dev/null
+        touch src/lib.rs
+        cat >Cargo.toml <<EOF
 [package]
 name = "fetch-deps"
 version = "0.0.0"
 edition = "2021"
 EOF
-                cargo fetch -Z build-std --target "${RUST_TARGET}"
-                popd >/dev/null
-                pushd "${HOME}"/.cargo/registry/src/github.com-*/libc-"${libc_version}" >/dev/null
-                ;;
+        cargo fetch -Z build-std --target "${RUST_TARGET}"
+        popd >/dev/null
+        case "${lib}" in
+            libc) lib_version="${libc_version}" ;;
+            compiler_builtins) lib_version="${compiler_builtins_version}" ;;
             *) bail "unrecognized lib '${lib}'" ;;
         esac
+        pushd "${HOME}"/.cargo/registry/src/index.crates.io-*/"${lib}-${lib_version}" >/dev/null
     fi
     patch -p1 <"${patch}"
     popd >/dev/null

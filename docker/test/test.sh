@@ -199,6 +199,7 @@ fi
 export CARGO_NET_RETRY=10
 export RUST_BACKTRACE=1
 export RUSTUP_MAX_RETRIES=10
+export RUST_TEST_THREADS=1 # TODO: set in entrypoint.sh? https://github.com/taiki-e/setup-cross-toolchain-action/issues/10
 export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"

@@ -1,0 +1,13 @@
+diff --git a/src/unix/linux_like/linux/musl/b32/powerpc.rs b/src/unix/linux_like/linux/musl/b32/powerpc.rs
+index b1669ade7..ec4f2047e 100644
+--- a/src/unix/linux_like/linux/musl/b32/powerpc.rs
++++ b/src/unix/linux_like/linux/musl/b32/powerpc.rs
+@@ -380,8 +380,6 @@ pub struct statvfs64 {
+
+ pub const EXTPROC: ::tcflag_t = 0x10000000;
+
+-pub const MAP_HUGETLB: ::c_int = 0x040000;
+-
+ pub const F_GETLK: ::c_int = 12;
+ pub const F_GETOWN: ::c_int = 9;
+ pub const F_SETLK: ::c_int = 13;

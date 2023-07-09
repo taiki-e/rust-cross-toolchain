@@ -35,8 +35,9 @@ jobs:
           - target: linux-gnu
           - target: linux-gnu
             host: aarch64
-          - target: linux-musl
-            musl: '1.1'
+          # TODO(linux-musl): https://github.com/rust-lang/rust/pull/107129/
+          # - target: linux-musl
+          #   musl: '1.1'
           - target: linux-musl
             musl: '1.2'
           - target: linux-uclibc
