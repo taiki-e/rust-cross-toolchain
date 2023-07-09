@@ -1,10 +1,9 @@
 #!/bin/false
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 # shellcheck shell=bash # not executable
 # shellcheck disable=SC2034
 
-# Linux (GNU)
-# rustup target list | grep -e '-linux-gnu'
-# rustc --print target-list | grep -e '-linux-gnu'
+# Linux (glibc)
 linux_gnu_targets=(
     aarch64-unknown-linux-gnu
     # aarch64-unknown-linux-gnu_ilp32 # tier3
@@ -19,11 +18,12 @@ linux_gnu_targets=(
     armv7-unknown-linux-gnueabihf
     i586-unknown-linux-gnu
     i686-unknown-linux-gnu
+    # loongarch64-unknown-linux-gnu
     # m68k-unknown-linux-gnu # tier3, build fail: https://github.com/rust-lang/rust/issues/89498
-    mips-unknown-linux-gnu
-    mips64-unknown-linux-gnuabi64
-    mips64el-unknown-linux-gnuabi64
-    mipsel-unknown-linux-gnu
+    mips-unknown-linux-gnu               # tier3
+    mips64-unknown-linux-gnuabi64        # tier3
+    mips64el-unknown-linux-gnuabi64      # tier3
+    mipsel-unknown-linux-gnu             # tier3
     mipsisa32r6-unknown-linux-gnu        # tier3
     mipsisa32r6el-unknown-linux-gnu      # tier3
     mipsisa64r6-unknown-linux-gnuabi64   # tier3
@@ -42,8 +42,6 @@ linux_gnu_targets=(
     x86_64-unknown-linux-gnux32
 )
 # Linux (musl)
-# rustup target list | grep -e '-linux-musl'
-# rustc --print target-list | grep -e '-linux-musl'
 linux_musl_targets=(
     aarch64-unknown-linux-musl
     arm-unknown-linux-musleabi
@@ -55,12 +53,12 @@ linux_musl_targets=(
     i586-unknown-linux-musl
     i686-unknown-linux-musl
     mips-unknown-linux-musl
-    # mips64-openwrt-linux-musl # tier3, https://github.com/rust-lang/rust/pull/92300
+    # mips64-openwrt-linux-musl # tier3, TODO: https://github.com/rust-lang/rust/pull/92300
     mips64-unknown-linux-muslabi64
     mips64el-unknown-linux-muslabi64
     mipsel-unknown-linux-musl
     powerpc-unknown-linux-musl # tier3
-    # powerpc64-unknown-linux-musl # tier3, ABI version 1 is not compatible with ABI version 2 output
+    # powerpc64-unknown-linux-musl # tier3, TODO: ABI version 1 is not compatible with ABI version 2 output
     powerpc64le-unknown-linux-musl # tier3
     # riscv32gc-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
     riscv64gc-unknown-linux-musl         # tier3
@@ -69,17 +67,19 @@ linux_musl_targets=(
     x86_64-unknown-linux-musl
 )
 # Linux (uClibc)
-# rustc --print target-list | grep -e '-linux-uclibc'
 linux_uclibc_targets=(
     armv5te-unknown-linux-uclibceabi # tier3
-    # armv7-unknown-linux-uclibceabi   # tier3, As of 2022-06-13, bootlin doesn't seem to provide toolchain for this target
+    # armv7-unknown-linux-uclibceabi   # tier3, TODO: as of 2022-06-13, bootlin doesn't seem to provide toolchain for this target
     armv7-unknown-linux-uclibceabihf # tier3
-    # mips-unknown-linux-uclibc        # tier3, error: Undefined temporary symbol $BB6_15
-    # mipsel-unknown-linux-uclibc      # tier3, error: Undefined temporary symbol $BB6_15
+    # mips-unknown-linux-uclibc # tier3, TODO: error: Undefined temporary symbol $BB6_15
+    # mipsel-unknown-linux-uclibc # tier3, TODO: error: Undefined temporary symbol $BB6_15
+)
+# Linux (OpenHarmony)
+linux_ohos_targets=(
+    # aarch64-unknown-linux-ohos # tier3
+    # armv7-unknown-linux-ohos # tier3
 )
 # Android
-# rustup target list | grep -e '-android'
-# rustc --print target-list | grep -e '-android'
 android_targets=(
     aarch64-linux-android
     arm-linux-androideabi
@@ -89,43 +89,36 @@ android_targets=(
     x86_64-linux-android
 )
 # macOS
-# rustup target list | grep -e '-darwin'
-# rustc --print target-list | grep -e '-darwin'
 macos_targets=(
     # aarch64-apple-darwin
-    # # i686-apple-darwin # tier3
+    # i686-apple-darwin # tier3
     # x86_64-apple-darwin
+    # x86_64h-apple-darwin # tier3
 )
 # iOS
-# rustup target list | grep -e '-ios'
-# rustc --print target-list | grep -e '-ios'
 ios_targets=(
     # aarch64-apple-ios
-    # # aarch64-apple-ios-macabi # tier3
+    # aarch64-apple-ios-macabi # tier3
     # aarch64-apple-ios-sim
-    # # armv7-apple-ios # tier3
-    # # armv7s-apple-ios # tier3
-    # # i386-apple-ios # tier3
+    # armv7-apple-ios # tier3
+    # armv7s-apple-ios # tier3
+    # i386-apple-ios # tier3
     # x86_64-apple-ios
-    # # x86_64-apple-ios-macabi # tier3
+    # x86_64-apple-ios-macabi # tier3
 )
 # tvOS
-# rustc --print target-list | grep -e '-tvos'
 tvos_targets=(
     # aarch64-apple-tvos # tier3
     # x86_64-apple-tvos # tier3
 )
 # watchOS
-# rustc --print target-list | grep -e '-watchos'
 watchos_targets=(
     # aarch64-apple-watchos-sim # tier3
-    # arm64_32-apple-watchos    # tier3
-    # armv7k-apple-watchos      # tier3
-    # x86_64-apple-watchos-sim  # tier3
+    # arm64_32-apple-watchos # tier3
+    # armv7k-apple-watchos # tier3
+    # x86_64-apple-watchos-sim # tier3
 )
 # FreeBSD
-# rustup target list | grep -e '-freebsd'
-# rustc --print target-list | grep -e '-freebsd'
 freebsd_targets=(
     aarch64-unknown-freebsd # tier3
     # armv6-unknown-freebsd # tier3
@@ -138,19 +131,18 @@ freebsd_targets=(
     x86_64-unknown-freebsd
 )
 # NetBSD
-# rustup target list | grep -e '-netbsd'
-# rustc --print target-list | grep -e '-netbsd'
 netbsd_targets=(
-    aarch64-unknown-netbsd      # tier3
+    aarch64-unknown-netbsd # tier3
+    # aarch64_be-unknown-netbsd # tier3 # TODO: added in NetBSD 10 (currently pre-release)
     armv6-unknown-netbsd-eabihf # tier3
     armv7-unknown-netbsd-eabihf # tier3
     i686-unknown-netbsd         # tier3
     powerpc-unknown-netbsd      # tier3
-    sparc64-unknown-netbsd      # tier3
+    # riscv64gc-unknown-netbsd # tier3 # TODO: not found in NetBSD 8/9/10
+    sparc64-unknown-netbsd # tier3
     x86_64-unknown-netbsd
 )
 # OpenBSD
-# rustc --print target-list | grep -e '-openbsd'
 openbsd_targets=(
     aarch64-unknown-openbsd   # tier3
     i686-unknown-openbsd      # tier3
@@ -161,27 +153,20 @@ openbsd_targets=(
     x86_64-unknown-openbsd    # tier3
 )
 # DragonFly BSD
-# rustc --print target-list | grep -e '-dragonfly'
 dragonfly_targets=(
     x86_64-unknown-dragonfly # tier3
 )
 # Solaris
-# rustup target list | grep -e '-solaris'
-# rustc --print target-list | grep -e '-solaris'
 solaris_targets=(
     sparcv9-sun-solaris
     x86_64-pc-solaris
     x86_64-sun-solaris
 )
 # illumos
-# rustup target list | grep -e '-illumos'
-# rustc --print target-list | grep -e '-illumos'
 illumos_targets=(
     x86_64-unknown-illumos
 )
 # Windows (MSVC)
-# rustup target list | grep -e '-windows-msvc'
-# rustc --print target-list | grep -e '-windows-msvc'
 windows_msvc_targets=(
     # aarch64-pc-windows-msvc
     # aarch64-uwp-windows-msvc # tier3
@@ -193,9 +178,7 @@ windows_msvc_targets=(
     # x86_64-pc-windows-msvc
     # x86_64-uwp-windows-msvc # tier3
 )
-# Windows (GNU)
-# rustup target list | grep -e '-windows-gnu'
-# rustc --print target-list | grep -e '-windows-gnu'
+# Windows (MinGW)
 windows_gnu_targets=(
     # aarch64-pc-windows-gnullvm # tier3
     i686-pc-windows-gnu
@@ -205,115 +188,98 @@ windows_gnu_targets=(
     # x86_64-uwp-windows-gnu # tier3
 )
 # WASI
-# rustup target list | grep -e '-wasi'
-# rustc --print target-list | grep -e '-wasi'
 wasi_targets=(
     wasm32-wasi
 )
 # Emscripten
-# rustup target list | grep -e '-emscripten'
-# rustc --print target-list | grep -e '-emscripten'
 emscripten_targets=(
     # asmjs-unknown-emscripten # TODO: wasm-validator error since around nightly-2023-03-26
     wasm32-unknown-emscripten
 )
-# WebAssembly (unknown)
-# rustup target list | grep -e '-unknown-unknown'
-# rustc --print target-list | grep -e '-unknown-unknown'
+# WebAssembly (unknown OS)
 wasm_targets=(
     # wasm32-unknown-unknown
     # wasm64-unknown-unknown # tier3
 )
 # AIX
-# rustc --print target-list | grep -e '-aix'
 aix_targets=(
     # powerpc64-ibm-aix # tier3
 )
 # CUDA
-# rustup target list | grep -e '-cuda'
-# rustc --print target-list | grep -e '-cuda'
 cuda_targets=(
     # nvptx64-nvidia-cuda
 )
 # ESP-IDF
-# rustc --print target-list | grep -e '-espidf'
 espidf_targets=(
+    # riscv32imac-esp-espidf # tier3
     # riscv32imc-esp-espidf # tier3
 )
 # Fuchsia
-# rustup target list | grep -e '-fuchsia'
-# rustc --print target-list | grep -e '-fuchsia'
 fuchsia_targets=(
-    # aarch64-fuchsia
-    # x86_64-fuchsia
+    # aarch64-fuchsia # tier3
+    # aarch64-unknown-fuchsia
+    # riscv64gc-unknown-fuchsia # tier3
+    # x86_64-fuchsia # tier3
+    # x86_64-unknown-fuchsia
 )
 # Haiku
-# rustc --print target-list | grep -e '-haiku'
 haiku_targets=(
     # i686-unknown-haiku # tier3
     # x86_64-unknown-haiku # tier3
 )
 # Hermit
-# rustc --print target-list | grep -e '-unknown-hermit'
 hermit_targets=(
     # aarch64-unknown-hermit # tier3
     # x86_64-unknown-hermit # tier3
 )
 # Horizon
-# rustc --print target-list | grep -e '-nintendo'
 horizon_targets=(
+    # aarch64-nintendo-switch-freestanding # tier3
     # armv6k-nintendo-3ds # tier3
 )
 # L4Re
-# rustc --print target-list | grep -e '-l4re'
 l4re_targets=(
     # x86_64-unknown-l4re-uclibc # tier3
 )
 # QNX Neutrino
-# rustc --print target-list | grep -e '-nto'
 nto_targets=(
     # aarch64-unknown-nto-qnx710 # tier3
+    # i586-pc-nto-qnx700 # tier3
     # x86_64-pc-nto-qnx710 # tier3
 )
-# PSP
-# rustc --print target-list | grep -e '-psp'
+# Sony PlayStation Portable (PSP)
 psp_targets=(
     # mipsel-sony-psp # tier3
 )
-# PSP
-# rustc --print target-list | grep -e '-psx'
+# Sony PlayStation 1 (PSX)
 psx_targets=(
     # mipsel-sony-psx # tier3
 )
 # Redox
-# rustup target list | grep -e '-redox'
-# rustc --print target-list | grep -e '-redox'
 redox_targets=(
     # aarch64-unknown-redox # tier3
     x86_64-unknown-redox
 )
 # SGX
-# rustup target list | grep -e '-sgx'
-# rustc --print target-list | grep -e '-sgx'
 sgx_targets=(
     # x86_64-fortanix-unknown-sgx
 )
 # SOLID
-# rustc --print target-list | grep -e '-solid_asp3'
 solid_asp3_targets=(
     # aarch64-kmc-solid_asp3 # tier3
     # armv7a-kmc-solid_asp3-eabi # tier3
     # armv7a-kmc-solid_asp3-eabihf # tier3
 )
 # UEFI
-# rustc --print target-list | grep -e '-uefi'
 uefi_targets=(
-    # aarch64-unknown-uefi # tier3
-    # i686-unknown-uefi # tier3
-    # x86_64-unknown-uefi # tier3
+    # aarch64-unknown-uefi
+    # i686-unknown-uefi
+    # x86_64-unknown-uefi
+)
+vita_targets=(
+    # armv7-sony-vita-newlibeabihf # tier3
 )
 # VxWorks
-# rustc --print target-list | grep -e '-vxworks'
 vxworks_targets=(
     # aarch64-wrs-vxworks # tier3
     # armv7-wrs-vxworks-eabihf # tier3
@@ -327,8 +293,6 @@ xous_targets=(
     # riscv32imac-unknown-xous-elf # tier3
 )
 # no-std
-# rustup target list | grep -e '-none'
-# rustc --print target-list | grep -e '-none'
 none_targets=(
     aarch64-unknown-none
     aarch64-unknown-none-softfloat
@@ -343,6 +307,8 @@ none_targets=(
     # avr-unknown-gnu-atmega328 # tier3
     # bpfeb-unknown-none # tier3
     # bpfel-unknown-none # tier3
+    # loongarch64-unknown-none # tier3
+    # loongarch64-unknown-none-softfloat # tier3
     # mipsel-unknown-none # tier3
     # msp430-none-elf # tier3
     riscv32i-unknown-none-elf
@@ -366,6 +332,7 @@ targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
     ${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}
+    ${linux_ohos_targets[@]+"${linux_ohos_targets[@]}"}
     ${android_targets[@]+"${android_targets[@]}"}
     ${macos_targets[@]+"${macos_targets[@]}"}
     ${ios_targets[@]+"${ios_targets[@]}"}
@@ -397,6 +364,7 @@ targets=(
     ${sgx_targets[@]+"${sgx_targets[@]}"}
     ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
     ${uefi_targets[@]+"${uefi_targets[@]}"}
+    ${vita_targets[@]+"${vita_targets[@]}"}
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}
     ${xous_targets[@]+"${xous_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}

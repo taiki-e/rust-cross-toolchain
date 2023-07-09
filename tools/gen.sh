@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 set -euo pipefail
 IFS=$'\n\t'
 cd "$(dirname "$0")"/..
 
 # shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
 
 # USAGE:
 #    ./tools/gen.sh
@@ -19,6 +20,7 @@ known_target_group=(
     linux_gnu
     linux_musl
     linux_uclibc
+    linux_ohos
     android
     # Darwin
     macos
@@ -68,8 +70,9 @@ mkdir -p tmp/gen/os
 rustc_targets=($(rustc --print target-list))
 # shellcheck disable=SC2207
 rustup_targets=($(rustup target list | sed 's/ .*//g'))
-for target in "${rustc_targets[@]}"; do
-    target_spec=$(rustc -Z unstable-options --print target-spec-json --target "${target}")
+for target_spec in $(rustc -Z unstable-options --print all-target-specs-json | jq -c '. | to_entries | .[]'); do
+    target=$(jq <<<"${target_spec}" -r '.key')
+    target_spec=$(jq <<<"${target_spec}" -c '.value')
     os=$(jq <<<"${target_spec}" -r '.os')
     if [[ "${os}" == "null" ]]; then
         os=none

@@ -46,13 +46,10 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] i686-unknown-linux-gnu
 - [x] i686-unknown-linux-musl
 - [ ] i686-unknown-uefi
-- [x] mips-unknown-linux-gnu
+- [ ] loongarch64-unknown-linux-gnu
 - [x] mips-unknown-linux-musl
-- [x] mips64-unknown-linux-gnuabi64
 - [x] mips64-unknown-linux-muslabi64
-- [x] mips64el-unknown-linux-gnuabi64
 - [x] mips64el-unknown-linux-muslabi64
-- [x] mipsel-unknown-linux-gnu
 - [x] mipsel-unknown-linux-musl
 - [ ] nvptx64-nvidia-cuda
 - [x] powerpc-unknown-linux-gnu

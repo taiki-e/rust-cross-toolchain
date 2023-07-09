@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
 
 # Set up tools to test the toolchain. (target-dependent)
 
@@ -30,7 +31,7 @@ export RUSTUP_MAX_RETRIES=10
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
-if rustup target list | grep -Eq "^${RUST_TARGET}( |$)"; then
+if rustup target list | sed 's/ .*//g' | grep -Eq "^${RUST_TARGET}$"; then
     rustup target add "${RUST_TARGET}"
 else
     touch /BUILD_STD

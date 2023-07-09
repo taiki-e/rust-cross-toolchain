@@ -34,6 +34,7 @@ RUN mkdir -p /sysroot
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) netbsd_arch=evbarm-aarch64 ;;
+    aarch64_be-*) netbsd_arch=evbarm-aarch64eb ;;
     armv6-*) netbsd_arch=evbarm-earmv6hf ;;
     armv7-*) netbsd_arch=evbarm-earmv7hf ;;
     i686-*) netbsd_arch=i386 ;;

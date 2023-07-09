@@ -26,6 +26,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-wrs-vxworks
 - [x] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
+- [ ] aarch64_be-unknown-netbsd
 - [ ] arm64_32-apple-watchos
 - [ ] armeb-unknown-linux-gnueabi
 - [ ] armv4t-none-eabi
@@ -61,12 +62,17 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-uwp-windows-gnu
 - [ ] i686-uwp-windows-msvc
 - [ ] i686-wrs-vxworks
-- [ ] loongarch64-unknown-linux-gnu
+- [ ] loongarch64-unknown-none
+- [ ] loongarch64-unknown-none-softfloat
 - [ ] m68k-unknown-linux-gnu
+- [x] mips-unknown-linux-gnu
 - [ ] mips-unknown-linux-uclibc
 - [ ] mips64-openwrt-linux-musl
+- [x] mips64-unknown-linux-gnuabi64
+- [x] mips64el-unknown-linux-gnuabi64
 - [ ] mipsel-sony-psp
 - [ ] mipsel-sony-psx
+- [x] mipsel-unknown-linux-gnu
 - [ ] mipsel-unknown-linux-uclibc
 - [ ] mipsel-unknown-none
 - [x] mipsisa32r6-unknown-linux-gnu
@@ -91,11 +97,13 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] riscv32gc-unknown-linux-gnu
 - [ ] riscv32gc-unknown-linux-musl
 - [x] riscv32im-unknown-none-elf
+- [ ] riscv32imac-esp-espidf
 - [ ] riscv32imac-unknown-xous-elf
 - [ ] riscv32imc-esp-espidf
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [x] riscv64gc-unknown-linux-musl
+- [ ] riscv64gc-unknown-netbsd
 - [x] riscv64gc-unknown-openbsd
 - [x] s390x-unknown-linux-musl
 - [ ] sparc-unknown-linux-gnu

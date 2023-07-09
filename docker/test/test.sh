@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 set -euo pipefail
 IFS=$'\n\t'
 
 # shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: Error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
 
 # Test the toolchain.
 
@@ -25,14 +26,13 @@ run_cargo() {
         cargo_flags+=(--no-default-features)
     fi
     if [[ -f /BUILD_STD ]]; then
-        if [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
+        if [[ -n "${no_std}" ]]; then
+            cargo_flags+=(-Z build-std="core,alloc")
+        elif [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
+            # TODO: check grep <<<"${cfg}" -q 'panic="abort"' for targets that panic=abort is default.
             cargo_flags+=(-Z build-std="panic_abort,std")
         else
-            if [[ -z "${no_std}" ]]; then
-                cargo_flags+=(-Z build-std)
-            else
-                cargo_flags+=(-Z build-std="core,alloc")
-            fi
+            cargo_flags+=(-Z build-std)
         fi
     fi
     subcmd="$1"
@@ -215,7 +215,8 @@ case "${RUST_TARGET}" in
 esac
 no_std=""
 case "${RUST_TARGET}" in
-    *-none* | *-uefi* | *-cuda* | avr-* | *-esp-espidf) no_std=1 ;;
+    # https://github.com/rust-lang/rust/blob/1.70.0/library/std/build.rs#L41
+    *-none* | *-uefi* | *-psp* | *-psx* | *-cuda* | avr-*) no_std=1 ;;
 esac
 no_cc_bin=""
 case "${RUST_TARGET}" in
@@ -238,13 +239,13 @@ case "${RUST_TARGET}" in
 esac
 no_rust_cpp="${no_cpp}"
 case "${RUST_TARGET}" in
-    # TODO(wasm32-wasi):
+    # TODO(wasi):
     #    Error: failed to run main module `/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm`
     #    Caused by:
     #        0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
     # TODO(android):
-    wasm32-wasi | *-android*) no_rust_cpp=1 ;;
+    *-wasi* | *-android*) no_rust_cpp=1 ;;
 esac
 # Whether or not to build the test.
 no_build_test=""

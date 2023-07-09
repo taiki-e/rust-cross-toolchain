@@ -19,12 +19,12 @@ linux_gnu_targets=(
     armv7-unknown-linux-gnueabihf
     i586-unknown-linux-gnu
     i686-unknown-linux-gnu
-    loongarch64-unknown-linux-gnu # tier3
+    loongarch64-unknown-linux-gnu
     m68k-unknown-linux-gnu # tier3
-    mips-unknown-linux-gnu
-    mips64-unknown-linux-gnuabi64
-    mips64el-unknown-linux-gnuabi64
-    mipsel-unknown-linux-gnu
+    mips-unknown-linux-gnu # tier3
+    mips64-unknown-linux-gnuabi64 # tier3
+    mips64el-unknown-linux-gnuabi64 # tier3
+    mipsel-unknown-linux-gnu # tier3
     mipsisa32r6-unknown-linux-gnu # tier3
     mipsisa32r6el-unknown-linux-gnu # tier3
     mipsisa64r6-unknown-linux-gnuabi64 # tier3
@@ -73,6 +73,10 @@ linux_uclibc_targets=(
     mips-unknown-linux-uclibc # tier3
     mipsel-unknown-linux-uclibc # tier3
 )
+linux_ohos_targets=(
+    aarch64-unknown-linux-ohos # tier3
+    armv7-unknown-linux-ohos # tier3
+)
 android_targets=(
     aarch64-linux-android
     arm-linux-androideabi
@@ -120,10 +124,12 @@ freebsd_targets=(
 )
 netbsd_targets=(
     aarch64-unknown-netbsd # tier3
+    aarch64_be-unknown-netbsd # tier3
     armv6-unknown-netbsd-eabihf # tier3
     armv7-unknown-netbsd-eabihf # tier3
     i686-unknown-netbsd # tier3
     powerpc-unknown-netbsd # tier3
+    riscv64gc-unknown-netbsd # tier3
     sparc64-unknown-netbsd # tier3
     x86_64-unknown-netbsd
 )
@@ -184,6 +190,7 @@ cuda_targets=(
     nvptx64-nvidia-cuda
 )
 espidf_targets=(
+    riscv32imac-esp-espidf # tier3
     riscv32imc-esp-espidf # tier3
 )
 fuchsia_targets=(
@@ -265,6 +272,8 @@ none_targets=(
     avr-unknown-gnu-atmega328 # tier3
     bpfeb-unknown-none # tier3
     bpfel-unknown-none # tier3
+    loongarch64-unknown-none # tier3
+    loongarch64-unknown-none-softfloat # tier3
     mipsel-unknown-none # tier3
     msp430-none-elf # tier3
     riscv32i-unknown-none-elf
@@ -284,14 +293,11 @@ none_targets=(
     thumbv8m.main-none-eabihf
     x86_64-unknown-none
 )
-linux_ohos_targets=(
-    aarch64-unknown-linux-ohos # tier3
-    armv7-unknown-linux-ohos # tier3
-)
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
     ${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}
+    ${linux_ohos_targets[@]+"${linux_ohos_targets[@]}"}
     ${android_targets[@]+"${android_targets[@]}"}
     ${macos_targets[@]+"${macos_targets[@]}"}
     ${ios_targets[@]+"${ios_targets[@]}"}
@@ -327,5 +333,4 @@ targets=(
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}
     ${xous_targets[@]+"${xous_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
-    ${linux_ohos_targets[@]+"${linux_ohos_targets[@]}"}
 )
