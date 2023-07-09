@@ -148,6 +148,7 @@ vfpv
 Vger
 virt
 wasmtime
+wchar
 WINEBOOT
 winehq
 WINEPATH

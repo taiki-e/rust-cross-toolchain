@@ -236,6 +236,12 @@ case "${RUST_TARGET}" in
     # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
     # TODO(hexagon-unknown-linux-musl): use gcc based toolchain or pass -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" in llvm build
     aarch64-unknown-openbsd | sparc64-unknown-openbsd | hexagon-unknown-linux-musl) no_cpp=1 ;;
+    # TODO(redox): /x86_64-unknown-redox/x86_64-unknown-redox/include/bits/wchar.h:12:28: error: cannot combine with previous 'int' declaration specifier
+    *-redox*)
+        case "${cc}" in
+            clang) no_cpp=1 ;;
+        esac
+        ;;
 esac
 no_rust_cpp="${no_cpp}"
 case "${RUST_TARGET}" in
