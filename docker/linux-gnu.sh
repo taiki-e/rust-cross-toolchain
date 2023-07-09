@@ -50,12 +50,25 @@ case "${RUST_TARGET}" in
         # GCC 10.2.1, Linux header 4.20.13, glibc 2.31, binutils 2.35.1, GDB 10.1
         # Use 10.2-2020.11 instead of 10.3-2021.07 because 10.3-2021.07 requires glibc 2.33.
         arm_gcc_version=10.2-2020.11
-        cc_target=aarch64_be-none-linux-gnu
+        cc_target="${RUST_TARGET/-unknown/-none}"
         gcc_version=10.2.1
         echo "${cc_target}" >/CC_TARGET
         echo "${cc_target}" >/APT_TARGET
         echo "${gcc_version}" >/GCC_VERSION
         curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://developer.arm.com/-/media/Files/downloads/gnu-a/${arm_gcc_version}/binrel/gcc-arm-${arm_gcc_version}-x86_64-${cc_target}.tar.xz" \
+            | tar xJf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
+        exit 0
+        ;;
+    armeb-unknown-linux-gnueabi | armeb-unknown-linux-gnueabihf)
+        # Toolchains for armeb-linux-gnueabi{,hf} is not available in APT.
+        # https://releases.linaro.org/components/toolchain/binaries
+        cc_target="${RUST_TARGET/-unknown/}"
+        toolchain_date=2019.12
+        gcc_version=7.5.0
+        echo "${cc_target}" >/CC_TARGET
+        echo "${cc_target}" >/APT_TARGET
+        echo "${gcc_version}" >/GCC_VERSION
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://releases.linaro.org/components/toolchain/binaries/${gcc_version%.*}-${toolchain_date}/${cc_target}/gcc-linaro-${gcc_version}-${toolchain_date}-x86_64_${cc_target}.tar.xz" \
             | tar xJf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;

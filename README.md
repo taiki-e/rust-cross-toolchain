@@ -36,7 +36,8 @@
 | target | glibc | GCC | host |
 | ------ | ----- | --- | ---- |
 | `aarch64-unknown-linux-gnu` | 2.27 (x86_64 host) / host (aarch64 host) | 7.4.0 (x86_64 host) / host (aarch64 host) | x86_64 linux (glibc 2.27+) |
-| `aarch64_be-unknown-linux-gnu` (tier3) | 2.31 | 10.2.1 |x86_64 linux (glibc 2.27+) |
+| `aarch64_be-unknown-linux-gnu` (tier3) | 2.31 | 10.2.1 | x86_64 linux (glibc 2.27+) |
+| `armeb-unknown-linux-gnueabi` (tier3) | 2.25 | 7.5.0 | x86_64 linux (glibc 2.27+) |
 | `arm-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `arm-unknown-linux-gnueabihf` | 2.24 | 9.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `armv5te-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |

@@ -173,8 +173,8 @@ dev_tools_dir="${toolchain_dir}/share/rust-cross-toolchain/${RUST_TARGET}"
 . "${dev_tools_dir}/${cc}-env"
 # See entrypoint.sh
 case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
-        # TODO(aarch64_be-unknown-linux-gnu,arm-unknown-linux-gnueabihf)
+    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf)
+        # TODO(aarch64_be-unknown-linux-gnu,armeb-unknown-linux-gnueabi*,arm-unknown-linux-gnueabihf)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
     riscv32gc-unknown-linux-gnu)
@@ -707,6 +707,7 @@ case "${RUST_TARGET}" in
                         ;;
                     thumbv8m.base-*) arch_specific_pat+=('Tag_CPU_arch: v8-M.baseline' 'Tag_CPU_arch_profile: Microcontroller' 'Tag_THUMB_ISA_use: Yes') ;;
                     thumbv8m.main-*) arch_specific_pat+=('Tag_CPU_arch: v8-M.mainline' 'Tag_CPU_arch_profile: Microcontroller' 'Tag_THUMB_ISA_use: Yes') ;;
+                    armeb-*) arch_specific_pat+=('Tag_CPU_arch: (v8|v7)?' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 case "${RUST_TARGET}" in
@@ -769,6 +770,7 @@ case "${RUST_TARGET}" in
                     arm*v7* | thumbv7*) ;;
                     thumbv8m*hf) arch_specific_pat+=('Tag_FP_arch: FPv5/FP-D16 for ARMv8') ;;
                     thumbv8m*) ;;
+                    armeb-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;

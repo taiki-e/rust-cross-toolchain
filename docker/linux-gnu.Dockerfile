@@ -16,14 +16,12 @@ RUN --mount=type=bind,target=/docker \
 # fd -t d '\b(doc|lintian|locale|i18n|man)\b'
 RUN <<EOF
 apt_target="$(</APT_TARGET)"
-case "${RUST_TARGET}" in
-    aarch64_be-* | arm-*hf)
-        rm -rf "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr/share/{i18n,locale}
-        ;;
-    riscv32gc-*)
-        rm -rf "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
-        ;;
-esac
+if [[ -d "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr/share ]]; then
+    rm -rf "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr/share/{i18n,locale}
+fi
+if [[ -d "${TOOLCHAIN_DIR}"/sysroot/usr/share ]]; then
+    rm -rf "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
+fi
 case "${RUST_TARGET}" in
     # There are {include,lib,libexec} for both gcc 9.4.0 and 6.3.0
     arm-*hf) rm -rf $(find "${TOOLCHAIN_DIR}" -name '6.3.0') $(find "${TOOLCHAIN_DIR}" -name '*gcc-6.3.0') ;;
@@ -76,7 +74,7 @@ if [[ "${gcc_version}" == "host" ]]; then
     exit 0
 fi
 case "${RUST_TARGET}" in
-    aarch64_be-* | arm-*hf)
+    aarch64_be-* | armeb-* | arm-*hf)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \

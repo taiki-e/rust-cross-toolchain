@@ -11,7 +11,7 @@ linux_gnu_targets=(
     # aarch64_be-unknown-linux-gnu_ilp32 # tier3
     arm-unknown-linux-gnueabi
     arm-unknown-linux-gnueabihf
-    # armeb-unknown-linux-gnueabi # tier3
+    armeb-unknown-linux-gnueabi # tier3
     # armv4t-unknown-linux-gnueabi # tier3, rustc generate code for armv5t (probably needs to pass +v4t to llvm)
     armv5te-unknown-linux-gnueabi
     armv7-unknown-linux-gnueabi

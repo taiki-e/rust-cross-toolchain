@@ -28,7 +28,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
 - [ ] aarch64_be-unknown-netbsd
 - [ ] arm64_32-apple-watchos
-- [ ] armeb-unknown-linux-gnueabi
+- [x] armeb-unknown-linux-gnueabi
 - [ ] armv4t-none-eabi
 - [ ] armv4t-unknown-linux-gnueabi
 - [x] armv5te-none-eabi

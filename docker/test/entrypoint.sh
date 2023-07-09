@@ -51,7 +51,7 @@ else
     fi
 fi
 case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf) sysroot_suffix="${RUST_TARGET}/libc" ;;
+    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf) sysroot_suffix="${RUST_TARGET}/libc" ;;
     riscv32gc-unknown-linux-gnu) sysroot_suffix="sysroot" ;;
     *) sysroot_suffix="${RUST_TARGET}" ;;
 esac
@@ -161,8 +161,8 @@ case "${RUST_TARGET}" in
 export RUSTFLAGS="-C debuginfo=0 \${RUSTFLAGS:-}"
 EOF
         ;;
-    aarch64_be-unknown-linux-gnu | arm-unknown-linux-gnueabihf)
-        # TODO(aarch64_be-unknown-linux-gnu,arm-unknown-linux-gnueabihf)
+    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf)
+        # TODO(aarch64_be-unknown-linux-gnu,armeb-unknown-linux-gnueabi*,arm-unknown-linux-gnueabihf)
         cat >>"${entrypoint_path}" <<EOF
 export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/libc/lib:\${toolchain_dir}/${RUST_TARGET}/lib:\${LD_LIBRARY_PATH:-}"
 EOF
@@ -285,6 +285,9 @@ case "${RUST_TARGET}" in
                     armv5te-*) qemu_cpu=arm1026 ;;
                     # ARMv7-A+NEONv2
                     armv7-* | thumbv7neon-*) qemu_cpu=cortex-a15 ;;
+                    # builtin armeb-unknown-linux-gnueabi is ARMv8
+                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armeb_unknown_linux_gnueabi.rs#L12
+                    armeb-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
