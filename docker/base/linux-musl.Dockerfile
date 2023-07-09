@@ -38,6 +38,8 @@ case "${RUST_TARGET}" in
     arm*hf | thumbv7neon-*) cc_target=arm-linux-musleabihf ;;
     arm*) cc_target=arm-linux-musleabi ;;
     hexagon-*) cc_target=hexagon-unknown-linux-musl ;;
+    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_musl.rs#L7
+    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_musl.rs#L6
     mips-*) cc_target=mips-linux-muslsf ;;
     mipsel-*) cc_target=mipsel-linux-muslsf ;;
     riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;

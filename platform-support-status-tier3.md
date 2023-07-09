@@ -40,7 +40,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv7-sony-vita-newlibeabihf
 - [ ] armv7-unknown-freebsd
 - [ ] armv7-unknown-linux-ohos
-- [ ] armv7-unknown-linux-uclibceabi
+- [x] armv7-unknown-linux-uclibceabi
 - [x] armv7-unknown-linux-uclibceabihf
 - [x] armv7-unknown-netbsd-eabihf
 - [ ] armv7-wrs-vxworks-eabihf

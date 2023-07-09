@@ -41,8 +41,12 @@ case "${RUST_TARGET}" in
             armeb-*) common_flags+=" -march=armv8-a -marm -mfloat-abi=soft -mstrict-align" ;;
             mips-* | mipsel-*)
                 common_flags+=" -march=mips32r2"
+                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_musl.rs#L7
+                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_musl.rs#L6
+                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_uclibc.rs#L13
+                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_uclibc.rs#L12
                 case "${RUST_TARGET}" in
-                    *-linux-musl*) common_flags+=" -mfloat-abi=soft" ;;
+                    *-linux-musl* | *-linux-uclibc*) common_flags+=" -mfloat-abi=soft" ;;
                 esac
                 ;;
             thumbv7neon-*) common_flags+=" -march=armv7-a -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard" ;;

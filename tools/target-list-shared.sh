@@ -69,7 +69,7 @@ linux_musl_targets=(
 # Linux (uClibc)
 linux_uclibc_targets=(
     armv5te-unknown-linux-uclibceabi # tier3
-    # armv7-unknown-linux-uclibceabi   # tier3, TODO: as of 2022-06-13, bootlin doesn't seem to provide toolchain for this target
+    armv7-unknown-linux-uclibceabi   # tier3
     armv7-unknown-linux-uclibceabihf # tier3
     # mips-unknown-linux-uclibc # tier3, TODO: error: Undefined temporary symbol $BB6_15
     # mipsel-unknown-linux-uclibc # tier3, TODO: error: Undefined temporary symbol $BB6_15

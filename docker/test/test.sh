@@ -223,7 +223,7 @@ no_cc_bin=""
 case "${RUST_TARGET}" in
     # TODO(clang,sparc-unknown-linux-gnu): clang: error: unknown argument: '-mv8plus'
     # TODO(clang,linux-uclibc): interpreter should be /lib/ld-uClibc.so.0
-    # TODO(clang,armv5te-unknown-linux-uclibceabi,armv7-unknown-linux-uclibceabihf): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+    # TODO(clang,linux-uclibc): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
     # TODO(clang,mips-musl-sf): interpreter should be /lib/ld-musl-mips(el)-sf.so.1
     sparc-unknown-linux-gnu | mips-unknown-linux-musl | mipsel-unknown-linux-musl | *-linux-uclibc*)
         case "${cc}" in
@@ -384,7 +384,7 @@ EOF
         x "${target_cc}" -o c.out hello.c
         bin="$(pwd)"/c.out
         case "${RUST_TARGET}" in
-            arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
+            arm* | thumb* | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) ;;
             *) cp "${bin}" "${out_dir}" ;;
         esac
         if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
@@ -401,7 +401,7 @@ EOF
             x "${target_cxx}" -o cpp.out hello.cpp
             bin="$(pwd)"/cpp.out
             case "${RUST_TARGET}" in
-                arm*-unknown-linux-gnu* | thumbv7neon-unknown-linux-gnu* | arm*-linux-android* | thumb*-linux-android*) ;;
+                arm* | thumb* | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) ;;
                 *) cp "${bin}" "${out_dir}" ;;
             esac
             if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
@@ -709,7 +709,7 @@ case "${RUST_TARGET}" in
                         ;;
                     thumbv8m.base-*) arch_specific_pat+=('Tag_CPU_arch: v8-M.baseline' 'Tag_CPU_arch_profile: Microcontroller' 'Tag_THUMB_ISA_use: Yes') ;;
                     thumbv8m.main-*) arch_specific_pat+=('Tag_CPU_arch: v8-M.mainline' 'Tag_CPU_arch_profile: Microcontroller' 'Tag_THUMB_ISA_use: Yes') ;;
-                    armeb-*) arch_specific_pat+=('Tag_CPU_arch: (v8|v7)?' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
+                    armeb-*) arch_specific_pat+=('Tag_CPU_arch: v8' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 case "${RUST_TARGET}" in
@@ -756,7 +756,7 @@ case "${RUST_TARGET}" in
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
                             # https://github.com/rust-lang/rust/pull/33414
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
-                            *-android* | *-netbsd*) fp_arch='(VFPv3|VFPv3-D16)' ;;
+                            *-android*) fp_arch='(VFPv3|VFPv3-D16)' ;;
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
                             thumbv7em-*) fp_arch=VFPv4-D16 ;;
                             *) fp_arch=VFPv3-D16 ;;
@@ -785,27 +785,12 @@ case "${RUST_TARGET}" in
                 file_header_pat+=('Machine:\s+Intel 80386')
                 ;;
             mips-* | mipsel-*)
-                file_info_pat+=('MIPS')
-                file_header_pat+=('Machine:\s+MIPS R3000')
-                # mips(el)-buildroot-linux-uclibc-gcc/g++'s default is -march=mips32
+                file_info_pat+=('MIPS' 'MIPS32 rel2')
+                file_header_pat+=('Machine:\s+MIPS R3000' 'Flags:.*mips32r2')
+                arch_specific_pat+=('ISA: MIPS32r2')
                 case "${RUST_TARGET}" in
-                    *-linux-uclibc*)
-                        file_info_pat+=('MIPS32( rel2)?')
-                        file_header_pat+=('(Flags:.*mips32r2)?')
-                        arch_specific_pat+=('ISA: MIPS32(r2)?')
-                        ;;
-                    *)
-                        file_info_pat+=('MIPS32 rel2')
-                        file_header_pat+=('Flags:.*mips32r2')
-                        arch_specific_pat+=('ISA: MIPS32r2')
-                        ;;
-                esac
-                case "${RUST_TARGET}" in
-                    *-linux-gnu*) arch_specific_pat+=('FP ABI: Hard float \(32-bit CPU, Any FPU\)') ;;
-                    *-linux-musl*) arch_specific_pat+=('FP ABI: Soft float') ;;
-                        # TODO: should be soft float?
-                    *-linux-uclibc*) arch_specific_pat+=('FP ABI: Hard float \(32-bit CPU, Any FPU\)') ;;
-                    *) bail "unrecognized target '${RUST_TARGET}'" ;;
+                    *-linux-musl* | *-linux-uclibc*) arch_specific_pat+=('FP ABI: Soft float') ;;
+                    *) arch_specific_pat+=('FP ABI: Hard float \(32-bit CPU, Any FPU\)') ;;
                 esac
                 ;;
             mips64-* | mips64el-*)

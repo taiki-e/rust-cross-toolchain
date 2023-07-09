@@ -155,12 +155,6 @@ EOF
         ;;
 esac
 case "${RUST_TARGET}" in
-    asmjs-unknown-emscripten)
-        # emcc: error: wasm2js does not support source maps yet (debug in wasm for now)
-        cat >>"${env_path}" <<EOF
-export RUSTFLAGS="-C debuginfo=0 \${RUSTFLAGS:-}"
-EOF
-        ;;
     aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf)
         # TODO(aarch64_be-unknown-linux-gnu,armeb-unknown-linux-gnueabi*,arm-unknown-linux-gnueabihf)
         cat >>"${entrypoint_path}" <<EOF
@@ -173,12 +167,23 @@ EOF
 export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/lib:\${toolchain_dir}/sysroot/lib:\${toolchain_dir}/sysroot/usr/lib:\${LD_LIBRARY_PATH:-}"
 EOF
         ;;
+esac
+case "${RUST_TARGET}" in
+    asmjs-unknown-emscripten)
+        # emcc: error: wasm2js does not support source maps yet (debug in wasm for now)
+        cat >>"${env_path}" <<EOF
+export RUSTFLAGS="-C debuginfo=0 \${RUSTFLAGS:-}"
+EOF
+        ;;
     mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc)
         # mips(el)-buildroot-linux-uclibc-gcc/g++'s default is -march=mips32
         # Allow override by user-set `CC_*`.
+        # Also set to soft-float.
+        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_uclibc.rs#L13
+        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_uclibc.rs#L12
         cat >>"${env_path}" <<EOF
-export CFLAGS_${rust_target_lower}="-march=mips32r2 \${CFLAGS_${rust_target_lower}:-}"
-export CXXFLAGS_${rust_target_lower}="-march=mips32r2 \${CXXFLAGS_${rust_target_lower}:-}"
+export CFLAGS_${rust_target_lower}="-march=mips32r2 -mfloat-abi=soft \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=mips32r2 -mfloat-abi=soft \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
     armv5te-none-eabi | thumbv5te-none-eabi)
@@ -221,11 +226,24 @@ export CFLAGS_${rust_target_lower}="-mabi=lp64d \${CFLAGS_${rust_target_lower}:-
 export CXXFLAGS_${rust_target_lower}="-mabi=lp64d \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
+    armeb-unknown-linux-gnueabi)
+        # builtin armeb-unknown-linux-gnueabi is ARMv8
+        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armeb_unknown_linux_gnueabi.rs#L12
+        case "${cc}" in
+            gcc)
+                cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-march=armv8-a \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=armv8-a \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+                ;;
+        esac
+        ;;
     # https://developer.android.com/ndk/guides/abis
     armv7-linux-androideabi)
         case "${cc}" in
             # cc-rs doesn't emit any flags when cc is clang family and target is android.
             # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L3179-L3186
+            # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1691-L1706
             clang)
                 cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-mfpu=vfpv3-d16 \${CFLAGS_${rust_target_lower}:-}"
@@ -238,10 +256,21 @@ EOF
         case "${cc}" in
             # cc-rs doesn't emit any flags when cc is clang family and target is android.
             # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L3179-L3186
+            # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1691-L1706
             clang)
                 cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-mfpu=neon-vfpv4 \${CFLAGS_${rust_target_lower}:-}"
 export CXXFLAGS_${rust_target_lower}="-mfpu=neon-vfpv4 \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+                ;;
+        esac
+        ;;
+    arm*v7*-netbsd*hf)
+        case "${cc}" in
+            clang)
+                cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-mfpu=vfpv3-d16 \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-mfpu=vfpv3-d16 \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
                 ;;
         esac

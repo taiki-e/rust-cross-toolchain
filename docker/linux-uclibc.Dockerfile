@@ -7,7 +7,7 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# TODO: update to 2021.11-1
+# TODO: update to 2022.08-1
 # https://toolchains.bootlin.com/releases_armv7-eabihf.html
 # GCC 10.2.0, GDB 9.2, Linux headers 5.4.61, uClibc 1.0.34, binutils 2.34
 ARG TOOLCHAIN_VERSION=2020.08-1
@@ -18,11 +18,14 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG RUST_TARGET
 RUN mkdir -p /toolchain
 ARG TOOLCHAIN_VERSION
+# https://toolchains.bootlin.com/toolchains.html
 RUN <<EOF
 case "${RUST_TARGET}" in
-    armv5te-*) arch=armv5-eabi ;;
+    aarch64-*) arch=aarch64 ;;
+    aarch64_be-*) arch=aarch64be ;;
+    armv6-*hf) arch=armv6-eabihf ;;
     armv7-*hf) arch=armv7-eabihf ;;
-    armv7-*) arch=armv7-eabi ;;
+    arm*) arch=armv5-eabi ;;
     mips-*) arch=mips32 ;;
     mipsel-*) arch=mips32el ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -41,9 +44,10 @@ COPY --from=toolchain /toolchain "${TOOLCHAIN_DIR}"
 
 RUN <<EOF
 case "${RUST_TARGET}" in
-    armv5te-*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
-    armv7-*hf) cc_target=arm-buildroot-linux-uclibcgnueabihf ;;
-    armv7-*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
+    aarch64-*) cc_target=aarch64-buildroot-linux-uclibc ;;
+    aarch64_be-*) cc_target=aarch64_be-buildroot-linux-uclibc ;;
+    arm*hf) cc_target=arm-buildroot-linux-uclibcgnueabihf ;;
+    arm*) cc_target=arm-buildroot-linux-uclibcgnueabi ;;
     mips-*) cc_target=mips-buildroot-linux-uclibc ;;
     mipsel-*) cc_target=mipsel-buildroot-linux-uclibc ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;

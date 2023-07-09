@@ -3,7 +3,6 @@ archiver
 armeabi
 backports
 BAREMETAL
-bootlin
 bsdtar
 BUILDKIT
 buildkitd

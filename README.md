@@ -109,6 +109,7 @@
 **Supported targets**:
 
 - `armv5te-unknown-linux-uclibceabi` (tier3)
+- `armv7-unknown-linux-uclibceabi` (tier3)
 - `armv7-unknown-linux-uclibceabihf` (tier3)
 
 ### Android
