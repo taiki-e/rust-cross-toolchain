@@ -159,8 +159,8 @@ for target in "${targets[@]}"; do
         *-linux-gnu*)
             ubuntu_version=18.04
             case "${target}" in
-                aarch64_be-* | arm-*hf | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
-                    # aarch64_be-*|arm-*hf|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | armeb-* | arm-*hf | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                    # aarch64_be-*|armeb-*|arm-*hf|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
                     # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     case "${arch}" in
                         x86_64) ;;
