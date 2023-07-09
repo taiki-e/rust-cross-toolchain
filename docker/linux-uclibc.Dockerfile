@@ -7,7 +7,7 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# TODO: update to 2022.08-1
+# TODO: update to 2021.11-1 or 2022.08-1
 # https://toolchains.bootlin.com/releases_armv7-eabihf.html
 # GCC 10.2.0, GDB 9.2, Linux headers 5.4.61, uClibc 1.0.34, binutils 2.34
 ARG TOOLCHAIN_VERSION=2020.08-1

@@ -171,15 +171,11 @@ dev_tools_dir="${toolchain_dir}/share/rust-cross-toolchain/${RUST_TARGET}"
 /test/entrypoint.sh "${cc}"
 # shellcheck disable=SC1090
 . "${dev_tools_dir}/${cc}-env"
-# See entrypoint.sh
+# TODO(linux-gnu)
+# NB: Sync with entrypoint.sh
 case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf)
-        # TODO(aarch64_be-unknown-linux-gnu,armeb-unknown-linux-gnueabi*,arm-unknown-linux-gnueabihf)
+    arm-unknown-linux-gnueabihf)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
-        ;;
-    riscv32gc-unknown-linux-gnu)
-        # TODO(riscv32gc-unknown-linux-gnu)
-        export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/lib:${toolchain_dir}/sysroot/lib:${toolchain_dir}/sysroot/usr/lib:${LD_LIBRARY_PATH:-}"
         ;;
 esac
 

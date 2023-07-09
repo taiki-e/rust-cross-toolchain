@@ -146,25 +146,20 @@ case "${RUST_TARGET}" in
 EOF
         ;;
 esac
+# TODO(linux-gnu)
+# NB: Sync with test.sh
+case "${RUST_TARGET}" in
+    arm-unknown-linux-gnueabihf)
+        cat >>"${entrypoint_path}" <<EOF
+export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/libc/lib:\${toolchain_dir}/${RUST_TARGET}/lib:\${LD_LIBRARY_PATH:-}"
+EOF
+        ;;
+esac
 case "${RUST_TARGET}" in
     *-wasi* | *-emscripten*)
         # cc-rs will try to link to libstdc++ by default.
         cat >>"${env_path}" <<EOF
 export CXXSTDLIB=c++
-EOF
-        ;;
-esac
-case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf)
-        # TODO(aarch64_be-unknown-linux-gnu,armeb-unknown-linux-gnueabi*,arm-unknown-linux-gnueabihf)
-        cat >>"${entrypoint_path}" <<EOF
-export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/libc/lib:\${toolchain_dir}/${RUST_TARGET}/lib:\${LD_LIBRARY_PATH:-}"
-EOF
-        ;;
-    riscv32gc-unknown-linux-gnu)
-        # TODO(riscv32gc-unknown-linux-gnu)
-        cat >>"${entrypoint_path}" <<EOF
-export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/lib:\${toolchain_dir}/sysroot/lib:\${toolchain_dir}/sysroot/usr/lib:\${LD_LIBRARY_PATH:-}"
 EOF
         ;;
 esac
@@ -445,7 +440,7 @@ EOF
                     # Cortex-M3 (ARMv7-M): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7m_none_eabi.rs
                     thumbv7m-none-eabi) qemu_cpu=cortex-m3 ;;
                     # Cortex-M23 (ARMv8-M Baseline): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_base_none_eabi.rs
-                    # TODO: As of qemu 6.1, qemu doesn't support --cpu=cortex-m23
+                    # TODO: As of QEMU 8.0, QEMU doesn't support -cpu cortex-m23
                     thumbv8m.base-none-eabi) qemu_cpu=cortex-m33 ;;
                     # Cortex-M33 (ARMV8-M Mainline):
                     # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_main_none_eabi.rs
