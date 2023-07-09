@@ -1,5 +1,6 @@
 #![warn(rust_2018_idioms, unsafe_op_in_unsafe_fn)]
 
+#[cfg(not(no_c))]
 extern "C" {
     fn hello_c();
     #[cfg(feature = "cpp")]
@@ -9,6 +10,7 @@ extern "C" {
 
 fn main() {
     println!("Hello Rust!");
+    #[cfg(not(no_c))]
     unsafe {
         hello_c();
         #[cfg(feature = "cpp")]
@@ -24,11 +26,13 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(not(no_c))]
     use super::*;
 
     #[test]
     fn test() {
         println!("Hello Rust!");
+        #[cfg(not(no_c))]
         unsafe {
             hello_c();
             #[cfg(feature = "cpp")]

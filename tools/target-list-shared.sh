@@ -49,7 +49,7 @@ linux_musl_targets=(
     armv5te-unknown-linux-musleabi
     armv7-unknown-linux-musleabi
     armv7-unknown-linux-musleabihf
-    # hexagon-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
+    hexagon-unknown-linux-musl # tier3
     i586-unknown-linux-musl
     i686-unknown-linux-musl
     mips-unknown-linux-musl

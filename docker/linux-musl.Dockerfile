@@ -58,8 +58,8 @@ ARG GCC_VERSION
 RUN --mount=type=bind,target=/docker <<EOF
 export COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\""
 case "${RUST_TARGET}" in
-    hexagon-unknown-linux-musl) ;;
-    riscv64gc-unknown-linux-musl)
+    hexagon-*) ;;
+    riscv64gc-*)
         COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
             /docker/clang-cross.sh
@@ -95,7 +95,7 @@ COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 ARG GCC_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
-    hexagon-unknown-linux-musl) ;;
+    hexagon-*) ;;
     *) /test/test.sh gcc ;;
 esac
 EOF
@@ -112,7 +112,7 @@ ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
 RUN <<EOF
 case "${RUST_TARGET}" in
-    hexagon-unknown-linux-musl) ;;
+    hexagon-*) ;;
     *) /test/test.sh gcc ;;
 esac
 EOF

@@ -61,6 +61,6 @@ for cc in "${RUST_TARGET}-gcc" "${RUST_TARGET}-g++" "${RUST_TARGET}-gdb" "${RUST
         "${cc}" --version
     fi
 done
-if [[ -e "${toolchain_dir}/bin/${RUST_TARGET}-clang" ]]; then
+if [[ -e "${toolchain_dir}/bin/${RUST_TARGET}-clang" ]] && [[ ! -x "${toolchain_dir}/bin/${RUST_TARGET}-clang" ]]; then
     tail -n +1 "${toolchain_dir}/bin/${RUST_TARGET}-clang" "${toolchain_dir}/bin/${RUST_TARGET}-clang++"
 fi

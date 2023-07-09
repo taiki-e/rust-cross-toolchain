@@ -69,14 +69,13 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| musl 1.1.24 [1] [2] / 1.2.3 | 9.4.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (any libc) |
+| musl 1.2.3 | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] | x86_64 linux (any libc) |
 
-[1] Default (see [libc#1848] for details)<br>
-[2] With a patch that fixes CVE-2020-28928<br>
+[1] Except for hexagon-unknown-linux-musl<br>
+[2] 16.0.5 for hexagon-unknown-linux-musl, otherwise host<br>
+[3] hexagon-unknown-linux-musl requires release mode for building test<br>
 
 ([Dockerfile](docker/linux-musl.Dockerfile))
-
-[libc#1848]: https://github.com/rust-lang/libc/issues/1848
 
 **Supported targets**:
 
@@ -86,6 +85,7 @@
 - `armv5te-unknown-linux-musleabi`
 - `armv7-unknown-linux-musleabi`
 - `armv7-unknown-linux-musleabihf`
+- `hexagon-unknown-linux-musl` (tier3)
 - `i586-unknown-linux-musl`
 - `i686-unknown-linux-musl`
 - `mips-unknown-linux-musl`

@@ -1,0 +1,619 @@
+diff --git a/src/float/add.rs b/src/float/add.rs
+index 67f6c2c..c54243d 100644
+--- a/src/float/add.rs
++++ b/src/float/add.rs
+@@ -194,12 +194,20 @@ fn add<F: Float>(a: F, b: F) -> F
+     pub extern "C" fn __addsf3(a: f32, b: f32) -> f32 {
+         add(a, b)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_addsf3(a: f32, b: f32) -> f32 {
++        __addsf3(a, b)
++    }
+
+     #[aapcs_on_arm]
+     #[arm_aeabi_alias = __aeabi_dadd]
+     pub extern "C" fn __adddf3(a: f64, b: f64) -> f64 {
+         add(a, b)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_adddf3(a: f64, b: f64) -> f64 {
++        __adddf3(a, b)
++    }
+
+     #[cfg(target_arch = "arm")]
+     pub extern "C" fn __addsf3vfp(a: f32, b: f32) -> f32 {
+diff --git a/src/float/cmp.rs b/src/float/cmp.rs
+index 1bd7aa2..6794fcf 100644
+--- a/src/float/cmp.rs
++++ b/src/float/cmp.rs
+@@ -103,73 +103,129 @@ fn unord<F: Float>(a: F, b: F) -> bool {
+     pub extern "C" fn __lesf2(a: f32, b: f32) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_lesf2(a: f32, b: f32) -> i32 {
++        __lesf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __gesf2(a: f32, b: f32) -> i32 {
+         cmp(a, b).to_ge_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_gesf2(a: f32, b: f32) -> i32 {
++        __gesf2(a, b)
++    }
+
+     #[avr_skip]
+     #[arm_aeabi_alias = __aeabi_fcmpun]
+     pub extern "C" fn __unordsf2(a: f32, b: f32) -> i32 {
+         unord(a, b) as i32
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_unordsf2(a: f32, b: f32) -> i32 {
++        __unordsf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __eqsf2(a: f32, b: f32) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_eqsf2(a: f32, b: f32) -> i32 {
++        __eqsf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __ltsf2(a: f32, b: f32) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_ltsf2(a: f32, b: f32) -> i32 {
++        __ltsf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __nesf2(a: f32, b: f32) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_nesf2(a: f32, b: f32) -> i32 {
++        __nesf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __gtsf2(a: f32, b: f32) -> i32 {
+         cmp(a, b).to_ge_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_gtsf2(a: f32, b: f32) -> i32 {
++        __gtsf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __ledf2(a: f64, b: f64) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_ledf2(a: f64, b: f64) -> i32 {
++        __ledf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __gedf2(a: f64, b: f64) -> i32 {
+         cmp(a, b).to_ge_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_gedf2(a: f64, b: f64) -> i32 {
++        __gedf2(a, b)
++    }
+
+     #[avr_skip]
+     #[arm_aeabi_alias = __aeabi_dcmpun]
+     pub extern "C" fn __unorddf2(a: f64, b: f64) -> i32 {
+         unord(a, b) as i32
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_unorddf2(a: f64, b: f64) -> i32 {
++        __unorddf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __eqdf2(a: f64, b: f64) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_eqdf2(a: f64, b: f64) -> i32 {
++        __eqdf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __ltdf2(a: f64, b: f64) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_ltdf2(a: f64, b: f64) -> i32 {
++        __ltdf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __nedf2(a: f64, b: f64) -> i32 {
+         cmp(a, b).to_le_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_nedf2(a: f64, b: f64) -> i32 {
++        __nedf2(a, b)
++    }
+
+     #[avr_skip]
+     pub extern "C" fn __gtdf2(a: f64, b: f64) -> i32 {
+         cmp(a, b).to_ge_abi()
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_gtdf2(a: f64, b: f64) -> i32 {
++        __gtdf2(a, b)
++    }
+ }
+
+ #[cfg(target_arch = "arm")]
+diff --git a/src/float/conv.rs b/src/float/conv.rs
+index 790c0ab..0ad64f6 100644
+--- a/src/float/conv.rs
++++ b/src/float/conv.rs
+@@ -76,21 +76,37 @@ pub fn u128_to_f64_bits(i: u128) -> u64 {
+     pub extern "C" fn __floatunsisf(i: u32) -> f32 {
+         f32::from_bits(int_to_float::u32_to_f32_bits(i))
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_floatunsisf(i: u32) -> f32 {
++        __floatunsisf(i)
++    }
+
+     #[arm_aeabi_alias = __aeabi_ui2d]
+     pub extern "C" fn __floatunsidf(i: u32) -> f64 {
+         f64::from_bits(int_to_float::u32_to_f64_bits(i))
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_floatunsidf(i: u32) -> f64 {
++        __floatunsidf(i)
++    }
+
+     #[arm_aeabi_alias = __aeabi_ul2f]
+     pub extern "C" fn __floatundisf(i: u64) -> f32 {
+         f32::from_bits(int_to_float::u64_to_f32_bits(i))
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_floatundisf(i: u64) -> f32 {
++        __floatundisf(i)
++    }
+
+     #[arm_aeabi_alias = __aeabi_ul2d]
+     pub extern "C" fn __floatundidf(i: u64) -> f64 {
+         f64::from_bits(int_to_float::u64_to_f64_bits(i))
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_floatundidf(i: u64) -> f64 {
++        __floatundidf(i)
++    }
+
+     #[cfg_attr(target_os = "uefi", unadjusted_on_win64)]
+     pub extern "C" fn __floatuntisf(i: u128) -> f32 {
+@@ -110,36 +126,60 @@ pub extern "C" fn __floatsisf(i: i32) -> f32 {
+         let sign_bit = ((i >> 31) as u32) << 31;
+         f32::from_bits(int_to_float::u32_to_f32_bits(i.unsigned_abs()) | sign_bit)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_floatsisf(i: i32) -> f32 {
++        __floatsisf(i)
++    }
+
+     #[arm_aeabi_alias = __aeabi_i2d]
+     pub extern "C" fn __floatsidf(i: i32) -> f64 {
+         let sign_bit = ((i >> 31) as u64) << 63;
+         f64::from_bits(int_to_float::u32_to_f64_bits(i.unsigned_abs()) | sign_bit)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_floatsidf(i: i32) -> f64 {
++        __floatsidf(i)
++    }
+
+     #[arm_aeabi_alias = __aeabi_l2f]
+     pub extern "C" fn __floatdisf(i: i64) -> f32 {
+         let sign_bit = ((i >> 63) as u32) << 31;
+         f32::from_bits(int_to_float::u64_to_f32_bits(i.unsigned_abs()) | sign_bit)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_floatdisf(i: i64) -> f32 {
++        __floatdisf(i)
++    }
+
+     #[arm_aeabi_alias = __aeabi_l2d]
+     pub extern "C" fn __floatdidf(i: i64) -> f64 {
+         let sign_bit = ((i >> 63) as u64) << 63;
+         f64::from_bits(int_to_float::u64_to_f64_bits(i.unsigned_abs()) | sign_bit)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_floatdidf(i: i64) -> f64 {
++        __floatdidf(i)
++    }
+
+     #[cfg_attr(target_os = "uefi", unadjusted_on_win64)]
+     pub extern "C" fn __floattisf(i: i128) -> f32 {
+         let sign_bit = ((i >> 127) as u32) << 31;
+         f32::from_bits(int_to_float::u128_to_f32_bits(i.unsigned_abs()) | sign_bit)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_floattisf(i: i128) -> f32 {
++        __floattisf(i)
++    }
+
+     #[cfg_attr(target_os = "uefi", unadjusted_on_win64)]
+     pub extern "C" fn __floattidf(i: i128) -> f64 {
+         let sign_bit = ((i >> 127) as u64) << 63;
+         f64::from_bits(int_to_float::u128_to_f64_bits(i.unsigned_abs()) | sign_bit)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_floattidf(i: i128) -> f64 {
++        __floattidf(i)
++    }
+ }
+
+ // Conversions from floats to unsigned integers.
+@@ -159,6 +199,10 @@ pub extern "C" fn __fixunssfsi(f: f32) -> u32 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_fixunssfsi(f: f32) -> u32 {
++        __fixunssfsi(f)
++    }
+
+     #[arm_aeabi_alias = __aeabi_f2ulz]
+     pub extern "C" fn __fixunssfdi(f: f32) -> u64 {
+@@ -175,6 +219,10 @@ pub extern "C" fn __fixunssfdi(f: f32) -> u64 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_fixunssfdi(f: f32) -> u64 {
++        __fixunssfdi(f)
++    }
+
+     #[win64_128bit_abi_hack]
+     pub extern "C" fn __fixunssfti(f: f32) -> u128 {
+@@ -191,6 +239,10 @@ pub extern "C" fn __fixunssfti(f: f32) -> u128 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixunssfti(f: f32) -> u128 {
++        __fixunssfti(f)
++    }
+
+     #[arm_aeabi_alias = __aeabi_d2uiz]
+     pub extern "C" fn __fixunsdfsi(f: f64) -> u32 {
+@@ -207,6 +259,10 @@ pub extern "C" fn __fixunsdfsi(f: f64) -> u32 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixunsdfsi(f: f64) -> u32 {
++        __fixunsdfsi(f)
++    }
+
+     #[arm_aeabi_alias = __aeabi_d2ulz]
+     pub extern "C" fn __fixunsdfdi(f: f64) -> u64 {
+@@ -223,6 +279,10 @@ pub extern "C" fn __fixunsdfdi(f: f64) -> u64 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixunsdfdi(f: f64) -> u64 {
++        __fixunsdfdi(f)
++    }
+
+     #[win64_128bit_abi_hack]
+     pub extern "C" fn __fixunsdfti(f: f64) -> u128 {
+@@ -239,6 +299,10 @@ pub extern "C" fn __fixunsdfti(f: f64) -> u128 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixunsdfti(f: f64) -> u128 {
++        __fixunsdfti(f)
++    }
+ }
+
+ // Conversions from floats to signed integers.
+@@ -259,6 +323,10 @@ pub extern "C" fn __fixsfsi(f: f32) -> i32 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixsfsi(f: f32) -> i32 {
++        __fixsfsi(f)
++    }
+
+     #[arm_aeabi_alias = __aeabi_f2lz]
+     pub extern "C" fn __fixsfdi(f: f32) -> i64 {
+@@ -276,6 +344,10 @@ pub extern "C" fn __fixsfdi(f: f32) -> i64 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixsfdi(f: f32) -> i64 {
++        __fixsfdi(f)
++    }
+
+     #[win64_128bit_abi_hack]
+     pub extern "C" fn __fixsfti(f: f32) -> i128 {
+@@ -293,6 +365,10 @@ pub extern "C" fn __fixsfti(f: f32) -> i128 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixsfti(f: f32) -> i128 {
++        __fixsfti(f)
++    }
+
+     #[arm_aeabi_alias = __aeabi_d2iz]
+     pub extern "C" fn __fixdfsi(f: f64) -> i32 {
+@@ -310,6 +386,10 @@ pub extern "C" fn __fixdfsi(f: f64) -> i32 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixdfsi(f: f64) -> i32 {
++        __fixdfsi(f)
++    }
+
+     #[arm_aeabi_alias = __aeabi_d2lz]
+     pub extern "C" fn __fixdfdi(f: f64) -> i64 {
+@@ -327,6 +407,10 @@ pub extern "C" fn __fixdfdi(f: f64) -> i64 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixdfdi(f: f64) -> i64 {
++        __fixdfdi(f)
++    }
+
+     #[win64_128bit_abi_hack]
+     pub extern "C" fn __fixdfti(f: f64) -> i128 {
+@@ -344,4 +428,8 @@ pub extern "C" fn __fixdfti(f: f64) -> i128 {
+             0
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_fixdfti(f: f64) -> i128 {
++        __fixdfti(f)
++    }
+ }
+diff --git a/src/float/div.rs b/src/float/div.rs
+index c0aae34..4ddf8cd 100644
+--- a/src/float/div.rs
++++ b/src/float/div.rs
+@@ -906,11 +906,19 @@ fn negate_u64(a: u64) -> u64 {
+     pub extern "C" fn __divsf3(a: f32, b: f32) -> f32 {
+         div32(a, b)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_divsf3(a: f32, b: f32) -> f32 {
++        __divsf3(a, b)
++    }
+
+     #[arm_aeabi_alias = __aeabi_ddiv]
+     pub extern "C" fn __divdf3(a: f64, b: f64) -> f64 {
+         div64(a, b)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_divdf3(a: f64, b: f64) -> f64 {
++        __divdf3(a, b)
++    }
+
+     #[cfg(target_arch = "arm")]
+     pub extern "C" fn __divsf3vfp(a: f32, b: f32) -> f32 {
+diff --git a/src/float/extend.rs b/src/float/extend.rs
+index 3963377..e6f6210 100644
+--- a/src/float/extend.rs
++++ b/src/float/extend.rs
+@@ -75,6 +75,10 @@ fn extend<F: Float, R: Float>(a: F) -> R
+     pub extern "C" fn  __extendsfdf2(a: f32) -> f64 {
+         extend(a)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn  __hexagon_extendsfdf2(a: f32) -> f64 {
++        __extendsfdf2(a)
++    }
+
+     #[cfg(target_arch = "arm")]
+     pub extern "C" fn  __extendsfdf2vfp(a: f32) -> f64 {
+diff --git a/src/float/mul.rs b/src/float/mul.rs
+index c89f227..08eb938 100644
+--- a/src/float/mul.rs
++++ b/src/float/mul.rs
+@@ -190,12 +190,20 @@ fn mul<F: Float>(a: F, b: F) -> F
+     pub extern "C" fn __mulsf3(a: f32, b: f32) -> f32 {
+         mul(a, b)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_mulsf3(a: f32, b: f32) -> f32 {
++        __mulsf3(a, b)
++    }
+
+     #[aapcs_on_arm]
+     #[arm_aeabi_alias = __aeabi_dmul]
+     pub extern "C" fn __muldf3(a: f64, b: f64) -> f64 {
+         mul(a, b)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_muldf3(a: f64, b: f64) -> f64 {
++        __muldf3(a, b)
++    }
+
+     #[cfg(target_arch = "arm")]
+     pub extern "C" fn __mulsf3vfp(a: f32, b: f32) -> f32 {
+diff --git a/src/float/sub.rs b/src/float/sub.rs
+index 8d300e9..cf6e424 100644
+--- a/src/float/sub.rs
++++ b/src/float/sub.rs
+@@ -7,11 +7,19 @@
+     pub extern "C" fn __subsf3(a: f32, b: f32) -> f32 {
+         __addsf3(a, f32::from_repr(b.repr() ^ f32::SIGN_MASK))
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_subsf3(a: f32, b: f32) -> f32 {
++        __subsf3(a, b)
++    }
+
+     #[arm_aeabi_alias = __aeabi_dsub]
+     pub extern "C" fn __subdf3(a: f64, b: f64) -> f64 {
+         __adddf3(a, f64::from_repr(b.repr() ^ f64::SIGN_MASK))
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_subdf3(a: f64, b: f64) -> f64 {
++        __subdf3(a, b)
++    }
+
+     #[cfg(target_arch = "arm")]
+     pub extern "C" fn __subsf3vfp(a: f32, b: f32) -> f32 {
+diff --git a/src/float/trunc.rs b/src/float/trunc.rs
+index d737130..4a02d1a 100644
+--- a/src/float/trunc.rs
++++ b/src/float/trunc.rs
+@@ -117,6 +117,10 @@ fn trunc<F: Float, R: Float>(a: F) -> R
+     pub extern "C" fn __truncdfsf2(a: f64) -> f32 {
+         trunc(a)
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_truncdfsf2(a: f64) -> f32 {
++        __truncdfsf2(a)
++    }
+
+     #[cfg(target_arch = "arm")]
+     pub extern "C" fn __truncdfsf2vfp(a: f64) -> f32 {
+diff --git a/src/int/sdiv.rs b/src/int/sdiv.rs
+index f1822f0..3a3ef34 100644
+--- a/src/int/sdiv.rs
++++ b/src/int/sdiv.rs
+@@ -144,8 +144,20 @@ pub extern "C" fn __divsi3(a: i32, b: i32) -> i32 {
+             t
+         }
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_divsi3(a: i32, b: i32) -> i32 {
++        __divsi3(a, b)
++    }
+ }
+ smod!(__umodsi3, __modsi3, u32, i32, maybe_use_optimized_c_shim);
++#[cfg(target_arch = "hexagon")]
++smod!(
++    __umodsi3,
++    __hexagon_modsi3,
++    u32,
++    i32,
++    maybe_use_optimized_c_shim
++);
+
+ sdivmod!(
+     __udivmoddi4,
+@@ -156,6 +168,14 @@ pub extern "C" fn __divsi3(a: i32, b: i32) -> i32 {
+ );
+ sdiv!(__udivdi3, __divdi3, u64, i64, maybe_use_optimized_c_shim);
+ smod!(__umoddi3, __moddi3, u64, i64, maybe_use_optimized_c_shim);
++#[cfg(target_arch = "hexagon")]
++smod!(
++    __umoddi3,
++    __hexagon_moddi3,
++    u64,
++    i64,
++    maybe_use_optimized_c_shim
++);
+
+ // LLVM does not currently have a `__divmodti4` function, but GCC does
+ sdivmod!(
+diff --git a/src/int/udiv.rs b/src/int/udiv.rs
+index fb09f87..8cfe408 100644
+--- a/src/int/udiv.rs
++++ b/src/int/udiv.rs
+@@ -11,12 +11,20 @@
+     pub extern "C" fn __udivsi3(n: u32, d: u32) -> u32 {
+         u32_div_rem(n, d).0
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_udivsi3(n: u32, d: u32) -> u32 {
++        __udivsi3(n, d)
++    }
+
+     #[maybe_use_optimized_c_shim]
+     /// Returns `n % d`
+     pub extern "C" fn __umodsi3(n: u32, d: u32) -> u32 {
+         u32_div_rem(n, d).1
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_umodsi3(n: u32, d: u32) -> u32 {
++        __umodsi3(n, d)
++    }
+
+     #[avr_skip]
+     #[maybe_use_optimized_c_shim]
+@@ -28,6 +36,10 @@ pub extern "C" fn __udivmodsi4(n: u32, d: u32, rem: Option<&mut u32>) -> u32 {
+         }
+         quo_rem.0
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_udivmodsi4(n: u32, d: u32, rem: Option<&mut u32>) -> u32 {
++        __udivmodsi4(n, d, rem)
++    }
+
+     #[avr_skip]
+     #[maybe_use_optimized_c_shim]
+@@ -35,6 +47,10 @@ pub extern "C" fn __udivmodsi4(n: u32, d: u32, rem: Option<&mut u32>) -> u32 {
+     pub extern "C" fn __udivdi3(n: u64, d: u64) -> u64 {
+         u64_div_rem(n, d).0
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_udivdi3(n: u64, d: u64) -> u64 {
++        __udivdi3(n, d)
++    }
+
+     #[avr_skip]
+     #[maybe_use_optimized_c_shim]
+@@ -42,6 +58,10 @@ pub extern "C" fn __udivdi3(n: u64, d: u64) -> u64 {
+     pub extern "C" fn __umoddi3(n: u64, d: u64) -> u64 {
+         u64_div_rem(n, d).1
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_umoddi3(n: u64, d: u64) -> u64 {
++        __umoddi3(n, d)
++    }
+
+     #[avr_skip]
+     #[maybe_use_optimized_c_shim]
+@@ -53,6 +73,10 @@ pub extern "C" fn __udivmoddi4(n: u64, d: u64, rem: Option<&mut u64>) -> u64 {
+         }
+         quo_rem.0
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub extern "C" fn __hexagon_udivmoddi4(n: u64, d: u64, rem: Option<&mut u64>) -> u64 {
++        __udivmoddi4(n, d, rem)
++    }
+
+     // Note: we use block configuration and not `if cfg!(...)`, because we need to entirely disable
+     // the existence of `u128_div_rem` to get 32-bit SPARC to compile, see `u128_divide_sparc` docs.
+diff --git a/src/mem/mod.rs b/src/mem/mod.rs
+index ccf1917..68fd27e 100644
+--- a/src/mem/mod.rs
++++ b/src/mem/mod.rs
+@@ -26,6 +26,10 @@
+         impls::copy_forward(dest, src, n);
+         dest
+     }
++    #[cfg(target_arch = "hexagon")]
++    pub unsafe extern "C" fn __hexagon_memcpy_likely_aligned_min32bytes_mult8bytes(dest: *mut u8, src: *const u8, n: usize) -> *mut u8 {
++        memcpy(dest, src, n)
++    }
+
+     #[cfg_attr(not(all(target_os = "windows", target_env = "gnu")), weak)]
+     #[mem_builtin]

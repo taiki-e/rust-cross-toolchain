@@ -22,22 +22,12 @@ bail() {
 }
 run_cargo() {
     local cargo_flags=()
-    if [[ -n "${no_rust_cpp}" ]]; then
+    if [[ -n "${no_rust_cpp}" ]] && [[ "$*" != *"--no-default-features"* ]]; then
         cargo_flags+=(--no-default-features)
-    fi
-    if [[ -f /BUILD_STD ]]; then
-        if [[ -n "${no_std}" ]]; then
-            cargo_flags+=(-Z build-std="core,alloc")
-        elif [[ "${RUSTFLAGS:-}" == *"panic=abort"* ]]; then
-            # TODO: check grep <<<"${cfg}" -q 'panic="abort"' for targets that panic=abort is default.
-            cargo_flags+=(-Z build-std="panic_abort,std")
-        else
-            cargo_flags+=(-Z build-std)
-        fi
     fi
     subcmd="$1"
     shift
-    x cargo "${subcmd}" --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
+    x cargo "${subcmd}" ${build_std[@]+"${build_std[@]}"} --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
 }
 assert_file_info() {
     local pat="$1"
@@ -227,12 +217,16 @@ case "${RUST_TARGET}" in
         esac
         ;;
 esac
+no_rust_c=""
+case "${RUST_TARGET}" in
+    # TODO(hexagon):
+    hexagon-unknown-linux-musl) no_rust_c=1 ;;
+esac
 no_cpp=""
 case "${RUST_TARGET}" in
     # TODO(aarch64-unknown-openbsd): clang segfault
     # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
-    # TODO(hexagon-unknown-linux-musl): use gcc based toolchain or pass -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" in llvm build
-    aarch64-unknown-openbsd | sparc64-unknown-openbsd | hexagon-unknown-linux-musl) no_cpp=1 ;;
+    aarch64-unknown-openbsd | sparc64-unknown-openbsd) no_cpp=1 ;;
     # TODO(redox): /x86_64-unknown-redox/x86_64-unknown-redox/include/bits/wchar.h:12:28: error: cannot combine with previous 'int' declaration specifier
     *-redox*)
         case "${cc}" in
@@ -253,8 +247,7 @@ esac
 # Whether or not to build the test.
 no_build_test=""
 case "${RUST_TARGET}" in
-    # TODO(sparc-unknown-linux-gnu):
-    #     undefined reference to `__sync_val_compare_and_swap_8'
+    # TODO(sparc-unknown-linux-gnu): undefined reference to `__sync_val_compare_and_swap_8'
     # TODO(sparc64-unknown-openbsd):
     #     /sparc64-unknown-openbsd/bin/sparc64-unknown-openbsd7.0-ld: /sparc64-unknown-openbsd/sparc64-unknown-openbsd/usr/lib/libm.a(s_fmin.o): in function `*_libm_fmin':
     #         /usr/src/lib/libm/src/s_fmin.c:35: undefined reference to `__isnan'
@@ -263,8 +256,7 @@ esac
 # Whether or not to run the test.
 no_run_test=""
 case "${RUST_TARGET}" in
-    # TODO(powerpc-unknown-linux-gnuspe):
-    #     run-pass, but test-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
+    # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
     powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
 esac
 # Whether or not to run the compiled binaries.
@@ -277,6 +269,19 @@ case "${RUST_TARGET}" in
     # TODO(redox):
     *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
 esac
+
+build_mode=debug
+build_std=()
+if [[ -f /BUILD_STD ]]; then
+    if [[ -n "${no_std}" ]]; then
+        build_std=(-Z build-std="core,alloc")
+    else
+        build_std=(-Z build-std)
+    fi
+    case "${RUST_TARGET}" in
+        hexagon-unknown-linux-musl) build_std+=(-Z build-std-features=llvm-libunwind) ;;
+    esac
+fi
 
 dpkg_arch="$(dpkg --print-architecture)"
 if [[ -z "${no_std}" ]]; then
@@ -319,21 +324,25 @@ if [[ -z "${no_std}" ]]; then
             self_contained="${rustlib}/lib/self-contained"
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
-                    # TODO(hexagon-unknown-linux-musl)
                     # TODO(powerpc-unknown-linux-musl)
                     # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
                     # TODO(riscv64gc-unknown-linux-musl)
                     # TODO(s390x-unknown-linux-musl): libunwind build issue since around 2022-12-16
                     # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
-                    hexagon-* | powerpc-* | powerpc64le-* | riscv64gc-* | s390x-* | thumbv7neon-*) ;;
+                    powerpc-* | powerpc64le-* | riscv64gc-* | s390x-* | thumbv7neon-*) ;;
                     *)
                         rm -rf "${rustlib}"
                         mkdir -p "${self_contained}"
 
-                        rm -rf /tmp/libunwind
-                        mkdir -p /tmp/libunwind
-                        x "${dev_tools_dir}/build-libunwind" --target="${RUST_TARGET}" --out=/tmp/libunwind
-                        cp /tmp/libunwind/libunwind*.a "${self_contained}"
+                        case "${RUST_TARGET}" in
+                            hexagon-*) cp "${toolchain_dir}/${RUST_TARGET}/usr/lib"/libunwind.a "${self_contained}" ;;
+                            *)
+                                rm -rf /tmp/libunwind
+                                mkdir -p /tmp/libunwind
+                                x "${dev_tools_dir}/build-libunwind" --target="${RUST_TARGET}" --out=/tmp/libunwind
+                                cp /tmp/libunwind/libunwind*.a "${self_contained}"
+                                ;;
+                        esac
 
                         rm -rf /tmp/build-std
                         mkdir -p /tmp/build-std/src
@@ -346,7 +355,7 @@ version = "0.0.0"
 edition = "2021"
 EOF
                         RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
-                            x cargo build -Z build-std --target "${RUST_TARGET}" --all-targets --release
+                            x cargo build "${build_std[@]}" --target "${RUST_TARGET}" --all-targets --release
                         rm target/"${RUST_TARGET}"/release/deps/*build_std-*
                         cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
                         popd >/dev/null
@@ -360,9 +369,19 @@ EOF
                         # https://github.com/rust-lang/rust/issues/91178
                         # And if I understand correctly, the code generation on the
                         # 32bit arm targets looks wrong about FPU arch and thumb ISA.
-                        cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                        cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
+                        case "${RUST_TARGET}" in
+                            hexagon-*)
+                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
+                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtbegin-hexagon.o "${self_contained}"/crtbegin.o
+                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtend-hexagon.o "${self_contained}"/crtend.o
+                                ;;
+                            *)
+                                cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
+                                cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
+                                ;;
+                        esac
 
+                        build_std=()
                         rm /BUILD_STD
                         ;;
                 esac
@@ -413,7 +432,7 @@ EOF
     case "${RUST_TARGET}" in
         *-linux-musl*)
             case "${RUST_TARGET}" in
-                # TODO(hexagon-unknown-linux-musl)
+                # TODO(hexagon-unknown-linux-musl): run-fail (segfault)
                 # TODO(powerpc-unknown-linux-musl)
                 # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
                 # TODO(riscv64gc-unknown-linux-musl)
@@ -424,14 +443,16 @@ EOF
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
                     bin="${out_dir}/rust-test-no-cpp-static${exe}"
-                    cp "$(pwd)/target/${RUST_TARGET}/debug/rust-test${exe}" "${bin}"
+                    cp "$(pwd)/target/${RUST_TARGET}/${build_mode}/rust-test${exe}" "${bin}"
                     if [[ -n "${runner}" ]]; then
                         x "${runner}" "${bin}" | tee run.log
                         if ! grep -Eq '^Hello Rust!' run.log; then
                             bail
                         fi
-                        if ! grep -Eq '^Hello C from Rust!' run.log; then
-                            bail
+                        if [[ -z "${no_rust_c}" ]]; then
+                            if ! grep -Eq '^Hello C from Rust!' run.log; then
+                                bail
+                            fi
                         fi
                     fi
                     x cargo clean
@@ -446,34 +467,41 @@ EOF
             export RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=-crt-static"
             ;;
     esac
-    run_cargo build || (tail -n +1 "target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/*.log && exit 1)
-    x ls "$(pwd)/target/${RUST_TARGET}"/debug "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
-    cp "$(pwd)/target/${RUST_TARGET}"/debug/rust*test"${exe}" "${out_dir}"
-    cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_c.o "${out_dir}"
-    if [[ -z "${no_rust_cpp}" ]]; then
-        cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/hello_cpp.o "${out_dir}"
+    run_cargo build || (tail -n +1 "target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/*.log && exit 1)
+    x ls "$(pwd)/target/${RUST_TARGET}/${build_mode}"
+    if [[ -z "${no_rust_c}" ]]; then
+        x ls "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
     fi
-    cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
-        || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
-    bin="$(pwd)/target/${RUST_TARGET}/debug/rust${rust_bin_separator}test${exe}"
+    cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/rust*test"${exe}" "${out_dir}"
+    if [[ -z "${no_rust_c}" ]]; then
+        cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_c.o "${out_dir}"
+        if [[ -z "${no_rust_cpp}" ]]; then
+            cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_cpp.o "${out_dir}"
+        fi
+        cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
+            || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
+    fi
+    bin="$(pwd)/target/${RUST_TARGET}/${build_mode}/rust${rust_bin_separator}test${exe}"
     if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
         x "${runner}" "${bin}" | tee run.log
         if ! grep -Eq '^Hello Rust!' run.log; then
             bail
         fi
-        if ! grep -Eq '^Hello C from Rust!' run.log; then
-            bail
-        fi
-        if [[ -z "${no_rust_cpp}" ]]; then
-            if ! grep -Eq '^Hello C\+\+ from Rust!' run.log; then
+        if [[ -z "${no_rust_c}" ]]; then
+            if ! grep -Eq '^Hello C from Rust!' run.log; then
                 bail
             fi
-        fi
-        if ! grep -Eq '^Hello Cmake from Rust!' run.log; then
-            bail
-        fi
-        if ! grep -Eq '^4 \* 2 = 8' run.log; then
-            bail
+            if [[ -z "${no_rust_cpp}" ]]; then
+                if ! grep -Eq '^Hello C\+\+ from Rust!' run.log; then
+                    bail
+                fi
+            fi
+            if ! grep -Eq '^Hello Cmake from Rust!' run.log; then
+                bail
+            fi
+            if ! grep -Eq '^4 \* 2 = 8' run.log; then
+                bail
+            fi
         fi
     fi
     popd >/dev/null
@@ -481,10 +509,21 @@ EOF
     # Build Rust tests
     pushd rust >/dev/null
     if [[ -z "${no_build_test}" ]]; then
-        run_cargo test --no-run
-        if [[ -n "${runner}" ]] && [[ -z "${no_run_test}" ]]; then
-            run_cargo test
-        fi
+        case "${RUST_TARGET}" in
+            # TODO(hexagon): relocation R_HEX_B22_PCREL out of range: 2156604 is not in [-2097152, 2097151]
+            hexagon-unknown-linux-musl)
+                run_cargo test --no-run --release
+                if [[ -n "${runner}" ]] && [[ -z "${no_run_test}" ]]; then
+                    run_cargo test --release
+                fi
+                ;;
+            *)
+                run_cargo test --no-run
+                if [[ -n "${runner}" ]] && [[ -z "${no_run_test}" ]]; then
+                    run_cargo test
+                fi
+                ;;
+        esac
     fi
     popd >/dev/null
 else
@@ -579,10 +618,10 @@ else
             else
                 RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
                     run_cargo "${cargo_args[@]}" --features cpp
-                [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
-                [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
+                [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
+                [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
             fi
-            bin="$(pwd)/target/${RUST_TARGET}"/debug/no-std-qemu-test
+            bin="$(pwd)/target/${RUST_TARGET}/${build_mode}"/no-std-qemu-test
             cp "${bin}" "${out_dir}/no-std-qemu-test-${linker}-${_runner}"
             if [[ -n "${runner}" ]]; then
                 if [[ "${_runner}" == "qemu-user" ]]; then

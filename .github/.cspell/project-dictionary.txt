@@ -122,6 +122,7 @@ nostdinc
 objcopy
 octeon
 opensbi
+PCREL
 pkgconfig
 posix
 powerpcspe

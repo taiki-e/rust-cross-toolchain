@@ -52,7 +52,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] avr-unknown-gnu-atmega328
 - [ ] bpfeb-unknown-none
 - [ ] bpfel-unknown-none
-- [ ] hexagon-unknown-linux-musl
+- [x] hexagon-unknown-linux-musl
 - [ ] i386-apple-ios
 - [ ] i586-pc-nto-qnx700
 - [ ] i686-apple-darwin

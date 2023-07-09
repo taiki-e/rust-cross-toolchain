@@ -98,17 +98,31 @@ EOF
         done
         ;;
     clang)
-        # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
-        cat >>"${env_path}" <<EOF
+        case "${RUST_TARGET}" in
+            hexagon-unknown-linux-musl)
+            cat >>"${env_path}" <<EOF
+export AR_${rust_target_lower}=${RUST_TARGET}-ar
+export RANLIB_${rust_target_lower}=${RUST_TARGET}-ranlib
+export NM=llvm-nm
+export STRIP=llvm-strip
+export OBJCOPY=${RUST_TARGET}-objcopy
+export OBJDUMP=${RUST_TARGET}-objdump
+export READELF=${RUST_TARGET}-readelf
+EOF
+            ;;
+            *)
+                # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
+                cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=llvm-ar
 export RANLIB_${rust_target_lower}=llvm-ranlib
-export AR=llvm-ar
 export NM=llvm-nm
 export STRIP=llvm-strip
 export OBJCOPY=llvm-objcopy
 export OBJDUMP=llvm-objdump
 export READELF=llvm-readelf
 EOF
+                ;;
+        esac
         ;;
 esac
 case "${RUST_TARGET}" in
