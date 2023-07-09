@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/scripts/freebsd-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/freebsd-toolchain.sh
 
 ARG UBUNTU_VERSION=18.04
 

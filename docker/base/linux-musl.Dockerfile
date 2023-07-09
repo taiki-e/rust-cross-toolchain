@@ -3,7 +3,7 @@
 # Refs:
 # - https://github.com/richfelker/musl-cross-make
 # - https://musl.cc
-# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/scripts/musl-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/musl-toolchain.sh
 
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 

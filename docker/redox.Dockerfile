@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-various-1/install-x86_64-redox.sh
+# - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/install-x86_64-redox.sh
 
 ARG UBUNTU_VERSION=20.04
 

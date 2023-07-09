@@ -2,8 +2,8 @@
 
 # Refs:
 # - https://www.uclibc-ng.org
-# - https://github.com/rust-lang/rust/blob/1.67.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabihf.md
-# - https://github.com/rust-lang/rust/blob/1.67.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabi.md
+# - https://github.com/rust-lang/rust/blob/1.70.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabihf.md
+# - https://github.com/rust-lang/rust/blob/1.70.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabi.md
 
 ARG UBUNTU_VERSION=18.04
 

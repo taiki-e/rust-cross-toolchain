@@ -2,7 +2,7 @@
 
 ARG UBUNTU_VERSION=18.04
 
-# https://github.com/rust-lang/rust/blob/be8e5ba157a4ae494f9b4219b3b848e44ea5e8d3/src/ci/docker/scripts/emscripten.sh
+# https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/emscripten.sh
 ARG EMSCRIPTEN_VERSION=2.0.5
 ARG NODE_VERSION=12.18.1
 

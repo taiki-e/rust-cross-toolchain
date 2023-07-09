@@ -43,9 +43,9 @@ case "${RUST_TARGET}" in
         # To target armv5te, which is the minimum supported architecture of
         # arm-linux-androideabi, the standard library needs to be recompiled.
         # https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility
-        # https://github.com/rust-lang/rust/blob/1.67.0/src/bootstrap/cc_detect.rs#L227
+        # https://github.com/rust-lang/rust/blob/1.70.0/src/bootstrap/cc_detect.rs#L239
         # https://developer.android.com/ndk/guides/abis
-        # https://github.com/rust-lang/rust/blob/1.67.0/compiler/rustc_target/src/spec/arm_linux_androideabi.rs#L11-L12
+        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/arm_linux_androideabi.rs#L11-L12
         touch /BUILD_STD
         ;;
 esac
