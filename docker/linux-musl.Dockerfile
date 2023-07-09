@@ -38,7 +38,7 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 
-# When updating this, the reminder to update docker/base/linux-musl.Dockerfile.
+# NB: When updating this, the reminder to update docker/base/linux-musl.Dockerfile.
 RUN <<EOF
 case "${RUST_TARGET}" in
     arm*hf | thumbv7neon-*) cc_target=arm-linux-musleabihf ;;

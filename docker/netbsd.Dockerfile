@@ -26,7 +26,7 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 
-# When updating this, the reminder to update docker/base/netbsd.Dockerfile.
+# NB: When updating this, the reminder to update docker/base/netbsd.Dockerfile.
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) cc_target=aarch64--netbsd ;;

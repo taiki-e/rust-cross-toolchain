@@ -147,13 +147,13 @@
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-freebsd` (tier3) | 12.2 (default), 13.1 | linux (any arch, any libc) |
-| `i686-unknown-freebsd` | 12.2 (default), 13.1 | linux (any arch, any libc) |
+| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.1 | linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 12.4 (default), 13.1 | linux (any arch, any libc) |
 | `powerpc-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
 | `powerpc64-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
 | `powerpc64le-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
 | `riscv64gc-unknown-freebsd` (tier3) | 13.1 | x86_64 linux (glibc 2.27+) |
-| `x86_64-unknown-freebsd` | 12.2 (default), 13.1 | linux (any arch, any libc) |
+| `x86_64-unknown-freebsd` | 12.4 (default), 13.1 | linux (any arch, any libc) |
 
 ### NetBSD
 
@@ -192,13 +192,13 @@
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
-| `i686-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
-| `powerpc-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
-| `powerpc64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
-| `riscv64gc-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | x86_64 linux (glibc 2.27+) |
-| `x86_64-unknown-openbsd` (tier3) | 7.1 (default), 7.2 | linux (any arch, any libc) |
+| `aarch64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
+| `powerpc64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
+| `riscv64gc-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | x86_64 linux (glibc 2.27+) |
+| `x86_64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
 
 ### DragonFly BSD
 

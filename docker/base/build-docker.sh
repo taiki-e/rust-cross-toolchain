@@ -102,7 +102,7 @@ case "${target}" in
         if [[ -n "${MUSL_VERSION:-}" ]]; then
             musl_versions=("${MUSL_VERSION}")
         else
-            # See tools/build-docker.sh for more.
+            # NB: When updating this, the reminder to update tools/build-docker.sh.
             musl_versions=("1.1.24" "1.2.3")
         fi
         for musl_version in "${musl_versions[@]}"; do
@@ -114,7 +114,7 @@ case "${target}" in
         if [[ -n "${NETBSD_VERSION:-}" ]]; then
             netbsd_versions=("${NETBSD_VERSION}")
         else
-            # See tools/build-docker.sh for more.
+            # NB: When updating this, the reminder to update tools/build-docker.sh.
             netbsd_versions=("8.2" "9.3")
         fi
         for netbsd_version in "${netbsd_versions[@]}"; do

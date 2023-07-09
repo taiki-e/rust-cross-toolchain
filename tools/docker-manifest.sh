@@ -114,7 +114,7 @@ docker_manifest() {
 
 for target in "${targets[@]}"; do
     arches=(amd64)
-    # When updating this, the reminder to update tools/build-docker.sh.
+    # NB: When updating this, the reminder to update tools/build-docker.sh.
     case "${target}" in
         *-linux-gnu*)
             arches=(amd64 arm64v8)
@@ -136,7 +136,7 @@ for target in "${targets[@]}"; do
             if [[ -n "${MUSL_VERSION:-}" ]]; then
                 musl_versions=("${MUSL_VERSION}")
             else
-                # See tools/build-docker.sh for more.
+                # NB: When updating this, the reminder to update tools/build-docker.sh.
                 musl_versions=("1.1" "1.2")
             fi
             default_musl_version="1.1"
@@ -157,7 +157,7 @@ for target in "${targets[@]}"; do
             ;;
         *-linux-uclibc*) docker_manifest "${target}" ;;
         *-android*)
-            # See tools/build-docker.sh for more.
+            # NB: When updating this, the reminder to update tools/build-docker.sh.
             case "${target}" in
                 aarch64-* | x86_64*)
                     default_ndk_version="21"
@@ -188,8 +188,8 @@ for target in "${targets[@]}"; do
             if [[ -n "${FREEBSD_VERSION:-}" ]]; then
                 freebsd_versions=("${FREEBSD_VERSION}")
             else
-                # See tools/build-docker.sh for more.
-                freebsd_versions=("12.3" "13.1")
+                # NB: When updating this, the reminder to update tools/build-docker.sh.
+                freebsd_versions=("12.4" "13.1")
             fi
             default_freebsd_version="12"
             for freebsd_version in "${freebsd_versions[@]}"; do
@@ -208,7 +208,7 @@ for target in "${targets[@]}"; do
             if [[ -n "${NETBSD_VERSION:-}" ]]; then
                 netbsd_versions=("${NETBSD_VERSION}")
             else
-                # See tools/build-docker.sh for more.
+                # NB: When updating this, the reminder to update tools/build-docker.sh.
                 netbsd_versions=("8" "9")
             fi
             default_netbsd_version="8"
@@ -234,16 +234,16 @@ for target in "${targets[@]}"; do
             if [[ -n "${OPENBSD_VERSION:-}" ]]; then
                 openbsd_versions=("${OPENBSD_VERSION}")
             else
-                # See tools/build-docker.sh for more.
-                openbsd_versions=("7.1" "7.2")
+                # NB: When updating this, the reminder to update tools/build-docker.sh.
+                openbsd_versions=("7.2" "7.3")
             fi
-            default_openbsd_version="7.1"
+            default_openbsd_version="7.2"
             for openbsd_version in "${openbsd_versions[@]}"; do
                 docker_manifest "${target}" "${openbsd_version}" "${default_openbsd_version}"
             done
             ;;
         *-dragonfly*)
-            # See tools/build-docker.sh for more.
+            # NB: When updating this, the reminder to update tools/build-docker.sh.
             dragonfly_version="${DRAGONFLY_VERSION:-"6.4.0"}"
             default_dragonfly_version="6"
             docker_manifest "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}"

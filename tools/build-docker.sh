@@ -196,7 +196,7 @@ for target in "${targets[@]}"; do
             else
                 # https://musl.libc.org/releases.html
                 # https://github.com/rust-lang/libc/issues/1848
-                # When updating this, the reminder to update docker/base/build-docker.sh.
+                # NB: When updating this, the reminder to update docker/base/build-docker.sh and README.md.
                 musl_versions=("1.1" "1.2")
             fi
             default_musl_version="1.1"
@@ -219,7 +219,7 @@ for target in "${targets[@]}"; do
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
         *-android*)
             # https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
-            # When updating this, the reminder to update tools/docker-manifest.sh.
+            # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
             case "${target}" in
                 aarch64-* | x86_64*)
                     default_ndk_version="21"
@@ -266,9 +266,9 @@ for target in "${targets[@]}"; do
                 # FreeBSD 11 was EoL on 2021-09-30.
                 # https://www.freebsd.org/security/unsupported
                 # https://endoflife.date/freebsd
-                # When updating this, the reminder to update tools/docker-manifest.sh.
-                # TODO: update to 12.4 on 2023-03-05 which is eol of 12.3.
-                freebsd_versions=("12.3" "13.1")
+                # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
+                # TODO: update to 13.2 on 2023-07-31 which is eol of 13.1.
+                freebsd_versions=("12.4" "13.1")
             fi
             default_freebsd_version="12"
             for freebsd_version in "${freebsd_versions[@]}"; do
@@ -290,15 +290,16 @@ for target in "${targets[@]}"; do
             else
                 # NetBSD have binary compatibility with previous releases.
                 # Therefore, the default is NetBSD 8 that is the minimum supported version.
-                # However, we don't support NetBSD 8 for the following targets, because:
+                # However, we cannot support old NetBSD for the following targets, because:
                 # - aarch64: not available in NetBSD 8.
+                # - aarch64_be: not available in NetBSD 8/9.
                 # See also https://www.netbsd.org/releases/formal-9/NetBSD-9.0.html.
                 #
                 # Supported releases: https://www.netbsd.org/releases
                 # NetBSD 7 was EoL on 2020-06-30.
                 # https://www.netbsd.org/releases/formal.html
                 # https://endoflife.date/netbsd
-                # When updating this, the reminder to update docker/base/build-docker.sh and tools/docker-manifest.sh.
+                # NB: When updating this, the reminder to update docker/base/build-docker.sh, tools/docker-manifest.sh, and README.md.
                 netbsd_versions=("8" "9")
             fi
             default_netbsd_version="8"
@@ -339,10 +340,10 @@ for target in "${targets[@]}"; do
                 # https://www.openbsd.org/faq/faq5.html#Flavors
                 # https://en.wikipedia.org/wiki/OpenBSD#Releases
                 # https://endoflife.date/openbsd
-                # When updating this, the reminder to update tools/docker-manifest.sh.
-                openbsd_versions=("7.1" "7.2")
+                # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
+                openbsd_versions=("7.2" "7.3")
             fi
-            default_openbsd_version="7.1"
+            default_openbsd_version="7.2"
             for openbsd_version in "${openbsd_versions[@]}"; do
                 build "openbsd" "${target}" "${openbsd_version}" "${default_openbsd_version}" \
                     --build-arg "OPENBSD_VERSION=${openbsd_version}"
@@ -350,7 +351,7 @@ for target in "${targets[@]}"; do
             ;;
         *-dragonfly*)
             # https://mirror-master.dragonflybsd.org/iso-images
-            # When updating this, the reminder to update tools/docker-manifest.sh.
+            # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
             dragonfly_version="${DRAGONFLY_VERSION:-"6.4.0"}"
             default_dragonfly_version="6"
             build "dragonfly" "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}" \
