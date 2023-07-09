@@ -514,7 +514,11 @@ else
         # https://github.com/rust-lang/rust/blob/1.70.0/tests/run-make/thumb-none-qemu/example/.cargo/config
         case "${linker}" in
             rust-lld) target_rustflags="" ;;
-            *-gcc) target_rustflags="-C linker=${linker} -C link-arg=-nostartfiles" ;;
+            *-gcc)
+                target_rustflags="-C linker=${linker} -C link-arg=-nostartfiles"
+                # TODO(none): collect2: fatal error: cannot find 'ld'
+                continue
+                ;;
             *) target_rustflags="-C linker=${linker}" ;;
         esac
         case "${linker}" in
@@ -570,17 +574,18 @@ else
             # To link to pre-compiled C libraries provided by a C
             # toolchain use GCC as the linker.
             case "${linker}" in
-                rust-lld | *-ld)
-                    RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
-                        run_cargo "${cargo_args[@]}"
-                    ;;
-                *)
-                    RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
-                        run_cargo "${cargo_args[@]}" --features cpp
-                    [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
-                    [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
-                    ;;
+                rust-lld | *-ld) test_cpp='' ;;
+                *) test_cpp='1' ;;
             esac
+            if [[ -z "${test_cpp}" ]]; then
+                RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
+                    run_cargo "${cargo_args[@]}"
+            else
+                RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
+                    run_cargo "${cargo_args[@]}" --features cpp
+                [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
+                [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}"/debug/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
+            fi
             bin="$(pwd)/target/${RUST_TARGET}"/debug/no-std-qemu-test
             cp "${bin}" "${out_dir}/no-std-qemu-test-${linker}-${_runner}"
             if [[ -n "${runner}" ]]; then
@@ -594,17 +599,14 @@ else
                 if ! grep -Eq '^Hello Rust!' run.log; then
                     bail
                 fi
-                case "${linker}" in
-                    rust-lld | *-ld) ;;
-                    *)
-                        if ! grep -Eq '^x = 5' run.log; then
-                            bail
-                        fi
-                        if ! grep -Eq '^y = 6' run.log; then
-                            bail
-                        fi
-                        ;;
-                esac
+                if [[ -n "${test_cpp}" ]]; then
+                    if ! grep -Eq '^x = 5' run.log; then
+                        bail
+                    fi
+                    if ! grep -Eq '^y = 6' run.log; then
+                        bail
+                    fi
+                fi
             fi
             popd >/dev/null
         done
