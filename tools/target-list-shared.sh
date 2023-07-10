@@ -121,8 +121,8 @@ watchos_targets=(
 # FreeBSD
 freebsd_targets=(
     aarch64-unknown-freebsd # tier3
-    # armv6-unknown-freebsd # tier3
-    # armv7-unknown-freebsd # tier3
+    # armv6-unknown-freebsd # tier3, as of 13.2, base.txz for armv{6,7} is not distributed.
+    # armv7-unknown-freebsd # tier3, as of 13.2, base.txz for armv{6,7} is not distributed.
     i686-unknown-freebsd
     powerpc-unknown-freebsd     # tier3
     powerpc64-unknown-freebsd   # tier3
