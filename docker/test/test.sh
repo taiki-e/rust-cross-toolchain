@@ -210,11 +210,10 @@ case "${RUST_TARGET}" in
 esac
 no_cc_bin=""
 case "${RUST_TARGET}" in
-    # TODO(clang,sparc-unknown-linux-gnu): clang: error: unknown argument: '-mv8plus'
     # TODO(clang,linux-uclibc): interpreter should be /lib/ld-uClibc.so.0
     # TODO(clang,linux-uclibc): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
     # TODO(clang,mips-musl-sf): interpreter should be /lib/ld-musl-mips(el)-sf.so.1
-    sparc-unknown-linux-gnu | mips-unknown-linux-musl | mipsel-unknown-linux-musl | *-linux-uclibc*)
+    mips-unknown-linux-musl | mipsel-unknown-linux-musl | *-linux-uclibc*)
         case "${cc}" in
             clang) no_cc_bin=1 ;;
         esac
@@ -250,11 +249,10 @@ esac
 # Whether or not to build the test.
 no_build_test=""
 case "${RUST_TARGET}" in
-    # TODO(sparc-unknown-linux-gnu): undefined reference to `__sync_val_compare_and_swap_8'
     # TODO(sparc64-unknown-openbsd):
     #     /sparc64-unknown-openbsd/bin/sparc64-unknown-openbsd7.0-ld: /sparc64-unknown-openbsd/sparc64-unknown-openbsd/usr/lib/libm.a(s_fmin.o): in function `*_libm_fmin':
     #         /usr/src/lib/libm/src/s_fmin.c:35: undefined reference to `__isnan'
-    sparc-unknown-linux-gnu | sparc64-unknown-openbsd) no_build_test=1 ;;
+    sparc64-unknown-openbsd) no_build_test=1 ;;
 esac
 # Whether or not to run the test.
 no_run_test=""

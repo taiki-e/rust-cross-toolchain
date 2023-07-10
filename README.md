@@ -23,11 +23,10 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| glibc [1] | [1] | host [3] | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
+| glibc [1] | [1] | host | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
 
 [1] See target list below for details<br>
 [2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
-[3] Except for sparc-unknown-linux-gnu<br>
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
 
@@ -61,6 +60,7 @@
 | `riscv64gc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `s390x-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `sparc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
+| `sparc-unknown-linux-gnu` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnux32` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
