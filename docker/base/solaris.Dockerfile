@@ -3,9 +3,9 @@
 # Refs:
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
 
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=20.04
 
-ARG SOLARIS_VERSION=2.11
+ARG SOLARIS_VERSION=2.10
 # https://ftp.gnu.org/gnu/binutils
 ARG BINUTILS_VERSION=2.33.1
 # https://ftp.gnu.org/gnu/gcc
@@ -69,6 +69,17 @@ for lib in $(find . -name '*.so.*'); do
     [[ -e "${target}" ]] || ln -s "${lib##*/}" "${target}"
 done
 EOF
+# Remove Solaris 11 functions that are optionally used by libbacktrace.
+# This is for Solaris 10 compatibility.
+RUN <<EOF
+rm usr/include/link.h
+patch -p0 <<'EOF2'
+--- usr/include/string.h
++++ usr/include/string10.h
+@@ -93 +92,0 @@
+-extern size_t strnlen(const char *, size_t);
+EOF2
+EOF
 RUN <<EOF
 case "${RUST_TARGET}" in
     x86_64*) lib_arch=amd64 ;;
@@ -84,13 +95,13 @@ ln -s usr/include /sysroot/include
 EOF
 WORKDIR /
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:alpine as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    libgmp-dev \
-    libmpc-dev \
-    libmpfr-dev
+RUN apk --no-cache add \
+    gmp-dev \
+    mpc1-dev \
+    mpfr-dev
 
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -119,6 +130,9 @@ export CFLAGS="-g0 -O2 -fPIC"
 export CXXFLAGS="-g0 -O2 -fPIC"
 export CFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
 export CXXFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
+export CC="gcc -static --static"
+export CXX="g++ -static --static"
+export LDFLAGS="-s -static --static"
 mkdir -p /tmp/gcc-build
 cd /tmp/gcc-build
 /tmp/gcc-src/configure \
@@ -137,6 +151,7 @@ cd /tmp/gcc-build
     --disable-libsanitizer \
     --disable-libssp \
     --disable-libvtv \
+    --disable-lto \
     --disable-multilib \
     --disable-nls \
     --enable-languages=c,c++ \
@@ -149,7 +164,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

@@ -5,7 +5,7 @@
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabihf.md
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/doc/rustc/src/platform-support/armv7-unknown-linux-uclibceabi.md
 
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=20.04
 
 # TODO: update to 2021.11-1 or 2022.08-1
 # https://toolchains.bootlin.com/toolchains.html

@@ -1,5 +1,9 @@
 # rust-cross-toolchain
 
+Toolchains for cross compilation and cross testing for Rust.
+
+See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-toolchain-action) created based on this project.
+
 - [Platform Support](#platform-support)
   - [Linux (GNU)](#linux-gnu)
   - [Linux (musl)](#linux-musl)
@@ -65,46 +69,49 @@
 | `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnux32` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 
-[1] Since nightly-2023-07-05, mips{,el}-unknown-linux-gnu requires release mode for building std<br>
+[1] [Since nightly-2023-07-05](https://github.com/rust-lang/compiler-team/issues/648), mips{,el}-unknown-linux-gnu requires release mode for building std<br>
 
 ### Linux (musl)
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| musl 1.2.3 | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] | x86_64 linux (any libc) |
+| musl 1.2.3 | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] | [4] |
 
 [1] Except for hexagon-unknown-linux-musl<br>
 [2] 16.0.5 for hexagon-unknown-linux-musl, otherwise host<br>
 [3] hexagon-unknown-linux-musl requires release mode for building test<br>
+[4] See target list below for details<br>
 
 ([Dockerfile](docker/linux-musl.Dockerfile))
 
 **Supported targets**:
 
-- `aarch64-unknown-linux-musl`
-- `arm-unknown-linux-musleabi`
-- `arm-unknown-linux-musleabihf`
-- `armv5te-unknown-linux-musleabi`
-- `armv7-unknown-linux-musleabi`
-- `armv7-unknown-linux-musleabihf`
-- `hexagon-unknown-linux-musl` (tier3)
-- `i586-unknown-linux-musl`
-- `i686-unknown-linux-musl`
-- `mips-unknown-linux-musl`
-- `mips64-unknown-linux-muslabi64`
-- `mips64el-unknown-linux-muslabi64`
-- `mipsel-unknown-linux-musl`
-- `powerpc-unknown-linux-musl` (tier3)
-- `powerpc64le-unknown-linux-musl` (tier3)
-- `s390x-unknown-linux-musl` (tier3)
-- `thumbv7neon-unknown-linux-musleabihf` (tier3)
-- `x86_64-unknown-linux-musl`
+| target | host |
+| ------ | ---- |
+| `aarch64-unknown-linux-musl` | x86_64 linux (any libc) |
+| `arm-unknown-linux-musleabi` | x86_64 linux (any libc) |
+| `arm-unknown-linux-musleabihf` | x86_64 linux (any libc) |
+| `armv5te-unknown-linux-musleabi` | x86_64 linux (any libc) |
+| `armv7-unknown-linux-musleabi` | x86_64 linux (any libc) |
+| `armv7-unknown-linux-musleabihf` | x86_64 linux (any libc) |
+| `hexagon-unknown-linux-musl` (tier3) | x86_64 linux (glibc 2.27+) |
+| `i586-unknown-linux-musl` | x86_64 linux (any libc) |
+| `i686-unknown-linux-musl` | x86_64 linux (any libc) |
+| `mips-unknown-linux-musl` | x86_64 linux (any libc) |
+| `mips64-unknown-linux-muslabi64` | x86_64 linux (any libc) |
+| `mips64el-unknown-linux-muslabi64` | x86_64 linux (any libc) |
+| `mipsel-unknown-linux-musl` | x86_64 linux (any libc) |
+| `powerpc-unknown-linux-musl` (tier3) | x86_64 linux (any libc) |
+| `powerpc64le-unknown-linux-musl` (tier3) | x86_64 linux (any libc) |
+| `s390x-unknown-linux-musl` (tier3) | x86_64 linux (any libc) |
+| `thumbv7neon-unknown-linux-musleabihf` (tier3) | x86_64 linux (any libc) |
+| `x86_64-unknown-linux-musl` | x86_64 linux (any libc) |
 
 ### Linux (uClibc)
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
+| uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (glibc 2.17+) |
 
 ([Dockerfile](docker/linux-uclibc.Dockerfile))
 
@@ -160,7 +167,7 @@
 | `powerpc-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
 | `powerpc64-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
 | `powerpc64le-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
-| `riscv64gc-unknown-freebsd` (tier3) | 13.1 | x86_64 linux (glibc 2.27+) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.1 | x86_64 linux (any libc) |
 | `x86_64-unknown-freebsd` | 12.4 (default), 13.1 | linux (any arch, any libc) |
 
 ### NetBSD
@@ -205,7 +212,7 @@
 | `powerpc-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
 | `powerpc64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
 | `riscv64gc-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | x86_64 linux (glibc 2.27+) |
+| `sparc64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | x86_64 linux (any libc) |
 | `x86_64-unknown-openbsd` (tier3) | 7.2 (default), 7.3 | linux (any arch, any libc) |
 
 ### DragonFly BSD
@@ -224,7 +231,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| solaris 2.11 | 8.5.0 |  | ✓ (libstdc++) |  | x86_64 linux (glibc 2.27+) |
+| solaris 2.10 | 8.5.0 |  | ✓ (libstdc++) |  | x86_64 linux (any libc) |
 
 ([Dockerfile](docker/solaris.Dockerfile))
 
@@ -238,7 +245,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| solaris 2.10 | 8.5.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.27+) |
+| solaris 2.10 | 8.5.0 | host | ✓ (libstdc++) |  | x86_64 linux (any libc) |
 
 ([Dockerfile](docker/illumos.Dockerfile))
 
@@ -250,7 +257,7 @@
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| redox 0.6.0 | 8.2.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.31+) |
+| redox 0.8.0 | 8.2.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.31+) |
 
 ([Dockerfile](docker/redox.Dockerfile))
 
@@ -283,7 +290,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| emscripten 1.39.20 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 linux (glibc 2.27+) |
+| emscripten 2.0.5 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 linux (glibc 2.27+) |
 
 ([Dockerfile](docker/emscripten.Dockerfile))
 

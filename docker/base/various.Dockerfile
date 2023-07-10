@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 
 ARG TARGET
-ARG UBUNTU_VERSION=18.04
 
 FROM ghcr.io/taiki-e/downloader as aarch64-none-elf
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -68,7 +67,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN rm -rf /toolchain/share/{doc,lintian,locale,man}
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TARGET

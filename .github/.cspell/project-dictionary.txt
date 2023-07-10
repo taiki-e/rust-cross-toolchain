@@ -43,19 +43,17 @@ LDFLAGS
 ldso
 lgcc
 libada
+libbacktrace
 libc
 libcilkrts
 libexec
 libgcc
-libgmp
 libgomp
 libhello
 libhf
 libint
 liblgrp
 libm
-libmpc
-libmpfr
 libpthread
 libpython
 libquadmath
@@ -94,6 +92,7 @@ MKPROFILE
 MKSHARE
 MKUNPRIVED
 mpcore
+mpfr
 msoft
 mstrict
 mthumb
@@ -125,6 +124,7 @@ softfp
 solarish
 stdarch
 stdlib
+strnlen
 SYSV
 TOOLDIR
 uclibcgnueabi

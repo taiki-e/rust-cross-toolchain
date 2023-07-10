@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=20.04
 
 # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/emscripten.sh
 ARG EMSCRIPTEN_VERSION=2.0.5

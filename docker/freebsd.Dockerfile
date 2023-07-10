@@ -3,7 +3,7 @@
 # Refs:
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/freebsd-toolchain.sh
 
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=20.04
 
 # See tools/build-docker.sh
 ARG FREEBSD_VERSION
@@ -40,7 +40,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://do
     | bsdtar xJf - -C /sysroot ./lib ./usr/include ./usr/lib ./bin/freebsd-version
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:alpine as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

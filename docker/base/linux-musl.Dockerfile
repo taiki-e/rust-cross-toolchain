@@ -7,9 +7,6 @@
 
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 
-ARG UBUNTU_VERSION=18.04
-ARG ALPINE_VERSION=3.15
-
 # Use the version that contains a patch that fixes CVE-2020-28928.
 ARG MUSL_CROSS_MAKE_REV=1a82fddcaeedbe6d93cea76d044f22fc1024d036
 # Available versions: https://github.com/richfelker/musl-cross-make/tree/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/hashes
@@ -19,7 +16,7 @@ ARG GCC_VERSION=9.4.0
 ARG MUSL_VERSION
 ARG LINUX_VERSION=headers-4.19.88-1
 
-FROM ghcr.io/taiki-e/build-base:alpine-"${ALPINE_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:alpine as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MUSL_CROSS_MAKE_REV
@@ -130,7 +127,7 @@ ls | grep '\.so'
 ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
 EOF
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

@@ -4,8 +4,6 @@
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/illumos-toolchain.sh
 # - https://github.com/illumos/sysroot
 
-ARG UBUNTU_VERSION=18.04
-
 # https://github.com/illumos/sysroot/releases
 ARG SYSROOT_VERSION=20181213-de6af22ae73b-v1
 # I guess illumos was originally based on solaris10, but it looks like they
@@ -41,13 +39,13 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://gi
     | tar xzf - -C /sysroot
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:alpine as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    libgmp-dev \
-    libmpc-dev \
-    libmpfr-dev
+RUN apk --no-cache add \
+    gmp-dev \
+    mpc1-dev \
+    mpfr-dev
 
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -70,13 +68,16 @@ COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 ARG GCC_VERSION
 COPY --from=gcc-src /gcc-src /tmp/gcc-src
-RUN mkdir -p /tmp/gcc-build
 # https://gcc.gnu.org/install/configure.html
 RUN <<EOF
 export CFLAGS="-g0 -O2 -fPIC"
 export CXXFLAGS="-g0 -O2 -fPIC"
 export CFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
 export CXXFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
+export CC="gcc -static --static"
+export CXX="g++ -static --static"
+export LDFLAGS="-s -static --static"
+mkdir -p /tmp/gcc-build
 cd /tmp/gcc-build
 /tmp/gcc-src/configure \
     --prefix="${TOOLCHAIN_DIR}" \
@@ -108,7 +109,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

@@ -9,7 +9,7 @@
 # - others don't work without binutils built by build.sh (unrecognized emulation mode error).
 
 ARG RUST_TARGET
-ARG UBUNTU_VERSION=18.04
+ARG UBUNTU_VERSION=20.04
 ARG TOOLCHAIN_TAG=dev
 ARG HOST_ARCH=amd64
 
