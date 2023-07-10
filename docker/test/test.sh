@@ -25,6 +25,9 @@ run_cargo() {
     if [[ -n "${no_rust_cpp}" ]] && [[ "$*" != *"--no-default-features"* ]]; then
         cargo_flags+=(--no-default-features)
     fi
+    if [[ "${build_mode}" == "release" ]] && [[ "$*" != *"--release"* ]]; then
+        cargo_flags+=(--release)
+    fi
     subcmd="$1"
     shift
     x cargo "${subcmd}" ${build_std[@]+"${build_std[@]}"} --target "${RUST_TARGET}" ${cargo_flags[@]+"${cargo_flags[@]}"} "$@"
@@ -280,6 +283,8 @@ if [[ -f /BUILD_STD ]]; then
     fi
     case "${RUST_TARGET}" in
         hexagon-unknown-linux-musl) build_std+=(-Z build-std-features=llvm-libunwind) ;;
+        # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
+        mips-unknown-linux-gnu | mipsel-unknown-linux-gnu | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) build_mode=release ;;
     esac
 fi
 
@@ -824,7 +829,8 @@ case "${RUST_TARGET}" in
                 file_header_pat+=('Machine:\s+MIPS R3000' 'Flags:.*mips32r2')
                 arch_specific_pat+=('ISA: MIPS32r2')
                 case "${RUST_TARGET}" in
-                    *-linux-musl* | *-linux-uclibc*) arch_specific_pat+=('FP ABI: Soft float') ;;
+                    # TODO(linux-uclibc): should be soft-float
+                    *-linux-musl*) arch_specific_pat+=('FP ABI: Soft float') ;;
                     *) arch_specific_pat+=('FP ABI: Hard float \(32-bit CPU, Any FPU\)') ;;
                 esac
                 ;;

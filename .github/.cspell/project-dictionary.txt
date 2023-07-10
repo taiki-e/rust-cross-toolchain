@@ -108,6 +108,7 @@ MKUNPRIVED
 mlong
 mpcore
 mrproper
+msoft
 mstrict
 mthumb
 multilib

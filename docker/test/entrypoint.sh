@@ -100,7 +100,7 @@ EOF
     clang)
         case "${RUST_TARGET}" in
             hexagon-unknown-linux-musl)
-            cat >>"${env_path}" <<EOF
+                cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=${RUST_TARGET}-ar
 export RANLIB_${rust_target_lower}=${RUST_TARGET}-ranlib
 export NM=llvm-nm
@@ -109,7 +109,7 @@ export OBJCOPY=${RUST_TARGET}-objcopy
 export OBJDUMP=${RUST_TARGET}-objdump
 export READELF=${RUST_TARGET}-readelf
 EOF
-            ;;
+                ;;
             *)
                 # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
                 cat >>"${env_path}" <<EOF
@@ -185,15 +185,19 @@ export RUSTFLAGS="-C debuginfo=0 \${RUSTFLAGS:-}"
 EOF
         ;;
     mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc)
-        # mips(el)-buildroot-linux-uclibc-gcc/g++'s default is -march=mips32
-        # Allow override by user-set `CC_*`.
-        # Also set to soft-float.
-        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_uclibc.rs#L13
-        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_uclibc.rs#L12
-        cat >>"${env_path}" <<EOF
-export CFLAGS_${rust_target_lower}="-march=mips32r2 -mfloat-abi=soft \${CFLAGS_${rust_target_lower}:-}"
-export CXXFLAGS_${rust_target_lower}="-march=mips32r2 -mfloat-abi=soft \${CXXFLAGS_${rust_target_lower}:-}"
+        case "${cc}" in
+            gcc)
+                # mips(el)-buildroot-linux-uclibc-gcc/g++'s default is -march=mips32
+                # Allow override by user-set `CC_*`.
+                # TODO(linux-uclibc): Rust targets are soft-float (-msoft-float), but toolchain is hard-float.
+                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_uclibc.rs#L13
+                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_uclibc.rs#L12
+                cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-march=mips32r2 \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=mips32r2 \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
+                ;;
+        esac
         ;;
     armv5te-none-eabi | thumbv5te-none-eabi)
         cat >>"${env_path}" <<EOF

@@ -45,10 +45,10 @@
 | `armv7-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `i586-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `i686-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `mips-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mips64-unknown-linux-gnuabi64` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mips64el-unknown-linux-gnuabi64` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mipsel-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
+| `mips-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
+| `mips64-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
+| `mips64el-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
+| `mipsel-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `mipsisa32r6-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
 | `mipsisa32r6el-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
 | `mipsisa64r6-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
@@ -64,6 +64,8 @@
 | `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 linux (glibc 2.27+) |
 | `x86_64-unknown-linux-gnux32` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
+
+[1] Since nightly-2023-07-05, mips{,el}-unknown-linux-gnu requires release mode for building std<br>
 
 ### Linux (musl)
 
@@ -111,6 +113,10 @@
 - `armv5te-unknown-linux-uclibceabi` (tier3)
 - `armv7-unknown-linux-uclibceabi` (tier3)
 - `armv7-unknown-linux-uclibceabihf` (tier3)
+- `mips-unknown-linux-uclibc` (tier3)
+- `mipsel-unknown-linux-uclibc` (tier3)
+
+[1] mips{,el}-unknown-linux-uclibc requires release mode for building std<br>
 
 ### Android
 
