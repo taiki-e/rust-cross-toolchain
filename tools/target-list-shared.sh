@@ -20,10 +20,10 @@ linux_gnu_targets=(
     i686-unknown-linux-gnu
     # loongarch64-unknown-linux-gnu
     # m68k-unknown-linux-gnu # tier3, build fail: https://github.com/rust-lang/rust/issues/89498
-    mips-unknown-linux-gnu # tier3
-    mips64-unknown-linux-gnuabi64   # tier3
-    mips64el-unknown-linux-gnuabi64 # tier3
-    mipsel-unknown-linux-gnu # tier3
+    mips-unknown-linux-gnu               # tier3
+    mips64-unknown-linux-gnuabi64        # tier3
+    mips64el-unknown-linux-gnuabi64      # tier3
+    mipsel-unknown-linux-gnu             # tier3
     mipsisa32r6-unknown-linux-gnu        # tier3
     mipsisa32r6el-unknown-linux-gnu      # tier3
     mipsisa64r6-unknown-linux-gnuabi64   # tier3
@@ -71,8 +71,8 @@ linux_uclibc_targets=(
     armv5te-unknown-linux-uclibceabi # tier3
     armv7-unknown-linux-uclibceabi   # tier3
     armv7-unknown-linux-uclibceabihf # tier3
-    mips-unknown-linux-uclibc # tier3
-    mipsel-unknown-linux-uclibc # tier3
+    mips-unknown-linux-uclibc        # tier3
+    mipsel-unknown-linux-uclibc      # tier3
 )
 # Linux (OpenHarmony)
 linux_ohos_targets=(
