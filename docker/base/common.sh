@@ -30,24 +30,38 @@ if [[ -f /CC_TARGET ]]; then
     set -x
 fi
 
+# NB: Sync with test/check.sh
 for bin_dir in "${TOOLCHAIN_DIR}/bin" "${TOOLCHAIN_DIR}/${RUST_TARGET}/bin"; do
     if [[ -e "${bin_dir}" ]]; then
         set +x
         for path in "${bin_dir}"/*; do
-            if file "${path}" | grep -Eq 'not stripped'; then
+            file_info=$(file "${path}")
+            if grep <<<"${file_info}" -Eq 'not stripped'; then
                 strip "${path}"
+            fi
+            if grep <<<"${file_info}" -Eq 'dynamically linked'; then
+                case "${RUST_TARGET}" in
+                    hexagon-unknown-linux-musl) ;;
+                    *-linux-musl* | *-solaris* | *-illumos*)
+                        echo >&2 "binaries must be statically linked"
+                        exit 1
+                        ;;
+                    *-freebsd* | *-openbsd*)
+                        case "${path}" in
+                            *clang | *clang++) ;; # symlink to host clang
+                            *)
+                                echo >&2 "binaries must be statically linked"
+                                exit 1
+                                ;;
+                        esac
+                        ;;
+                esac
+                echo -n "${path}"
+                # https://stackoverflow.com/questions/3436008/how-to-determine-version-of-glibc-glibcxx-binary-will-depend-on
+                objdump -T "${path}" | grep GLIBC_ | sed 's/.*GLIBC_\([.0-9]*\).*/\1/g' | sort -Vu | tail -1
             fi
         done
         set -x
         file "${bin_dir}"/*
-        case "${RUST_TARGET}" in
-            hexagon-unknown-linux-musl) ;;
-            *-linux-musl*)
-                if file "${bin_dir}"/* | grep -Eq 'dynamically linked'; then
-                    echo >&2 "binaries must be statically linked"
-                    exit 1
-                fi
-                ;;
-        esac
     fi
 done

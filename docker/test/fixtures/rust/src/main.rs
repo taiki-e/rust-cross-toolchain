@@ -26,17 +26,21 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    #[cfg(not(no_c))]
-    use super::*;
-
     #[test]
     fn test() {
         println!("Hello Rust!");
         #[cfg(not(no_c))]
         unsafe {
+            use super::*;
             hello_c();
             #[cfg(feature = "cpp")]
             hello_cpp();
+
+            let input = 4;
+            let output = hello_cmake(input);
+            assert_eq!(output, 8);
+            println!("Hello Cmake from Rust!");
+            println!("{input} * 2 = {output}");
         }
     }
 }

@@ -27,6 +27,7 @@ if [[ -e "${toolchain_dir}/${RUST_TARGET}/bin" ]]; then
     popd >/dev/null
 fi
 
+# NB: Sync with base/common.sh
 for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
     if [[ -e "${bin_dir}" ]]; then
         set +x
@@ -44,7 +45,7 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
                         ;;
                     *-freebsd* | *-openbsd*)
                         case "${path}" in
-                            *clang | *clang++) ;;
+                            *clang | *clang++) ;; # symlink to host clang
                             *)
                                 echo >&2 "binaries must be statically linked"
                                 exit 1

@@ -435,7 +435,7 @@ EOF
     case "${RUST_TARGET}" in
         *-linux-musl*)
             case "${RUST_TARGET}" in
-                # TODO(hexagon-unknown-linux-musl): run-fail (segfault)
+                # TODO(hexagon): run-fail (segfault)
                 # TODO(powerpc-unknown-linux-musl)
                 # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
                 # TODO(riscv64gc-unknown-linux-musl)
