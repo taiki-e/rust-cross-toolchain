@@ -552,11 +552,9 @@ else
         # https://github.com/rust-lang/rust/blob/1.70.0/tests/run-make/thumb-none-qemu/example/.cargo/config
         case "${linker}" in
             rust-lld) target_rustflags="" ;;
-            *-gcc)
-                target_rustflags="-C linker=${linker} -C link-arg=-nostartfiles"
-                # TODO(none): collect2: fatal error: cannot find 'ld'
-                continue
-                ;;
+            # TODO(none): pass -C link-arg=-fuse-ld=bfd to workaround rustc bug
+            # https://github.com/rust-lang/rust/issues/113597
+            *-gcc) target_rustflags="-C linker=${linker} -C link-arg=-nostartfiles -C link-arg=-fuse-ld=bfd" ;;
             *) target_rustflags="-C linker=${linker}" ;;
         esac
         case "${linker}" in
