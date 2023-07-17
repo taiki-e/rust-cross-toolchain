@@ -46,6 +46,7 @@ libada
 libbacktrace
 libc
 libcilkrts
+libdl
 libexec
 libgcc
 libgomp

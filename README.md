@@ -129,7 +129,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| [1] | 4.9 | 5.0 | ? (libc++) |  | x86_64 linux (glibc 2.27+) |
+| [1] | N/A | 14.0.6 | ? (libc++) | ✓ (qemu) | x86_64 linux (glibc 2.17+) |
 
 [1] See target list below for details<br>
 
@@ -137,16 +137,14 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 **Supported targets**:
 
-| target | NDK version |
+| target | API level |
 | ------ | ------- |
 | `aarch64-linux-android` | 21 |
-| `arm-linux-androideabi` [1] | 14 (default), 21 |
-| `armv7-linux-androideabi` | 14 (default), 21 |
-| `i686-linux-android` | 14 (default), 21 |
-| `thumbv7neon-linux-androideabi` | 14 (default), 21 |
+| `arm-linux-androideabi` | 19 |
+| `armv7-linux-androideabi` | 19 |
+| `i686-linux-android` | 19 |
+| `thumbv7neon-linux-androideabi` | 19 |
 | `x86_64-linux-android` | 21 |
-
-[1] The pre-compiled libraries distributed by rustup targets armv7a because [it uses](https://github.com/rust-lang/rust/blob/1.70.0/src/bootstrap/cc_detect.rs#L239) the [default arm-linux-androideabi-clang](https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility). To target armv5te, which is the minimum supported architecture of arm-linux-androideabi, you need to recompile the standard library with arm-linux-androideabi-gcc.
 
 ### FreeBSD
 

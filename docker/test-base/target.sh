@@ -36,19 +36,6 @@ if rustup target list | sed 's/ .*//g' | grep -Eq "^${RUST_TARGET}$"; then
 else
     touch /BUILD_STD
 fi
-case "${RUST_TARGET}" in
-    arm-linux-androideabi)
-        # The pre-compiled library distributed by rustup targets armv7a because
-        # it uses the default arm-linux-androideabi-clang.
-        # To target armv5te, which is the minimum supported architecture of
-        # arm-linux-androideabi, the standard library needs to be recompiled.
-        # https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md#abi-compatibility
-        # https://github.com/rust-lang/rust/blob/1.70.0/src/bootstrap/cc_detect.rs#L239
-        # https://developer.android.com/ndk/guides/abis
-        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/arm_linux_androideabi.rs#L11-L12
-        touch /BUILD_STD
-        ;;
-esac
 
 # https://github.com/rust-lang/rust/blob/HEAD/Cargo.lock
 libc_version=0.2.147

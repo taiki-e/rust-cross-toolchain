@@ -226,9 +226,10 @@ case "${RUST_TARGET}" in
 esac
 no_cpp=""
 case "${RUST_TARGET}" in
+    # TODO(android):
     # TODO(aarch64-unknown-openbsd): clang segfault
     # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
-    aarch64-unknown-openbsd | sparc64-unknown-openbsd) no_cpp=1 ;;
+    arm*-android* | thumb*-android* | i686-*-android* | aarch64-unknown-openbsd | sparc64-unknown-openbsd) no_cpp=1 ;;
     # TODO(redox): /x86_64-unknown-redox/x86_64-unknown-redox/include/bits/wchar.h:12:28: error: cannot combine with previous 'int' declaration specifier
     *-redox*)
         case "${cc}" in
@@ -243,8 +244,7 @@ case "${RUST_TARGET}" in
     #    Caused by:
     #        0: failed to instantiate "/tmp/test-clang/rust/target/wasm32-wasi/debug/rust-test.wasm"
     #        1: unknown import: `env::_ZnwmSt11align_val_t` has not been defined
-    # TODO(android):
-    *-wasi* | *-android*) no_rust_cpp=1 ;;
+    *-wasi*) no_rust_cpp=1 ;;
 esac
 # Whether or not to build the test.
 no_build_test=""
@@ -266,9 +266,8 @@ case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
-    # TODO(android):
     # TODO(redox):
-    *-unknown-linux-* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
+    *-unknown-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
 esac
 
 build_mode=debug
@@ -717,19 +716,9 @@ case "${RUST_TARGET}" in
                             *) arch_specific_pat+=('Tag_CPU_arch: v6KZ') ;;
                         esac
                         ;;
-                    arm-*-android*) arch_specific_pat+=('Tag_CPU_arch: v5TE') ;;
-                    arm-* | armv6* | thumbv6*)
-                        case "${RUST_TARGET}" in
-                            thumb*)
-                                arch_specific_pat+=('Tag_CPU_arch: v6S-M')
-                                arch_specific_pat+=('Tag_CPU_arch_profile: Microcontroller')
-                                ;;
-                            *) arch_specific_pat+=('Tag_CPU_arch: v6') ;;
-                        esac
-                        ;;
                     armv4t-* | thumbv4t-*) arch_specific_pat+=('Tag_CPU_arch: v4T') ;;
                     armv5te-* | thumbv5te-*) arch_specific_pat+=('Tag_CPU_arch: v5TE(J)?') ;;
-                    arm*v7* | thumbv7*)
+                    arm*v7* | thumbv7* | arm-*-android*)
                         case "${RUST_TARGET}" in
                             thumbv7em-*) arch_specific_pat+=('Tag_CPU_arch: v7E-M') ;;
                             *) arch_specific_pat+=('Tag_CPU_arch: v7') ;;
@@ -744,29 +733,18 @@ case "${RUST_TARGET}" in
                     thumbv8m.base-*) arch_specific_pat+=('Tag_CPU_arch: v8-M.baseline' 'Tag_CPU_arch_profile: Microcontroller' 'Tag_THUMB_ISA_use: Yes') ;;
                     thumbv8m.main-*) arch_specific_pat+=('Tag_CPU_arch: v8-M.mainline' 'Tag_CPU_arch_profile: Microcontroller' 'Tag_THUMB_ISA_use: Yes') ;;
                     armeb-*) arch_specific_pat+=('Tag_CPU_arch: v8' 'Tag_CPU_arch_profile: Application' 'Tag_THUMB_ISA_use: Thumb-2') ;;
+                    arm-* | armv6* | thumbv6*)
+                        case "${RUST_TARGET}" in
+                            thumb*)
+                                arch_specific_pat+=('Tag_CPU_arch: v6S-M')
+                                arch_specific_pat+=('Tag_CPU_arch_profile: Microcontroller')
+                                ;;
+                            *) arch_specific_pat+=('Tag_CPU_arch: v6') ;;
+                        esac
+                        ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 case "${RUST_TARGET}" in
-                    arm-*hf | armv6*hf)
-                        for bin in "${out_dir}"/*; do
-                            if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
-                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
-                                assert_arch_specific 'Tag_FP_arch: VFPv3' "${bin}"
-                            else
-                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
-                                assert_arch_specific 'Tag_FP_arch: VFPv2' "${bin}"
-                            fi
-                        done
-                        ;;
-                    arm-* | armv6* | thumbv6*)
-                        for bin in "${out_dir}"/*; do
-                            if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
-                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
-                            else
-                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
-                            fi
-                        done
-                        ;;
                     armv4t-* | thumbv4t-*) arch_specific_pat+=('Tag_THUMB_ISA_use: Thumb-1') ;;
                     armv5te-* | thumbv5te-*)
                         for bin in "${out_dir}"/*; do
@@ -782,9 +760,11 @@ case "${RUST_TARGET}" in
                             fi
                         done
                         ;;
-                    thumbv7neon-*) arch_specific_pat+=('Tag_FP_arch: VFPv4' 'Tag_Advanced_SIMD_arch: NEONv1 with Fused-MAC') ;;
-                    arm*v7*hf | thumbv7*hf | armv7-*android*)
+                    thumbv7neon-*hf) arch_specific_pat+=('Tag_FP_arch: VFPv4' 'Tag_Advanced_SIMD_arch: NEONv1 with Fused-MAC') ;;
+                    arm*v7*hf | thumbv7*hf | armv7-*android* | arm-*-android* | thumbv7neon-*-android*)
                         case "${RUST_TARGET}" in
+                            # TODO: This should be always VFPv4
+                            thumbv7neon-*-android*) fp_arch='(VFPv3|VFPv3-D16|VFPv4)' ;;
                             # TODO: This should be VFPv3-D16
                             # https://developer.android.com/ndk/guides/abis
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
@@ -807,6 +787,26 @@ case "${RUST_TARGET}" in
                     thumbv8m*hf) arch_specific_pat+=('Tag_FP_arch: FPv5/FP-D16 for ARMv8') ;;
                     thumbv8m*) ;;
                     armeb-*) ;;
+                    arm-*hf | armv6*hf)
+                        for bin in "${out_dir}"/*; do
+                            if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
+                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
+                                assert_arch_specific 'Tag_FP_arch: VFPv3' "${bin}"
+                            else
+                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
+                                assert_arch_specific 'Tag_FP_arch: VFPv2' "${bin}"
+                            fi
+                        done
+                        ;;
+                    arm-* | armv6* | thumbv6*)
+                        for bin in "${out_dir}"/*; do
+                            if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then
+                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-2' "${bin}"
+                            else
+                                assert_arch_specific 'Tag_THUMB_ISA_use: Thumb-1' "${bin}"
+                            fi
+                        done
+                        ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;

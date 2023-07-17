@@ -41,8 +41,7 @@ jobs:
           - target: linux-musl
             musl: '1.2'
           - target: linux-uclibc
-          # TODO(android): https://github.com/rust-lang/rust/issues/103673
-          # - target: android
+          - target: android
           - target: freebsd
           - target: netbsd
           - target: openbsd

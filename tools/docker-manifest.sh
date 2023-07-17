@@ -158,23 +158,9 @@ for target in "${targets[@]}"; do
         *-linux-uclibc*) docker_manifest "${target}" ;;
         *-android*)
             # NB: When updating this, the reminder to update tools/build-docker.sh.
-            case "${target}" in
-                aarch64-* | x86_64*)
-                    default_ndk_version="21"
-                    ndk_versions=("21")
-                    ;;
-                arm* | thumb* | i686-*)
-                    default_ndk_version="14"
-                    ndk_versions=("14" "21")
-                    ;;
-                *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
-            esac
-            if [[ -n "${NDK_VERSION:-}" ]]; then
-                ndk_versions=("${NDK_VERSION}")
-            fi
-            for ndk_version in "${ndk_versions[@]}"; do
-                docker_manifest "${target}" "${ndk_version}" "${default_ndk_version}"
-            done
+            default_ndk_version="r25b"
+            ndk_version="${NDK_VERSION:-"${default_ndk_version}"}"
+            docker_manifest "${target}" "${ndk_version}" "${default_ndk_version}"
             ;;
         *-macos*) docker_manifest "${target}" ;;
         *-ios*) docker_manifest "${target}" ;;

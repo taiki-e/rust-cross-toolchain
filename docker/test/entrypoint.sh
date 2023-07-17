@@ -319,17 +319,17 @@ case "${RUST_TARGET}" in
                     *) qemu_arch=arm ;;
                 esac
                 case "${RUST_TARGET}" in
-                    # ARMv6: https://en.wikipedia.org/wiki/ARM11
-                    arm-* | armv6-*) qemu_cpu=arm11mpcore ;;
                     # ARMv4: https://en.wikipedia.org/wiki/StrongARM
                     armv4t-*) qemu_cpu=sa1110 ;;
                     # ARMv5TE
                     armv5te-*) qemu_cpu=arm1026 ;;
                     # ARMv7-A+NEONv2
-                    armv7-* | thumbv7neon-*) qemu_cpu=cortex-a15 ;;
+                    armv7-* | thumbv7neon-* | arm-*-android*) qemu_cpu=cortex-a15 ;;
                     # builtin armeb-unknown-linux-gnueabi is ARMv8
                     # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armeb_unknown_linux_gnueabi.rs#L12
                     armeb-*) ;;
+                    # ARMv6: https://en.wikipedia.org/wiki/ARM11
+                    arm-* | armv6-*) qemu_cpu=arm11mpcore ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;

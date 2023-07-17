@@ -129,7 +129,7 @@ build() {
     )
     local tag="${repository}:${target}"
     log_dir="tmp/log/${base}/${target}"
-    if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
+    if [[ -n "${1:-}" ]] && [[ "${1:-}" != "--"* ]]; then
         local sys_version="$1"
         local default_sys_version="$2"
         shift
@@ -219,26 +219,12 @@ for target in "${targets[@]}"; do
             ;;
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
         *-android*)
-            # https://github.com/rust-lang/rust/blob/1.67.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L10-L15
+            # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L9
             # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-            case "${target}" in
-                aarch64-* | x86_64*)
-                    default_ndk_version="21"
-                    ndk_versions=("21")
-                    ;;
-                arm* | thumb* | i686-*)
-                    default_ndk_version="14"
-                    ndk_versions=("14" "21")
-                    ;;
-                *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
-            esac
-            if [[ -n "${NDK_VERSION:-}" ]]; then
-                ndk_versions=("${NDK_VERSION}")
-            fi
-            for ndk_version in "${ndk_versions[@]}"; do
-                build "android" "${target}" "${ndk_version}" "${default_ndk_version}" \
-                    --build-arg "NDK_VERSION=${ndk_version}"
-            done
+            default_ndk_version="r25b"
+            ndk_version="${NDK_VERSION:-"${default_ndk_version}"}"
+            build "android" "${target}" "${ndk_version}" "${default_ndk_version}" \
+                --build-arg "NDK_VERSION=${ndk_version}"
             ;;
         *-macos*) build "macos" "${target}" ;;
         *-ios*) build "ios" "${target}" ;;
