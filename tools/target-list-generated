@@ -282,6 +282,7 @@ none_targets=(
     riscv32imc-unknown-none-elf
     riscv64gc-unknown-none-elf
     riscv64imac-unknown-none-elf
+    sparc-unknown-none-elf # tier3
     thumbv4t-none-eabi # tier3
     thumbv5te-none-eabi # tier3
     thumbv6m-none-eabi
