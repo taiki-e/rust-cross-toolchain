@@ -59,50 +59,58 @@ RUN /test-base.sh
 RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     e2tools
 ARG RUST_TARGET
-COPY --from=ndk /ndk/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot /ndk-sysroot-tmp
+COPY --from=ndk /ndk/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot /ndk-sysroot
 # https://dl.google.com/android/repository/sys-img/android/sys-img.xml
 RUN <<EOF
 mkdir -p /system/{bin,lib,lib64}
+# TODO: use 21 instead of 24 for 32-bit targets: libc: error getting old personality value: Operation not permitted
 case "${RUST_TARGET}" in
     aarch64*)
         lib_target=aarch64-linux-android
         arch=arm64-v8a
-        api_level=24
+        img_api_level=24
         revision=r07
         ;;
     arm* | thumb*)
         lib_target=arm-linux-androideabi
         arch=armeabi-v7a
-        api_level=21
+        img_api_level=21
         revision=r04
         ;;
     i686-*)
         lib_target=i686-linux-android
         arch=x86
-        api_level=21
+        img_api_level=21
         revision=r05
         ;;
     x86_64*)
         lib_target=x86_64-linux-android
         arch=x86_64
-        api_level=24
+        img_api_level=24
         revision=r08
         ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-file="${arch}-${api_level}_${revision}.zip"
+file="${arch}-${img_api_level}_${revision}.zip"
 prefix=''
 case "${RUST_TARGET}" in
     x86_64* | aarch64*) prefix='64' ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused -O "https://dl.google.com/android/repository/sys-img/android/${file}"
-unzip "${file}"
+unzip -q "${file}" "${arch}/system.img"
 e2cp -p "${arch}/system.img:/bin/linker${prefix}" "/system/bin/"
-e2cp -p "${arch}/system.img:/lib${prefix}/libdl.so" "/system/lib${prefix}/"
-e2cp -p "${arch}/system.img:/lib${prefix}/libc.so" "/system/lib${prefix}/"
-e2cp -p "${arch}/system.img:/lib${prefix}/libm.so" "/system/lib${prefix}/"
-cp "ndk-sysroot-tmp/usr/lib/${lib_target}/libc++_shared.so" "/system/lib${prefix}/"
+for lib in "ndk-sysroot/usr/lib/${lib_target}/${img_api_level}"/*.so; do
+    lib=$(basename "${lib}")
+    # TODO: error with img_api_level < 24: Attempt to read block from filesystem resulted in short readError copying file /lib/libGLESv3.so to /system/lib//libGLESv3.so
+    e2cp -p "${arch}/system.img:/lib${prefix}/${lib}" "/system/lib${prefix}/" || true
+done
+cp "ndk-sysroot/usr/lib/${lib_target}/libc++_shared.so" "/system/lib${prefix}/"
+rm "${file}"
+rm -rf "${arch}"
 EOF
+ENV ANDROID_DNS_MODE=local
+ENV ANDROID_ROOT=/system
+ENV TMPDIR=/tmp/
 COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test

@@ -46,7 +46,6 @@ libada
 libbacktrace
 libc
 libcilkrts
-libdl
 libexec
 libgcc
 libgomp
@@ -127,6 +126,7 @@ stdarch
 stdlib
 strnlen
 SYSV
+TMPDIR
 TOOLDIR
 uclibcgnueabi
 uclibcgnueabihf
