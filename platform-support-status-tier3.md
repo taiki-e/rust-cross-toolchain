@@ -107,6 +107,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] riscv64gc-unknown-openbsd
 - [x] s390x-unknown-linux-musl
 - [x] sparc-unknown-linux-gnu
+- [ ] sparc-unknown-none-elf
 - [x] sparc64-unknown-netbsd
 - [x] sparc64-unknown-openbsd
 - [ ] thumbv4t-none-eabi
