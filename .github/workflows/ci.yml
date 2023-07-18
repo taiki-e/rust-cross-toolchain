@@ -115,7 +115,7 @@ jobs:
         run: rustup toolchain add nightly --no-self-update && rustup default nightly
       - run: tools/gen.sh
       - id: diff
-        run: ci/gen.sh
+        run: tools/ci/gen.sh
         if: github.repository_owner == 'taiki-e' && (github.event_name == 'schedule' || github.event_name == 'push' && github.ref == 'refs/heads/main')
       - uses: peter-evans/create-pull-request@v5
         with:
