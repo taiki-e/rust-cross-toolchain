@@ -126,6 +126,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-unknown-haiku
 - [ ] x86_64-unknown-hermit
 - [ ] x86_64-unknown-l4re-uclibc
+- [ ] x86_64-unknown-linux-ohos
 - [x] x86_64-unknown-openbsd
 - [ ] x86_64-uwp-windows-gnu
 - [ ] x86_64-uwp-windows-msvc
