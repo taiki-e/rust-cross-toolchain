@@ -65,7 +65,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
 FROM "${TARGET}" as toolchain
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN rm -rf /toolchain/share/{doc,lintian,locale,man}
+RUN rm -rf /toolchain/share/{doc,i18n,lintian,locale,man}
 
 FROM ubuntu as final
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

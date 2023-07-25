@@ -27,10 +27,12 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| glibc [1] | [1] | host | ✓ (libstdc++) | ✓ (qemu) [2] | [1] |
+| glibc [1] | [1] | host [2] | ✓ (libstdc++) [3] | ✓ (qemu) [4] | [1] |
 
 [1] See target list below for details<br>
-[2] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
+[2] Except for sparc-unknown-linux-gnu and loongarch64-unknown-linux-gnu<br>
+[3] Except for loongarch64-unknown-linux-gnu<br>
+[4] Except for powerpc-unknown-linux-gnuspe, riscv32gc-unknown-linux-gnu, and x86_64-unknown-linux-gnux32<br>
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
 
@@ -48,6 +50,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `armv7-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `i586-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
 | `i686-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
+| `loongarch64-unknown-linux-gnu` | 2.36 | 13.0.0 | x86_64 linux (any libc) |
 | `mips-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `mips64-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
 | `mips64el-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |

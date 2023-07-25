@@ -12,7 +12,8 @@ fn main() {
     let target_env = &*env::var("CARGO_CFG_TARGET_ENV").expect("CARGO_CFG_TARGET_ENV not set");
 
     // TODO(hexagon):
-    if target_arch == "hexagon" {
+    // TODO(loongarch64):
+    if target_arch == "hexagon" || target_arch == "loongarch64" {
         println!("cargo:rustc-cfg=no_c");
         return;
     }

@@ -170,6 +170,9 @@ case "${RUST_TARGET}" in
     arm-unknown-linux-gnueabihf)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
+    loongarch64-unknown-linux-gnu)
+        export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/loongarch64-unknown-linux-gnu/lib64:${LD_LIBRARY_PATH:-}"
+        ;;
 esac
 
 dpkg_arch="$(dpkg --print-architecture)"
@@ -218,11 +221,14 @@ case "${RUST_TARGET}" in
             clang) no_cc_bin=1 ;;
         esac
         ;;
+    # TODO(loongarch64):
+    loongarch64-unknown-linux-gnu) no_cc_bin=1 ;;
 esac
 no_rust_c=""
 case "${RUST_TARGET}" in
     # TODO(hexagon):
-    hexagon-unknown-linux-musl) no_rust_c=1 ;;
+    # TODO(loongarch64):
+    hexagon-unknown-linux-musl | loongarch64-unknown-linux-gnu) no_rust_c=1 ;;
 esac
 no_cpp=""
 case "${RUST_TARGET}" in
@@ -672,7 +678,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('ELF 32-bit LSB')
                 file_header_pat+=('Class:\s+ELF32' 'little endian')
                 ;;
-            aarch64-* | mips64el-* | mipsisa64r6el-* | powerpc64le-* | riscv64* | x86_64*)
+            aarch64-* | loongarch64-* | mips64el-* | mipsisa64r6el-* | powerpc64le-* | riscv64* | x86_64*)
                 file_info_pat+=('ELF 64-bit LSB')
                 file_header_pat+=('Class:\s+ELF64' 'little endian')
                 ;;
@@ -818,6 +824,10 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('Intel 80386')
                 file_header_pat+=('Machine:\s+Intel 80386')
                 ;;
+            loongarch64-*)
+                file_info_pat+=('LoongArch')
+                file_header_pat+=('Machine:\s+LoongArch' 'Flags:\s+0x3, LP64, DOUBLE-FLOAT')
+                ;;
             mips-* | mipsel-*)
                 file_info_pat+=('MIPS' 'MIPS32 rel2')
                 file_header_pat+=('Machine:\s+MIPS R3000' 'Flags:.*mips32r2')
@@ -932,6 +942,7 @@ case "${RUST_TARGET}" in
                     arm*hf | thumbv7neon-*) ldso='/lib/ld-linux-armhf\.so\.3' ;;
                     arm*) ldso='/lib/ld-linux\.so\.3' ;;
                     i586-* | i686-*) ldso='/lib/ld-linux\.so\.2' ;;
+                    loongarch64-*) ldso='/lib64/ld-linux-loongarch-lp64d\.so\.1' ;;
                     mips-* | mipsel-*) ldso='/lib/ld\.so\.1' ;;
                     mips64-* | mips64el-*) ldso='/lib64/ld\.so\.1' ;;
                     mipsisa32r6-* | mipsisa32r6el-*) ldso='/lib/ld-linux-mipsn8\.so\.1' ;;
@@ -1118,3 +1129,5 @@ for bin in "${out_dir}"/*; do
         assert_not_arch_specific "${pat}" "${bin}"
     done
 done
+
+rm -rf "${test_dir}"

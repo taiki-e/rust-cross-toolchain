@@ -13,15 +13,14 @@ RUN mkdir -p "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 
 RUN --mount=type=bind,target=/docker \
     /docker/linux-gnu.sh
-# fd -t d '\b(doc|lintian|locale|i18n|man)\b'
+# fd -t d '\b(doc|i18n|lintian|locale|man)\b'
 RUN <<EOF
 apt_target="$(</APT_TARGET)"
-if [[ -d "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr/share ]]; then
-    rm -rf "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr/share/{i18n,locale}
-fi
-if [[ -d "${TOOLCHAIN_DIR}"/sysroot/usr/share ]]; then
-    rm -rf "${TOOLCHAIN_DIR}"/sysroot/usr/share/{i18n,locale}
-fi
+for dir in "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr "${TOOLCHAIN_DIR}"/sysroot/usr "${TOOLCHAIN_DIR}"/target/usr; do
+    if [[ -d "${dir}"/share ]]; then
+        rm -rf "${dir}"/share/{doc,i18n,lintian,locale,man}
+    fi
+done
 case "${RUST_TARGET}" in
     # There are {include,lib,libexec} for both gcc 9.4.0 and 6.3.0
     arm-*hf) rm -rf $(find "${TOOLCHAIN_DIR}" -name '6.3.0') $(find "${TOOLCHAIN_DIR}" -name '*gcc-6.3.0') ;;
@@ -68,6 +67,7 @@ RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
 # TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
+# TODO(loongarch64):
 RUN --mount=type=bind,target=/docker <<EOF
 gcc_version="$(</GCC_VERSION)"
 if [[ "${gcc_version}" == "host" ]]; then
@@ -86,7 +86,7 @@ case "${RUST_TARGET}" in
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
             /docker/clang-cross.sh
         ;;
-    sparc-*) ;;
+    sparc-* | loongarch64-*) ;;
     *)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" -B\"\${toolchain_dir}\"/${RUST_TARGET}/bin -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L${TOOLCHAIN_DIR}/lib/gcc-cross/${RUST_TARGET}/${gcc_version%%.*}" \
             CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
@@ -119,9 +119,10 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/
 RUN /test/test.sh gcc
 # TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
+# TODO(loongarch64):
 RUN <<EOF
 case "${RUST_TARGET}" in
-    sparc-*) ;;
+    sparc-* | loongarch64-*) ;;
     *) /test/test.sh clang ;;
 esac
 EOF

@@ -53,6 +53,7 @@ fi
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf) sysroot_suffix="${RUST_TARGET}/libc" ;;
     riscv32gc-unknown-linux-gnu) sysroot_suffix="sysroot" ;;
+    loongarch64-unknown-linux-gnu) sysroot_suffix="target/usr" ;;
     *) sysroot_suffix="${RUST_TARGET}" ;;
 esac
 dev_tools_dir="${toolchain_dir}/share/rust-cross-toolchain/${RUST_TARGET}"
@@ -166,6 +167,11 @@ case "${RUST_TARGET}" in
     arm-unknown-linux-gnueabihf)
         cat >>"${entrypoint_path}" <<EOF
 export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/libc/lib:\${toolchain_dir}/${RUST_TARGET}/lib:\${LD_LIBRARY_PATH:-}"
+EOF
+        ;;
+    loongarch64-unknown-linux-gnu)
+        cat >>"${entrypoint_path}" <<EOF
+export LD_LIBRARY_PATH="\${toolchain_dir}/target/usr/lib64:\${toolchain_dir}/loongarch64-unknown-linux-gnu/lib64:\${LD_LIBRARY_PATH:-}"
 EOF
         ;;
 esac
@@ -335,6 +341,7 @@ case "${RUST_TARGET}" in
                 ;;
             i*86-*) qemu_arch=i386 ;;
             hexagon-*) qemu_arch=hexagon ;;
+            loongarch64-*) qemu_arch=loongarch64 ;;
             m68k-*) qemu_arch=m68k ;;
             mips-* | mipsel-*) qemu_arch="${RUST_TARGET%%-*}" ;;
             mips64-* | mips64el-*)

@@ -119,8 +119,8 @@ for target in "${targets[@]}"; do
         *-linux-gnu*)
             arches=(amd64 arm64v8)
             case "${target}" in
-                aarch64_be-* | armeb-* | arm-*hf | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
-                    # aarch64_be-*|armeb-*|arm-*hf|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                    # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
                     # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     arches=(amd64)
                     ;;

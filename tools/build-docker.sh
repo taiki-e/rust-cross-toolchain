@@ -160,8 +160,8 @@ for target in "${targets[@]}"; do
             ubuntu_version=18.04
             case "${target}" in
                 # NB: When updating this, the reminder to update tools/update-manifest.sh.
-                aarch64_be-* | armeb-* | arm-*hf | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
-                    # aarch64_be-*|armeb-*|arm-*hf|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                    # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
                     # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     case "${arch}" in
                         x86_64) ;;
@@ -187,6 +187,10 @@ for target in "${targets[@]}"; do
                             ;;
                     esac
                     ;;
+            esac
+            case "${target}" in
+                # old file command doesn't support loongarch64
+                loongarch64-*) ubuntu_version=22.04 ;;
             esac
             build "linux-gnu" "${target}" \
                 --build-arg "DISTRO_VERSION=${ubuntu_version}"

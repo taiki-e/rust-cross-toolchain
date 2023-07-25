@@ -18,7 +18,7 @@ linux_gnu_targets=(
     armv7-unknown-linux-gnueabihf
     i586-unknown-linux-gnu
     i686-unknown-linux-gnu
-    # loongarch64-unknown-linux-gnu
+    loongarch64-unknown-linux-gnu
     # m68k-unknown-linux-gnu # tier3, build fail: https://github.com/rust-lang/rust/issues/89498
     mips-unknown-linux-gnu               # tier3
     mips64-unknown-linux-gnuabi64        # tier3

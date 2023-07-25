@@ -100,6 +100,20 @@ case "${RUST_TARGET}" in
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;
+    loongarch64-unknown-linux-gnu)
+        # Toolchains for loongarch64-linux-gnu is not available in APT.
+        # https://github.com/loongson/build-tools/releases
+        toolchain_date=2022.09.06
+        toolchain_version=6.3
+        cc_target="${RUST_TARGET}"
+        gcc_version=13.0.0
+        echo "${cc_target}" >/CC_TARGET
+        echo "${cc_target}" >/APT_TARGET
+        echo "${gcc_version}" >/GCC_VERSION
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/loongson/build-tools/releases/download/${toolchain_date}/loongarch64-clfs-${toolchain_version}-cross-tools-gcc-glibc.tar.xz" \
+            | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
+        exit 0
+        ;;
 esac
 
 case "${RUST_TARGET}" in
