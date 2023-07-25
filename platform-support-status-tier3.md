@@ -102,6 +102,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imc-esp-espidf
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
+- [ ] riscv64gc-unknown-hermit
 - [x] riscv64gc-unknown-linux-musl
 - [ ] riscv64gc-unknown-netbsd
 - [x] riscv64gc-unknown-openbsd
