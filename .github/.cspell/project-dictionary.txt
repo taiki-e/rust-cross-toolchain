@@ -130,6 +130,7 @@ TMPDIR
 TOOLDIR
 uclibcgnueabi
 uclibcgnueabihf
+unikraft
 versatilepb
 vfpv
 Vger

@@ -64,6 +64,7 @@ linux_musl_targets=(
     riscv64gc-unknown-linux-musl # tier3
     s390x-unknown-linux-musl # tier3
     thumbv7neon-unknown-linux-musleabihf # tier3
+    x86_64-unikraft-linux-musl # tier3
     x86_64-unknown-linux-musl
 )
 linux_uclibc_targets=(
