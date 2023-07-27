@@ -9,6 +9,7 @@ trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 set -x
 
 rm -rf "${TOOLCHAIN_DIR:?}"/share/{doc,i18n,lintian,locale,man}
+rm -f "${TOOLCHAIN_DIR:?}"/bin/qemu-*
 
 if [[ -f /CC_TARGET ]]; then
     if [[ -f /APT_TARGET ]]; then

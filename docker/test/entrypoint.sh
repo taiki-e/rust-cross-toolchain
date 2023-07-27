@@ -409,6 +409,7 @@ case "${RUST_TARGET}" in
         esac
         # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
+        "qemu-${qemu_arch}" --version
         runner="${RUST_TARGET}-runner"
         cat >"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
@@ -530,6 +531,7 @@ EOF
         fi
         # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_user_arch}" ]] || cp "$(type -P "qemu-${qemu_user_arch}")" "${toolchain_dir}/bin"
+        "qemu-${qemu_user_arch}" --version
         runner_qemu_user="${RUST_TARGET}-runner-qemu-user"
         cat >"${toolchain_dir}/bin/${runner_qemu_user}" <<EOF
 #!/bin/sh

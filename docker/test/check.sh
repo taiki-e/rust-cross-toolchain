@@ -53,7 +53,7 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
                         esac
                         ;;
                 esac
-                echo -n "${path}"
+                echo -n "${path}: "
                 # https://stackoverflow.com/questions/3436008/how-to-determine-version-of-glibc-glibcxx-binary-will-depend-on
                 objdump -T "${path}" | grep GLIBC_ | sed 's/.*GLIBC_\([.0-9]*\).*/\1/g' | sort -Vu | tail -1
             fi
