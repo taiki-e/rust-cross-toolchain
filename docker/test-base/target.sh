@@ -39,7 +39,7 @@ fi
 
 # https://github.com/rust-lang/rust/blob/HEAD/Cargo.lock
 libc_version=0.2.147
-compiler_builtins_version=0.1.95
+compiler_builtins_version=0.1.98
 sysroot=$(rustc --print sysroot)
 for patch in /test-base/patches/*.diff; do
     set +x
