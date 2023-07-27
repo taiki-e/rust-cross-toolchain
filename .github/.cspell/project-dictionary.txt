@@ -39,6 +39,7 @@ INLINES
 isnan
 isystem
 keyserver
+lclang
 LDFLAGS
 ldso
 lgcc

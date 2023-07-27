@@ -171,7 +171,7 @@ case "${RUST_TARGET}" in
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
     loongarch64-unknown-linux-gnu)
-        export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/loongarch64-unknown-linux-gnu/lib64:${LD_LIBRARY_PATH:-}"
+        export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/${RUST_TARGET}/lib64:${LD_LIBRARY_PATH:-}"
         ;;
 esac
 
@@ -285,7 +285,10 @@ if [[ -f /BUILD_STD ]]; then
         build_std=(-Z build-std)
     fi
     case "${RUST_TARGET}" in
-        hexagon-unknown-linux-musl) build_std+=(-Z build-std-features=llvm-libunwind) ;;
+        hexagon-unknown-linux-musl)
+            export RUSTFLAGS="${RUSTFLAGS:-} -C link-args=-lclang_rt.builtins-hexagon"
+            build_std+=(-Z build-std-features=llvm-libunwind)
+            ;;
         # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
         mips-unknown-linux-gnu | mipsel-unknown-linux-gnu | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) build_mode=release ;;
     esac

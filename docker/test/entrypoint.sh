@@ -171,7 +171,7 @@ EOF
         ;;
     loongarch64-unknown-linux-gnu)
         cat >>"${entrypoint_path}" <<EOF
-export LD_LIBRARY_PATH="\${toolchain_dir}/target/usr/lib64:\${toolchain_dir}/loongarch64-unknown-linux-gnu/lib64:\${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="\${toolchain_dir}/target/usr/lib64:\${toolchain_dir}/${RUST_TARGET}/lib64:\${LD_LIBRARY_PATH:-}"
 EOF
         ;;
 esac
