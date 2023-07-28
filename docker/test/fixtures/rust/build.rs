@@ -19,7 +19,7 @@ fn main() {
     }
 
     cc::Build::new().file("hello_c.c").compile("hello_c");
-    if target_os == "openbsd" || target_os == "windows" && target_env == "gnu" {
+    if target_os == "openbsd" || target_os == "windows" {
     } else {
         // Make sure that the link with libc works.
         println!("cargo:rustc-link-lib=c");
@@ -37,6 +37,11 @@ fn main() {
         );
     }
 
+    // TODO(windows-msvc):
+    if target_os == "windows" && target_env == "msvc" {
+        println!("cargo:rustc-cfg=no_cmake");
+        return;
+    }
     let cmake_dst = cmake::build("libhello_cmake");
     println!("cargo:rustc-link-search=native={}", cmake_dst.display());
     println!("cargo:rustc-link-lib=static=hello_cmake");
