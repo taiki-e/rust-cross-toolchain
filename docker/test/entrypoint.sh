@@ -582,13 +582,36 @@ EOF
         ;;
     *-windows-gnu*)
         runner="${RUST_TARGET}-runner"
-        gcc_lib="$(basename "$(ls -d "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix)")"
+        case "${RUST_TARGET}" in
+            *-gnullvm*) winepath="\${toolchain_dir}/${RUST_TARGET}/bin" ;;
+            *)
+                gcc_lib="$(basename "$(ls -d "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix)")"
+                winepath="\${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_lib};\${toolchain_dir}/${RUST_TARGET}/lib"
+                ;;
+        esac
+        case "${RUST_TARGET}" in
+            aarch64*)
+                # Refs: https://gitlab.com/Linaro/windowsonarm/woa-linux/-/blob/master/containers/unified.Dockerfile
+                wine_root=/opt/wine-arm64
+                wine_exe="${wine_root}"/bin/wine
+                qemu_arch=aarch64
+                for bin in wine wineserver wine-preloader; do
+                    sed -i "s/qemu-${qemu_arch}-static/qemu-${qemu_arch}/g" "${wine_root}/bin/${bin}"
+                done
+                cp "${wine_root}"/lib/ld-linux-aarch64.so.1 /lib/
+                wineprefix="export WINEPREFIX=\${WINEPREFIX:-${wine_root}/wine-prefix}"
+                [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
+                "qemu-${qemu_arch}" --version
+                ;;
+            *) wine_exe=wine ;;
+        esac
         cat >"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
-export WINEPATH="\${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_lib};\${toolchain_dir}/${RUST_TARGET}/lib;\${WINEPATH:-}"
-exec wine "\$@"
+export WINEPATH="${winepath};\${WINEPATH:-}"
+${wineprefix:-}
+exec ${wine_exe} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
         cat "${toolchain_dir}/bin/${runner}"

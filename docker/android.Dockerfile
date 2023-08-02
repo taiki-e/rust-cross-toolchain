@@ -110,7 +110,7 @@ rm -rf "${arch}"
 EOF
 ENV ANDROID_DNS_MODE=local
 ENV ANDROID_ROOT=/system
-ENV TMPDIR=/tmp/
+ENV TMPDIR=/tmp
 COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test

@@ -307,16 +307,29 @@ if [[ -z "${no_std}" ]]; then
             amd64)
                 case "${RUST_TARGET}" in
                     *-windows-gnu*)
-                        # Adapted from https://github.com/cross-rs/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
-                        export HOME=/tmp/home
-                        mkdir -p "${HOME}"
-                        # Initialize the wine prefix (virtual windows installation)
-                        export WINEPREFIX=/tmp/wine
-                        mkdir -p "${WINEPREFIX}"
-                        if [[ ! -e /WINEBOOT ]]; then
-                            x wineboot &>/dev/null
-                            touch /WINEBOOT
-                        fi
+                        case "${RUST_TARGET}" in
+                            aarch64*)
+                                wine_root=/opt/wine-arm64
+                                export HOME=/tmp/home
+                                mkdir -p "${HOME}/.wine"
+                                if [[ ! -e /WINEBOOT ]]; then
+                                    x "${wine_root}/bin/wineserver" &>/dev/null
+                                    touch /WINEBOOT
+                                fi
+                                ;;
+                            *)
+                                # Adapted from https://github.com/cross-rs/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
+                                export HOME=/tmp/home
+                                mkdir -p "${HOME}"
+                                # Initialize the wine prefix (virtual windows installation)
+                                export WINEPREFIX=/tmp/wine
+                                mkdir -p "${WINEPREFIX}"
+                                if [[ ! -e /WINEBOOT ]]; then
+                                    x wineboot &>/dev/null
+                                    touch /WINEBOOT
+                                fi
+                                ;;
+                        esac
                         ;;
                 esac
                 ;;
@@ -1081,6 +1094,7 @@ case "${RUST_TARGET}" in
         for bin in "${out_dir}"/*; do
             if [[ -x "${bin}" ]]; then
                 case "${RUST_TARGET}" in
+                    aarch64-*) assert_file_info 'PE32\+ executable \(console\) Aarch64, for MS Windows' "${bin}" ;;
                     i686-*) assert_file_info 'PE32 executable \(console\) Intel 80386' "${bin}" ;;
                     x86_64*) assert_file_info 'PE32\+ executable \(console\) x86-64' "${bin}" ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
@@ -1088,6 +1102,7 @@ case "${RUST_TARGET}" in
                 assert_file_info 'for MS Windows' "${bin}"
             else
                 case "${RUST_TARGET}" in
+                    aarch64-*) assert_file_info 'data' "${bin}" ;; # TODO: ?
                     i686-*) assert_file_info 'Intel 80386 COFF object file' "${bin}" ;;
                     x86_64*) assert_file_info 'Intel amd64 COFF object file' "${bin}" ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;

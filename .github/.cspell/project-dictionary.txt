@@ -17,7 +17,6 @@ crtn
 CURDIR
 CXXSTDLIB
 debuginfo
-devel
 dilos
 distro
 earmv
@@ -45,7 +44,6 @@ ldso
 lgcc
 libada
 libbacktrace
-libc
 libcilkrts
 libexec
 libgcc
@@ -70,6 +68,7 @@ libstdc
 libunwind
 libvtv
 libx
+linaro
 lintian
 Loongson
 lstdc
@@ -106,7 +105,6 @@ nofp
 nosimd
 nostartfiles
 nostdinc
-objcopy
 octeon
 opensbi
 PCREL
@@ -139,8 +137,8 @@ virt
 wasmtime
 wchar
 WINEBOOT
-winehq
 WINEPATH
 WINEPREFIX
+wineserver
 Znwm
 zynq

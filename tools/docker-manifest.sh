@@ -243,20 +243,17 @@ for target in "${targets[@]}"; do
         *-windows-gnu*)
             arches=(amd64 arm64v8)
             case "${target}" in
-                i686-*)
-                    # i686 needs to build gcc from source.
-                    arches=(amd64)
-                    ;;
+                # TODO: aarch64
+                # i686 needs to build gcc from source.
+                i686-* | aarch64*) arches=(amd64) ;;
             esac
             docker_manifest "${target}"
             ;;
         *-none*)
             arches=(amd64 arm64v8)
             case "${target}" in
-                riscv*)
-                    # Toolchains for these targets are not available on non-x86_64 host.
-                    arches=(amd64)
-                    ;;
+                # Toolchains for these targets are not available on non-x86_64 host.
+                riscv*) arches=(amd64) ;;
             esac
             docker_manifest "${target}"
             ;;

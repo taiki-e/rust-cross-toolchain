@@ -10,7 +10,6 @@ FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}-base${TOOLCHAIN_TAG:+"
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UBUNTU_VERSION
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
@@ -48,27 +47,20 @@ RUN <<EOF
 dpkg_arch="$(dpkg --print-architecture)"
 case "${dpkg_arch##*-}" in
     amd64) dpkg --add-architecture i386 ;;
-    arm64) dpkg --add-architecture armhf ;;
+    arm64)
+        dpkg --add-architecture armhf
+        # TODO: do not skip if actual host is arm64
+        exit 0
+        ;;
     *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
 esac
-EOF
-RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+# See https://wiki.winehq.org/Ubuntu when install the latest wine.
+apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     wine-stable \
     wine32 \
     wine64
-# To install the latest wine: https://wiki.winehq.org/Ubuntu
-# RUN <<EOF
-# curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://dl.winehq.org/wine-builds/winehq.key | apt-key add -
-# codename="$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')"
-# echo "deb https://dl.winehq.org/wine-builds/ubuntu/ ${codename} main" >/etc/apt/sources.list.d/winehq.list
-# EOF
-# # Use winehq-devel instead of winehq-stable (6.0.2), because mio needs wine 6.11+.
-# # https://dl.winehq.org/wine-builds/ubuntu/dists/focal/main/binary-amd64
-# # https://wiki.winehq.org/Wine_User%27s_Guide#Wine_from_WineHQ
-# # https://github.com/tokio-rs/mio/issues/1444
-# RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-#     winehq-devel
-RUN wine --version
+wine --version
+EOF
 ARG RUST_TARGET
 COPY /test-base /test-base
 RUN /test-base/target.sh

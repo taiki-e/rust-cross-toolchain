@@ -13,7 +13,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-fuchsia
 - [ ] aarch64-kmc-solid_asp3
 - [ ] aarch64-nintendo-switch-freestanding
-- [ ] aarch64-pc-windows-gnullvm
+- [x] aarch64-pc-windows-gnullvm
 - [x] aarch64-unknown-freebsd
 - [ ] aarch64-unknown-hermit
 - [ ] aarch64-unknown-linux-gnu_ilp32
@@ -100,6 +100,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imac-esp-espidf
 - [ ] riscv32imac-unknown-xous-elf
 - [ ] riscv32imc-esp-espidf
+- [ ] riscv64-linux-android
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
@@ -122,7 +123,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-apple-watchos-sim
 - [ ] x86_64-fuchsia
 - [ ] x86_64-pc-nto-qnx710
-- [ ] x86_64-pc-windows-gnullvm
+- [x] x86_64-pc-windows-gnullvm
 - [ ] x86_64-unikraft-linux-musl
 - [x] x86_64-unknown-dragonfly
 - [ ] x86_64-unknown-haiku

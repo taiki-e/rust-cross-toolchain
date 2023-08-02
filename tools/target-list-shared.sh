@@ -180,11 +180,11 @@ windows_msvc_targets=(
 )
 # Windows (MinGW)
 windows_gnu_targets=(
-    # aarch64-pc-windows-gnullvm # tier3
+    aarch64-pc-windows-gnullvm # tier3
     i686-pc-windows-gnu
     # i686-uwp-windows-gnu # tier3
     x86_64-pc-windows-gnu
-    # x86_64-pc-windows-gnullvm # tier3
+    x86_64-pc-windows-gnullvm # tier3
     # x86_64-uwp-windows-gnu # tier3
 )
 # WASI

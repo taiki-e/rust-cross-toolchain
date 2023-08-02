@@ -18,7 +18,8 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
   - [Redox](#redox)
   - [WASI](#wasi)
   - [Emscripten](#emscripten)
-  - [Windows (GNU)](#windows-gnu)
+  - [Windows (MinGW)](#windows-mingw)
+  - [Windows (LLVM MinGW)](#windows-llvm-mingw)
   - [No-std](#no-std)
 
 ## Platform Support
@@ -300,7 +301,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 - `asmjs-unknown-emscripten`
 - `wasm32-unknown-emscripten`
 
-### Windows (GNU)
+### Windows (MinGW)
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
@@ -321,6 +322,24 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 | ------ | ---- |
 | `x86_64-pc-windows-gnu` | x86_64/aarch64 linux (glibc 2.31+) |
 | `i686-pc-windows-gnu` | x86_64 linux (glibc 2.31+) |
+
+### Windows (LLVM MinGW)
+
+| libc | GCC | clang | C++ | test | host |
+| ---- | --- | ----- | --- | ---- | ---- |
+| Mingw-w64 b190082 | N/A | 16.0.6 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 linux (glibc 2.31+) |
+
+<!--
+Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20230614/build-mingw-w64.sh#L21
+Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20230614
+-->
+
+([Dockerfile](docker/windows-gnu.Dockerfile))
+
+**Supported targets**:
+
+- `aarch64-pc-windows-gnullvm`
+- `x86_64-pc-windows-gnullvm`
 
 ### No-std
 

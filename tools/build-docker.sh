@@ -356,15 +356,19 @@ for target in "${targets[@]}"; do
         *-emscripten*) build "emscripten" "${target}" ;;
         *-windows-gnu*)
             case "${target}" in
-                i686-*)
-                    # i686 needs to build gcc from source.
+                # TODO: aarch64
+                # i686 needs to build gcc from source.
+                i686-* | aarch64*)
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;
                     esac
                     ;;
             esac
-            build "windows-gnu" "${target}"
+            case "${target}" in
+                *-gnullvm*) build "windows-gnullvm" "${target}" ;;
+                *) build "windows-gnu" "${target}" ;;
+            esac
             ;;
         *-none*)
             case "${target}" in
