@@ -599,7 +599,6 @@ EOF
                     sed -i "s/qemu-${qemu_arch}-static/qemu-${qemu_arch}/g" "${wine_root}/bin/${bin}"
                 done
                 cp "${wine_root}"/lib/ld-linux-aarch64.so.1 /lib/
-                wineprefix="export WINEPREFIX=\${WINEPREFIX:-${wine_root}/wine-prefix}"
                 [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
                 "qemu-${qemu_arch}" --version
                 ;;
@@ -610,7 +609,6 @@ EOF
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
 export WINEPATH="${winepath};\${WINEPATH:-}"
-${wineprefix:-}
 exec ${wine_exe} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"

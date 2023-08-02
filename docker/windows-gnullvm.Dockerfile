@@ -80,7 +80,7 @@ COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-aarch64 /usr/bin/
 COPY --from=linaro/wine-arm64 /opt/wine-arm64 /opt/wine-arm64
 RUN <<EOF
 case "${RUST_TARGET}" in
-    aarch64*) ;;
+    aarch64*) rm -rf /opt/wine-arm64/wine-prefix ;;
     *)
         rm -rf /opt/wine-arm64
         mkdir -p /opt/wine-arm64

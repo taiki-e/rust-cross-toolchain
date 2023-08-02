@@ -307,29 +307,18 @@ if [[ -z "${no_std}" ]]; then
             amd64)
                 case "${RUST_TARGET}" in
                     *-windows-gnu*)
+                        export HOME=/tmp/home
+                        mkdir -p "${HOME}"/.wine
+                        export WINEPREFIX=/tmp/wine
+                        mkdir -p "${WINEPREFIX}"
                         case "${RUST_TARGET}" in
-                            aarch64*)
-                                wine_root=/opt/wine-arm64
-                                export HOME=/tmp/home
-                                mkdir -p "${HOME}/.wine"
-                                if [[ ! -e /WINEBOOT ]]; then
-                                    x "${wine_root}/bin/wineserver" &>/dev/null
-                                    touch /WINEBOOT
-                                fi
-                                ;;
-                            *)
-                                # Adapted from https://github.com/cross-rs/cross/blob/16a64e7028d90a3fdf285cfd642cdde9443c0645/docker/windows-entry.sh
-                                export HOME=/tmp/home
-                                mkdir -p "${HOME}"
-                                # Initialize the wine prefix (virtual windows installation)
-                                export WINEPREFIX=/tmp/wine
-                                mkdir -p "${WINEPREFIX}"
-                                if [[ ! -e /WINEBOOT ]]; then
-                                    x wineboot &>/dev/null
-                                    touch /WINEBOOT
-                                fi
-                                ;;
+                            aarch64*) wineboot=/opt/wine-arm64/bin/wineserver ;;
+                            *) wineboot=wineboot ;;
                         esac
+                        if [[ ! -e /WINEBOOT ]]; then
+                            x "${wineboot}" &>/dev/null
+                            touch /WINEBOOT
+                        fi
                         ;;
                 esac
                 ;;
