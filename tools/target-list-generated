@@ -177,6 +177,7 @@ windows_gnu_targets=(
 )
 wasi_targets=(
     wasm32-wasi
+    wasm32-wasi-preview1-threads
 )
 emscripten_targets=(
     asmjs-unknown-emscripten

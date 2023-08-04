@@ -76,6 +76,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] wasm32-unknown-emscripten
 - [ ] wasm32-unknown-unknown
 - [x] wasm32-wasi
+- [ ] wasm32-wasi-preview1-threads
 - [ ] x86_64-apple-darwin
 - [ ] x86_64-apple-ios
 - [ ] x86_64-fortanix-unknown-sgx
