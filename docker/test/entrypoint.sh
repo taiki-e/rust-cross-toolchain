@@ -317,6 +317,7 @@ case "${RUST_TARGET}" in
                     arm64*be*) qemu_arch=aarch64_be ;;
                     arm64*) qemu_arch=aarch64 ;;
                 esac
+                # TODO: Use neoverse-v1 once QEMU 8.1 released
                 qemu_cpu=a64fx
                 ;;
             arm* | thumb*)

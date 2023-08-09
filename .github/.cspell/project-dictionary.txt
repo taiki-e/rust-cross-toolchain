@@ -99,6 +99,7 @@ mthumb
 multilib
 muslsf
 NDEBUG
+neoverse
 netbsdelf
 newlib
 nofp
