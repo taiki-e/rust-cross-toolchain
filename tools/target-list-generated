@@ -243,6 +243,9 @@ solid_asp3_targets=(
     armv7a-kmc-solid_asp3-eabi # tier3
     armv7a-kmc-solid_asp3-eabihf # tier3
 )
+teeos_targets=(
+    aarch64-unknown-teeos # tier3
+)
 uefi_targets=(
     aarch64-unknown-uefi
     i686-unknown-uefi
@@ -334,6 +337,7 @@ targets=(
     ${redox_targets[@]+"${redox_targets[@]}"}
     ${sgx_targets[@]+"${sgx_targets[@]}"}
     ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
+    ${teeos_targets[@]+"${teeos_targets[@]}"}
     ${uefi_targets[@]+"${uefi_targets[@]}"}
     ${vita_targets[@]+"${vita_targets[@]}"}
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}

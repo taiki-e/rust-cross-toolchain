@@ -22,6 +22,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-unknown-nto-qnx710
 - [x] aarch64-unknown-openbsd
 - [ ] aarch64-unknown-redox
+- [ ] aarch64-unknown-teeos
 - [ ] aarch64-uwp-windows-msvc
 - [ ] aarch64-wrs-vxworks
 - [x] aarch64_be-unknown-linux-gnu

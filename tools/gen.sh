@@ -57,6 +57,7 @@ known_target_group=(
     redox
     sgx
     solid_asp3
+    teeos
     uefi
     vita
     vxworks
