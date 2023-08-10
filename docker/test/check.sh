@@ -18,7 +18,7 @@ if [[ -e "${toolchain_dir}/${RUST_TARGET}/bin" ]]; then
     pushd "${toolchain_dir}/${RUST_TARGET}/bin" >/dev/null
     set +x
     for path in "${toolchain_dir}/${RUST_TARGET}/bin"/*; do
-        tool="$(basename "${path}")"
+        tool=$(basename "${path}")
         if [[ ! -L "${tool}" ]] && [[ -e ../../bin/"${RUST_TARGET}-${tool}" ]]; then
             ln -sf ../../bin/"${RUST_TARGET}-${tool}" "${tool}"
         fi

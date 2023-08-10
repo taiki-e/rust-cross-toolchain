@@ -54,7 +54,7 @@ ARG LINUX_VERSION
 # https://conf.musl.cc/plain_20210301_10-2-1.txt
 # See also cc-rs for target flags: https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1649
 RUN <<EOF
-cc_target="$(</CC_TARGET)"
+cc_target=$(</CC_TARGET)
 cd musl-cross-make
 cat >./config.mak <<EOF2
 OUTPUT = ${TOOLCHAIN_DIR}

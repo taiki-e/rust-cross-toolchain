@@ -34,7 +34,7 @@ if type -P "${RUST_TARGET}-${cc}"; then
             fi
             ;;
     esac
-    toolchain_dir="$(dirname "$(dirname "$(type -P "${target_cc}")")")"
+    toolchain_dir=$(dirname "$(dirname "$(type -P "${target_cc}")")")
 else
     target_cc="${cc}"
     target_cxx="${cxx}"
@@ -78,7 +78,7 @@ chmod +x "${entrypoint_path}"
 
 rust_target_lower="${RUST_TARGET//-/_}"
 rust_target_lower="${rust_target_lower//./_}"
-rust_target_upper="$(tr '[:lower:]' '[:upper:]' <<<"${rust_target_lower}")"
+rust_target_upper=$(tr '[:lower:]' '[:upper:]' <<<"${rust_target_lower}")
 case "${cc}" in
     gcc)
         if type -P "${RUST_TARGET}-ar"; then
@@ -91,7 +91,7 @@ EOF
         fi
         for tool in strip objdump; do
             if type -P "${RUST_TARGET}-${tool}"; then
-                tool_upper="$(tr '[:lower:]' '[:upper:]' <<<"${tool}")"
+                tool_upper=$(tr '[:lower:]' '[:upper:]' <<<"${tool}")
                 cat >>"${env_path}" <<EOF
 export ${tool_upper}=${RUST_TARGET}-${tool}
 EOF
@@ -302,7 +302,7 @@ case "${RUST_TARGET}" in
         ;;
 esac
 
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) host_arch=x86_64 ;;
     arm64) host_arch=aarch64 ;;
@@ -586,7 +586,7 @@ EOF
         case "${RUST_TARGET}" in
             *-gnullvm*) winepath="\${toolchain_dir}/${RUST_TARGET}/bin" ;;
             *)
-                gcc_lib="$(basename "$(ls -d "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix)")"
+                gcc_lib=$(basename "$(ls -d "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix)")
                 winepath="\${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_lib};\${toolchain_dir}/${RUST_TARGET}/lib"
                 ;;
         esac

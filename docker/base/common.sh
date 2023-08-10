@@ -13,9 +13,9 @@ rm -f "${TOOLCHAIN_DIR:?}"/bin/qemu-*
 
 if [[ -f /CC_TARGET ]]; then
     if [[ -f /APT_TARGET ]]; then
-        cc_target="$(</APT_TARGET)"
+        cc_target=$(</APT_TARGET)
     else
-        cc_target="$(</CC_TARGET)"
+        cc_target=$(</CC_TARGET)
     fi
     # Some paths still use the target name that passed by --target even if we use
     # options such as --program-prefix. So use the target name for C by default,
@@ -23,7 +23,7 @@ if [[ -f /CC_TARGET ]]; then
     set +x
     while IFS= read -r -d '' path; do
         pushd "$(dirname "${path}")" >/dev/null
-        original="$(basename "${path}")"
+        original=$(basename "${path}")
         link="${original/"${cc_target}"/"${RUST_TARGET}"}"
         [[ -e "${link}" ]] || ln -s "${original}" "${link}"
         popd >/dev/null

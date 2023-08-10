@@ -116,7 +116,7 @@ RUN <<EOF
 case "${RUST_TARGET}" in
     armv7-*) common_flags=" -march=armv7-a -mthumb -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
 esac
-cc_target="$(</CC_TARGET)"
+cc_target=$(</CC_TARGET)
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" <<EOF2
 #!/bin/sh
 set -eu

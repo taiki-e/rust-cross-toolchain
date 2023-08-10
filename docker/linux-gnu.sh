@@ -19,7 +19,7 @@ trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 
 set -x
 
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${RUST_TARGET}" in
     x86_64-unknown-linux-gnu)
         case "${dpkg_arch##*-}" in

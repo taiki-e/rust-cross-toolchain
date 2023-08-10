@@ -47,7 +47,7 @@ case "${arch}" in
         ;;
     *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
 esac
-time="$(date -u '+%Y-%m-%d-%H-%M-%S')"
+time=$(date -u '+%Y-%m-%d-%H-%M-%S')
 
 github_tag="dev"
 if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then

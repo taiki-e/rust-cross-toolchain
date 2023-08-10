@@ -132,7 +132,7 @@ for os in "${known_target_group[@]}"; do
 done
 rmdir tmp/gen/os &>/dev/null \
     || for os_targets in tmp/gen/os/*; do
-        os="$(basename "${os_targets}")"
+        os=$(basename "${os_targets}")
         emit_targets
     done
 echo "targets=(" >>"${target_list_file}"

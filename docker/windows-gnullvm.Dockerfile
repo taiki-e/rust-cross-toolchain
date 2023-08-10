@@ -16,7 +16,7 @@ RUN mkdir -p /toolchain
 ARG TOOLCHAIN_VERSION
 # https://github.com/mstorsjo/llvm-mingw/releases
 RUN <<EOF
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) arch=x86_64 ;;
     arm64) arch=aarch64 ;;
@@ -54,7 +54,7 @@ COPY /test-base.sh /
 RUN /test-base.sh
 ARG RUST_TARGET
 RUN <<EOF
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) dpkg --add-architecture i386 ;;
     arm64)

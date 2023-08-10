@@ -57,7 +57,7 @@ EOF
 
 RUN <<EOF
 cd "${TOOLCHAIN_DIR}"
-cc_target="$(</CC_TARGET)"
+cc_target=$(</CC_TARGET)
 orig_sysroot_dir="${cc_target}/sysroot"
 dest_sysroot_dir="${cc_target}"
 mkdir -p "${dest_sysroot_dir}"/usr/{include,lib} "${dest_sysroot_dir}"/lib

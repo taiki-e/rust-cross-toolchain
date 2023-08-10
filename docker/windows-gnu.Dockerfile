@@ -44,7 +44,7 @@ ENV HOME=/tmp/home
 COPY /test-base.sh /
 RUN /test-base.sh
 RUN <<EOF
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) dpkg --add-architecture i386 ;;
     arm64)

@@ -15,7 +15,7 @@ RUN --mount=type=bind,target=/docker \
     /docker/linux-gnu.sh
 # fd -t d '\b(doc|i18n|lintian|locale|man)\b'
 RUN <<EOF
-apt_target="$(</APT_TARGET)"
+apt_target=$(</APT_TARGET)
 for dir in "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr "${TOOLCHAIN_DIR}"/sysroot/usr "${TOOLCHAIN_DIR}"/target/usr; do
     if [[ -d "${dir}"/share ]]; then
         rm -rf "${dir}"/share/{doc,i18n,lintian,locale,man}
@@ -32,8 +32,8 @@ esac
 EOF
 
 RUN <<EOF
-apt_target="$(</APT_TARGET)"
-gcc_version="$(</GCC_VERSION)"
+apt_target=$(</APT_TARGET)
+gcc_version=$(</GCC_VERSION)
 if [[ "${gcc_version}" == "host" ]]; then
     exit 0
 fi
@@ -69,7 +69,7 @@ RUN --mount=type=bind,target=/docker \
 # TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
 # TODO(loongarch64):
 RUN --mount=type=bind,target=/docker <<EOF
-gcc_version="$(</GCC_VERSION)"
+gcc_version=$(</GCC_VERSION)
 if [[ "${gcc_version}" == "host" ]]; then
     exit 0
 fi

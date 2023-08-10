@@ -145,7 +145,7 @@ esac
 if type -P "${RUST_TARGET}-${cc}"; then
     target_cc="${RUST_TARGET}-${cc}"
     target_cxx="${RUST_TARGET}-${cxx}"
-    toolchain_dir="$(dirname "$(dirname "$(type -P "${target_cc}")")")"
+    toolchain_dir=$(dirname "$(dirname "$(type -P "${target_cc}")")")
 else
     target_cc="${cc}"
     target_cxx="${cxx}"
@@ -175,7 +175,7 @@ case "${RUST_TARGET}" in
         ;;
 esac
 
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) ;;
     *)
@@ -294,7 +294,6 @@ if [[ -f /BUILD_STD ]]; then
     esac
 fi
 
-dpkg_arch="$(dpkg --print-architecture)"
 if [[ -z "${no_std}" ]]; then
     runner=""
     if [[ -z "${no_run}" ]]; then

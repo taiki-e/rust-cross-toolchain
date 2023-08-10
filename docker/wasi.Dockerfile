@@ -45,7 +45,7 @@ COPY /test-base.sh /
 RUN /test-base.sh
 ARG WASMTIME_VERSION
 RUN <<EOF
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) wasmtime_arch=x86_64 ;;
     arm64) wasmtime_arch=aarch64 ;;

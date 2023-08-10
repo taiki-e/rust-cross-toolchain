@@ -16,7 +16,7 @@ bail() {
     exit 1
 }
 
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) ;;
     *)
@@ -43,7 +43,7 @@ compiler_builtins_version=0.1.98
 sysroot=$(rustc --print sysroot)
 for patch in /test-base/patches/*.diff; do
     set +x
-    t="$(basename "${patch}")"
+    t=$(basename "${patch}")
     t="${t%.diff}"
     target="${t#*+}"
     lib="${t%+*}"

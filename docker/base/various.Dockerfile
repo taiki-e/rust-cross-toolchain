@@ -12,7 +12,7 @@ RUN mkdir -p /toolchain
 # GCC 10.3.1, newlib 4.1.0, binutils 2.36.1, GDB 10.2
 RUN <<EOF
 cc_target=aarch64-none-elf
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) host_arch=x86_64 ;;
     arm64) host_arch=aarch64 ;;
@@ -32,7 +32,7 @@ RUN mkdir -p /toolchain
 # The same GCC, newlib, binutils, GDB versions as aarch64-toolchain.
 RUN <<EOF
 cc_target=arm-none-eabi
-dpkg_arch="$(dpkg --print-architecture)"
+dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) host_arch=x86_64 ;;
     arm64) host_arch=aarch64 ;;

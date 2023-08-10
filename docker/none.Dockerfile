@@ -27,8 +27,8 @@ EOF
 ARG RUST_TARGET
 # $ fd -t d 'v5te|v6|v7|v8'
 RUN <<EOF
-cc_target="$(</CC_TARGET)"
-gcc_version="$(</GCC_VERSION)"
+cc_target=$(</CC_TARGET)
+gcc_version=$(</GCC_VERSION)
 cd "/${cc_target}"
 case "${RUST_TARGET}" in
     *v5te*) ;;
@@ -129,7 +129,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # https://launchpad.net/~canonical-server/+archive/ubuntu/server-backports/+packages
 RUN <<EOF
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 94E187AD53A59D1847E4880F8A295C4FB8B190B7
-codename="$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')"
+codename=$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')
 echo "deb http://ppa.launchpad.net/canonical-server/server-backports/ubuntu ${codename} main" >/etc/apt/sources.list.d/server-backports.list
 apt-get -o Acquire::Retries=10 update -qq
 # libpython2.7 is needed for GDB
