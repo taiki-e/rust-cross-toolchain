@@ -8,7 +8,7 @@
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 
 # Use the version that contains a patch that fixes CVE-2020-28928.
-ARG MUSL_CROSS_MAKE_REV=1a82fddcaeedbe6d93cea76d044f22fc1024d036
+ARG MUSL_CROSS_MAKE_REV=dea0b17b01ab1293cb2d32c406b5dc86a86c13f3
 # Available versions: https://github.com/richfelker/musl-cross-make/tree/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/hashes
 # Default: https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/Makefile
 ARG BINUTILS_VERSION=2.33.1
@@ -53,8 +53,12 @@ ARG LINUX_VERSION
 # https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/config.mak.dist
 # https://conf.musl.cc/plain_20210301_10-2-1.txt
 # See also cc-rs for target flags: https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1649
+# Use binutils 2.36.1 for riscv because linker error "unsupported ISA subset 'z'" since nightly-2023-08-09 (LLVM 17)
 RUN <<EOF
 cc_target=$(</CC_TARGET)
+case "${RUST_TARGET}" in
+    riscv*) BINUTILS_VERSION=2.36.1 ;;
+esac
 cd musl-cross-make
 cat >./config.mak <<EOF2
 OUTPUT = ${TOOLCHAIN_DIR}
