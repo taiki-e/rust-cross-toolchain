@@ -47,5 +47,5 @@
       "dictionaries": ["rust"]
     }
   ],
-  "ignorePaths": ["**/*.diff", "**/*.ld", "**/*.x", "**/*.s"]
+  "ignorePaths": ["**/*.diff"]
 }

@@ -589,25 +589,14 @@ else
                     case "${RUST_TARGET}" in
                         # TODO: As of qemu 7.2, qemu-system-arm doesn't support Cortex-R machine.
                         armv7r* | armebv7r*) continue ;;
-                        thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m*)
+                        thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | riscv*)
                             _linker=link.x
-                            target_rustflags+=" -C link-arg=-T${_linker}"
-                            ;;
-                        aarch64*)
-                            _linker=raspi/kernel.ld
-                            target_rustflags+=" -C link-arg=-T${_linker}"
-                            ;;
-                        riscv*)
-                            case "${RUST_TARGET}" in
-                                riscv32*) _linker=riscv32.ld ;;
-                                riscv64*) _linker=riscv64.ld ;;
-                                *) bail "unrecognized target '${RUST_TARGET}'" ;;
-                            esac
                             target_rustflags+=" -C link-arg=-T${_linker}"
                             ;;
                     esac
                     ;;
                 qemu-user)
+                    cargo_args+=(--features qemu-user)
                     case "${RUST_TARGET}" in
                         thumb*) continue ;;
                     esac
