@@ -160,8 +160,8 @@ for target in "${targets[@]}"; do
             ubuntu_version=18.04
             case "${target}" in
                 # NB: When updating this, the reminder to update tools/update-manifest.sh.
-                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32gc-* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
-                    # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32gc-*: Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                    # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
                     # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     case "${arch}" in
                         x86_64) ;;
@@ -234,8 +234,8 @@ for target in "${targets[@]}"; do
         *-ios*) build "ios" "${target}" ;;
         *-freebsd*)
             case "${target}" in
-                riscv64gc-*)
-                    # riscv64gc needs to build binutils from source.
+                riscv64*)
+                    # riscv64 needs to build binutils from source.
                     # TODO: don't skip if actual host is arm64
                     case "${arch}" in
                         x86_64) ;;
@@ -264,7 +264,7 @@ for target in "${targets[@]}"; do
             default_freebsd_version="12"
             for freebsd_version in "${freebsd_versions[@]}"; do
                 case "${target}" in
-                    powerpc-* | powerpc64-* | powerpc64le-* | riscv64gc-*)
+                    powerpc-* | powerpc64-* | powerpc64le-* | riscv64*)
                         default_freebsd_version="13"
                         if [[ "${freebsd_version}" == "12"* ]]; then
                             continue

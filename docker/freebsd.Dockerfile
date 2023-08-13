@@ -30,9 +30,9 @@ RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) freebsd_arch=arm64/aarch64 ;;
     arm*) freebsd_arch="arm/${RUST_TARGET%%-*}" ;;
-    i686-*) freebsd_arch=i386/i386 ;;
+    i?86-*) freebsd_arch=i386/i386 ;;
     powerpc*) freebsd_arch="powerpc/${RUST_TARGET%%-*}" ;;
-    riscv64gc-*) freebsd_arch="riscv/riscv64" ;;
+    riscv64*) freebsd_arch="riscv/riscv64" ;;
     x86_64*) freebsd_arch=amd64/amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
@@ -56,11 +56,11 @@ mkdir -p "${cc_target}"
 ln -s "${cc_target}" "${RUST_TARGET}"
 EOF
 
-# riscv64gc: ld.lld: error: hello.c:(.text+0x0): relocation R_RISCV_ALIGN requires unimplemented linker relaxation; recompile with -mno-relax
+# riscv64: ld.lld: error: hello.c:(.text+0x0): relocation R_RISCV_ALIGN requires unimplemented linker relaxation; recompile with -mno-relax
 COPY --from=binutils-src /binutils-src /tmp/binutils-src
 RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
-    riscv64gc-*) CC_TARGET="$(</CC_TARGET)" /docker/base/build-binutils.sh ;;
+    riscv64*) CC_TARGET="$(</CC_TARGET)" /docker/base/build-binutils.sh ;;
 esac
 EOF
 
@@ -75,7 +75,7 @@ RUN mv "${SYSROOT_DIR}/bin" "${TOOLCHAIN_DIR}/bin"
 
 RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
-    riscv64gc-*)
+    riscv64*)
         COMMON_FLAGS="--ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld" \
             /docker/clang-cross.sh
         ;;

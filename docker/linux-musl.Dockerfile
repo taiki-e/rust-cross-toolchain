@@ -59,7 +59,7 @@ RUN --mount=type=bind,target=/docker <<EOF
 export COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\""
 case "${RUST_TARGET}" in
     hexagon-*) rm -f "${TOOLCHAIN_DIR}"/bin/qemu-* ;; # TODO: rm
-    riscv64gc-*)
+    riscv64*)
         COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
             /docker/clang-cross.sh

@@ -80,7 +80,7 @@ case "${RUST_TARGET}" in
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \
             /docker/clang-cross.sh
         ;;
-    riscv32gc-*)
+    riscv32*)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -I\"\${toolchain_dir}\"/sysroot/usr/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
@@ -142,13 +142,13 @@ EOF
 # # TODO(linux-gnu)
 # RUN <<EOF
 # case "${RUST_TARGET}" in
-#     aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh gcc ;;
+#     aarch64_be-* | arm-*hf | riscv32*) /test/test.sh gcc ;;
 #     *) NO_RUN=1 /test/test.sh gcc ;;
 # esac
 # EOF
 # RUN <<EOF
 # case "${RUST_TARGET}" in
-#     aarch64_be-* | arm-*hf | riscv32gc-*) /test/test.sh clang ;;
+#     aarch64_be-* | arm-*hf | riscv32*) /test/test.sh clang ;;
 #     *) NO_RUN=1 /test/test.sh clang ;;
 # esac
 # EOF

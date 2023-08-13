@@ -132,14 +132,14 @@ case "${RUST_TARGET}" in
     aarch64-*) lib_arch=arm64 ;;
     arm*hf | thumbv7neon-*) lib_arch=armhf ;;
     arm*) lib_arch=armel ;;
-    i*86-*) lib_arch=i386 ;;
+    i?86-*) lib_arch=i386 ;;
     mipsisa32r6*) lib_arch="${lib_arch/isa32/}" ;;
     mipsisa64r6*) lib_arch="${lib_arch/isa64/64}" ;;
     powerpc-*spe) lib_arch=powerpcspe ;;
     powerpc-*) lib_arch=powerpc ;;
     powerpc64-*) lib_arch=ppc64 ;;
     powerpc64le-*) lib_arch=ppc64el ;;
-    riscv64gc-*) lib_arch="${RUST_TARGET%gc-unknown*}" ;;
+    riscv32gc-* | riscv64gc-*) lib_arch="${RUST_TARGET%gc-unknown*}" ;;
     sparc-*) lib_arch=sparc64 ;;
     x86_64*x32) lib_arch=x32 ;;
     x86_64*) lib_arch=amd64 ;;

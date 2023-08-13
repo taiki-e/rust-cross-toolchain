@@ -37,8 +37,11 @@ case "${RUST_TARGET}" in
     aarch64_be-*) netbsd_arch=evbarm-aarch64eb ;;
     armv6-*) netbsd_arch=evbarm-earmv6hf ;;
     armv7-*) netbsd_arch=evbarm-earmv7hf ;;
-    i686-*) netbsd_arch=i386 ;;
+    i?86-*) netbsd_arch=i386 ;;
     powerpc-*) netbsd_arch=evbppc ;;
+    riscv32*) netbsd_arch=riscv-riscv32 ;;
+    riscv64*) netbsd_arch=riscv-riscv64 ;;
+    sparc-*) netbsd_arch=sparc ;;
     sparc64-*) netbsd_arch=sparc64 ;;
     x86_64*) netbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -75,10 +78,14 @@ ARG NETBSD_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) cc_target=aarch64--netbsd ;;
+    aarch64_be-*) cc_target=aarch64_be--netbsd ;;
     armv6-*) cc_target=armv6--netbsdelf-eabihf ;;
     armv7-*) cc_target=armv7--netbsdelf-eabihf ;;
-    i686-*) cc_target=i486--netbsdelf ;;
+    i?86-*) cc_target=i486--netbsdelf ;;
     powerpc-*) cc_target=powerpc--netbsd ;;
+    riscv32*) cc_target=riscv32--netbsd ;;
+    riscv64*) cc_target=riscv64--netbsd ;;
+    sparc-*) cc_target=sparc--netbsd ;;
     sparc64-*) cc_target=sparc64--netbsd ;;
     x86_64*) cc_target=x86_64--netbsd ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
@@ -97,10 +104,14 @@ RUN ./build.sh list-arch
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) args=(-m evbarm -a aarch64) ;;
+    aarch64_be-*) args=(-m evbarm -a aarch64eb) ;;
     armv6-*) args=(-m evbarm -a earmv6hf) ;;
     armv7-*) args=(-m evbarm -a earmv7hf) ;;
-    i686-*) args=(-m i386) ;;
+    i?86-*) args=(-m i386) ;;
     powerpc-*) args=(-m evbppc) ;;
+    riscv32*) args=(-m riscv -a riscv32) ;;
+    riscv64*) args=(-m riscv -a riscv64) ;;
+    sparc-*) args=(-m sparc) ;;
     sparc64-*) args=(-m sparc64) ;;
     x86_64*) args=(-m amd64) ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;

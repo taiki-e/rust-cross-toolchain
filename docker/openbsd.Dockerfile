@@ -29,11 +29,11 @@ RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) openbsd_arch=arm64 ;;
     armv7-*) openbsd_arch=armv7 ;;
-    i686-*) openbsd_arch=i386 ;;
+    i?86-*) openbsd_arch=i386 ;;
     mips64-*) openbsd_arch=octeon ;;
     powerpc-*) openbsd_arch=macppc ;;
     powerpc64-*) openbsd_arch=powerpc64 ;;
-    riscv64gc-*) openbsd_arch=riscv64 ;;
+    riscv64*) openbsd_arch=riscv64 ;;
     sparc64-*) openbsd_arch=sparc64 ;;
     x86_64*) openbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;

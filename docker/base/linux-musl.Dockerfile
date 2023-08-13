@@ -93,8 +93,8 @@ case "${RUST_TARGET}" in
     # https://github.com/buildroot/buildroot/blob/2022.02/package/gcc/gcc.mk#L229-L244
     powerpc64-*) common_config="--with-abi=elfv2 --without-long-double-128 --enable-secureplt" ;;
     powerpc64le-*) common_config="--with-abi=elfv2 --without-long-double-128 --enable-secureplt" ;;
-    riscv32gc-*) common_config="--with-arch=rv32gc --with-abi=ilp32d --with-cmodel=medany" ;;
-    riscv64gc-*) common_config="--with-arch=rv64gc --with-abi=lp64d --with-cmodel=medany" ;;
+    riscv32*) common_config="--with-arch=rv32gc --with-abi=ilp32d --with-cmodel=medany" ;;
+    riscv64*) common_config="--with-arch=rv64gc --with-abi=lp64d --with-cmodel=medany" ;;
     thumbv7neon-*) common_config="--with-arch=armv7-a --with-fpu=neon-vfpv4 --with-float=hard --with-mode=thumb" ;;
 esac
 echo "${common_config:+"COMMON_CONFIG += ${common_config}"}" >>./config.mak
@@ -112,7 +112,7 @@ case "${RUST_TARGET}" in
     arm*hf | thumbv7neon-*) ldso_arch=armhf ;;
     arm*) ldso_arch=arm ;;
     hexagon-*) ldso_arch=hexagon ;;
-    i*86-*) ldso_arch=i386 ;;
+    i?86-*) ldso_arch=i386 ;;
     mips-*) ldso_arch=mips-sf ;;
     mips64-*) ldso_arch=mips64 ;;
     mips64el-*) ldso_arch=mips64el ;;
@@ -120,8 +120,8 @@ case "${RUST_TARGET}" in
     powerpc-*) ldso_arch=powerpc ;;
     powerpc64-*) ldso_arch=powerpc64 ;;
     powerpc64le-*) ldso_arch=powerpc64le ;;
-    riscv32gc-*) ldso_arch=riscv32 ;;
-    riscv64gc-*) ldso_arch=riscv64 ;;
+    riscv32*) ldso_arch=riscv32 ;;
+    riscv64*) ldso_arch=riscv64 ;;
     s390x-*) ldso_arch=s390x ;;
     x86_64*) ldso_arch=x86_64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;

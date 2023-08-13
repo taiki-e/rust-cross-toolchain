@@ -30,10 +30,14 @@ COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) cc_target=aarch64--netbsd ;;
+    aarch64_be-*) cc_target=aarch64_be--netbsd ;;
     armv6-*) cc_target=armv6--netbsdelf-eabihf ;;
     armv7-*) cc_target=armv7--netbsdelf-eabihf ;;
-    i686-*) cc_target=i486--netbsdelf ;;
+    i?86-*) cc_target=i486--netbsdelf ;;
     powerpc-*) cc_target=powerpc--netbsd ;;
+    riscv32*) cc_target=riscv32--netbsd ;;
+    riscv64*) cc_target=riscv64--netbsd ;;
+    sparc-*) cc_target=sparc--netbsd ;;
     sparc64-*) cc_target=sparc64--netbsd ;;
     x86_64*) cc_target=x86_64--netbsd ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;

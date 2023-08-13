@@ -340,7 +340,7 @@ case "${RUST_TARGET}" in
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
-            i*86-*) qemu_arch=i386 ;;
+            i?86-*) qemu_arch=i386 ;;
             hexagon-*) qemu_arch=hexagon ;;
             loongarch64-*) qemu_arch=loongarch64 ;;
             m68k-*) qemu_arch=m68k ;;
@@ -376,10 +376,11 @@ case "${RUST_TARGET}" in
                 qemu_arch=ppc64le
                 qemu_cpu=power10
                 ;;
-            riscv32gc-* | riscv64gc-*) qemu_arch="${RUST_TARGET%%gc-*}" ;;
+            riscv32*) qemu_arch=riscv32 ;;
+            riscv64*) qemu_arch=riscv64 ;;
             s390x-*) qemu_arch=s390x ;;
             sparc-*) qemu_arch=sparc32plus ;;
-            sparc64-*) qemu_arch=sparc64 ;;
+            sparc64-* | sparcv9-*) qemu_arch=sparc64 ;;
             x86_64*)
                 qemu_arch=x86_64
                 # qemu does not seem to support emulating x86_64 CPU features on x86_64 hosts.

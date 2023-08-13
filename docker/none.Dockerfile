@@ -92,8 +92,9 @@ echo "${cc_target}" >/CC_TARGET
 EOF
 FROM riscv32-toolchain as riscv32i-unknown-none-elf
 FROM riscv32-toolchain as riscv32im-unknown-none-elf
-FROM riscv32-toolchain as riscv32imac-unknown-none-elf
 FROM riscv32-toolchain as riscv32imc-unknown-none-elf
+FROM riscv32-toolchain as riscv32imac-unknown-none-elf
+FROM riscv32-toolchain as riscv32gc-unknown-none-elf
 
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv64-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as riscv64-toolchain
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -102,8 +103,11 @@ RUN <<EOF
 cc_target=riscv64-unknown-elf
 echo "${cc_target}" >/CC_TARGET
 EOF
-FROM riscv64-toolchain as riscv64gc-unknown-none-elf
+FROM riscv64-toolchain as riscv64i-unknown-none-elf
+FROM riscv64-toolchain as riscv64im-unknown-none-elf
+FROM riscv64-toolchain as riscv64imc-unknown-none-elf
 FROM riscv64-toolchain as riscv64imac-unknown-none-elf
+FROM riscv64-toolchain as riscv64gc-unknown-none-elf
 
 FROM "${RUST_TARGET}" as toolchain
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]

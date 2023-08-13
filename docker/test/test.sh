@@ -341,7 +341,7 @@ if [[ -z "${no_std}" ]]; then
                     # TODO(riscv64gc-unknown-linux-musl)
                     # TODO(s390x-unknown-linux-musl): libunwind build issue since around 2022-12-16
                     # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
-                    powerpc-* | powerpc64le-* | riscv64gc-* | s390x-* | thumbv7neon-*) ;;
+                    powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-*) ;;
                     *)
                         rm -rf "${rustlib}"
                         mkdir -p "${self_contained}"
@@ -450,7 +450,7 @@ EOF
                 # TODO(riscv64gc-unknown-linux-musl)
                 # TODO(s390x-unknown-linux-musl)
                 # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
-                hexagon-* | powerpc-* | powerpc64le-* | riscv64gc-* | s390x-* | thumbv7neon-*) ;;
+                hexagon-* | powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
@@ -667,7 +667,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('ELF 32-bit MSB')
                 file_header_pat+=('Class:\s+ELF32' 'big endian')
                 ;;
-            arm* | hexagon-* | i*86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
+            arm* | hexagon-* | i?86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
                 file_info_pat+=('ELF 32-bit LSB')
                 file_header_pat+=('Class:\s+ELF32' 'little endian')
                 ;;
@@ -813,7 +813,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('QUALCOMM DSP6')
                 file_header_pat+=('Machine:\s+QUALCOMM DSP6 Processor')
                 ;;
-            i*86-*)
+            i?86-*)
                 file_info_pat+=('Intel 80386')
                 file_header_pat+=('Machine:\s+Intel 80386')
                 ;;
@@ -908,7 +908,7 @@ case "${RUST_TARGET}" in
         case "${RUST_TARGET}" in
             *-freebsd*)
                 case "${RUST_TARGET}" in
-                    riscv64gc-*)
+                    riscv64*)
                         file_info_pat+=('(SYSV|FreeBSD)')
                         file_header_pat+=('OS/ABI:\s+UNIX - (System V|FreeBSD)')
                         ;;
@@ -934,7 +934,7 @@ case "${RUST_TARGET}" in
                     aarch64_be-*) ldso='/lib/ld-linux-aarch64_be\.so\.1' ;;
                     arm*hf | thumbv7neon-*) ldso='/lib/ld-linux-armhf\.so\.3' ;;
                     arm*) ldso='/lib/ld-linux\.so\.3' ;;
-                    i586-* | i686-*) ldso='/lib/ld-linux\.so\.2' ;;
+                    i?86-*) ldso='/lib/ld-linux\.so\.2' ;;
                     loongarch64-*) ldso='/lib64/ld-linux-loongarch-lp64d\.so\.1' ;;
                     mips-* | mipsel-*) ldso='/lib/ld\.so\.1' ;;
                     mips64-* | mips64el-*) ldso='/lib64/ld\.so\.1' ;;
@@ -943,8 +943,8 @@ case "${RUST_TARGET}" in
                     powerpc-*) ldso='/lib/ld\.so\.1' ;;
                     powerpc64-*) ldso='/lib64/ld64\.so\.1' ;;
                     powerpc64le-*) ldso='/lib64/ld64\.so\.2' ;;
-                    riscv32gc-*) ldso='/lib/ld-linux-riscv32-ilp32d\.so\.1' ;;
-                    riscv64gc-*) ldso='/lib/ld-linux-riscv64-lp64d\.so\.1' ;;
+                    riscv32*) ldso='/lib/ld-linux-riscv32-ilp32d\.so\.1' ;;
+                    riscv64*) ldso='/lib/ld-linux-riscv64-lp64d\.so\.1' ;;
                     s390x-*) ldso='/lib/ld64\.so\.1' ;;
                     sparc-*) ldso='/lib/ld-linux\.so\.2' ;;
                     sparc64-*) ldso='/lib64/ld-linux\.so\.2' ;;
@@ -965,7 +965,7 @@ case "${RUST_TARGET}" in
                     arm*hf | thumbv7neon-*) ldso_arch=armhf ;;
                     arm*) ldso_arch=arm ;;
                     hexagon-*) ldso_arch=hexagon ;;
-                    i*86-*) ldso_arch=i386 ;;
+                    i?86-*) ldso_arch=i386 ;;
                     mips-*) ldso_arch=mips-sf ;;
                     mips64-*) ldso_arch=mips64 ;;
                     mips64el-*) ldso_arch=mips64el ;;
@@ -973,8 +973,8 @@ case "${RUST_TARGET}" in
                     powerpc-*) ldso_arch=powerpc ;;
                     powerpc64-*) ldso_arch=powerpc64 ;;
                     powerpc64le-*) ldso_arch=powerpc64le ;;
-                    riscv32gc-*) ldso_arch=riscv32 ;;
-                    riscv64gc-*) ldso_arch=riscv64 ;;
+                    riscv32*) ldso_arch=riscv32 ;;
+                    riscv64*) ldso_arch=riscv64 ;;
                     s390x-*) ldso_arch=s390x ;;
                     x86_64*) ldso_arch=x86_64 ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
