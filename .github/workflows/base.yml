@@ -81,7 +81,7 @@ jobs:
             host: aarch64
 
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 120
     permissions:
       contents: read
       packages: write

@@ -28,6 +28,7 @@ jobs:
     uses: taiki-e/workflows/.github/workflows/tidy.yml@main
 
   build:
+    needs: tidy
     strategy:
       fail-fast: false
       matrix:
