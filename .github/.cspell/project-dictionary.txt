@@ -113,7 +113,6 @@ posix
 powerpcspe
 raspi
 rcrt
-rlib
 rtti
 Scrt
 secureplt
