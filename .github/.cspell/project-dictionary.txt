@@ -5,7 +5,6 @@ backports
 BAREMETAL
 bsdtar
 BUILDKIT
-buildkitd
 buildpackage
 buildroot
 buildx
