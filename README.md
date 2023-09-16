@@ -259,7 +259,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| redox 0.8.0 | 8.2.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.31+) |
+| redox 0.8.0 | 13.2.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.35+) |
 
 ([Dockerfile](docker/redox.Dockerfile))
 

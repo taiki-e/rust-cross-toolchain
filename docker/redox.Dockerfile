@@ -3,7 +3,7 @@
 # Refs:
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/install-x86_64-redox.sh
 
-ARG UBUNTU_VERSION=20.04
+ARG UBUNTU_VERSION=22.04
 
 FROM ghcr.io/taiki-e/downloader as toolchain
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
@@ -23,7 +23,7 @@ COPY --from=toolchain /toolchain "${TOOLCHAIN_DIR}"
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
-ARG GCC_VERSION=8.2.0
+ARG GCC_VERSION=13.2.0
 RUN --mount=type=bind,target=/docker \
     CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
     CXXFLAGS="-std=c++14 -isystem\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
