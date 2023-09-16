@@ -5,42 +5,42 @@
 
 # Linux (glibc)
 linux_gnu_targets=(
-    aarch64-unknown-linux-gnu
-    # aarch64-unknown-linux-gnu_ilp32 # tier3
-    aarch64_be-unknown-linux-gnu # tier3
-    # aarch64_be-unknown-linux-gnu_ilp32 # tier3
-    arm-unknown-linux-gnueabi
-    arm-unknown-linux-gnueabihf
-    armeb-unknown-linux-gnueabi # tier3
-    # armv4t-unknown-linux-gnueabi # tier3, rustc generate code for armv5t (probably needs to pass +v4t to llvm)
-    armv5te-unknown-linux-gnueabi
-    armv7-unknown-linux-gnueabi
-    armv7-unknown-linux-gnueabihf
+    # aarch64-unknown-linux-gnu
+    # # aarch64-unknown-linux-gnu_ilp32 # tier3
+    # aarch64_be-unknown-linux-gnu # tier3
+    # # aarch64_be-unknown-linux-gnu_ilp32 # tier3
+    # arm-unknown-linux-gnueabi
+    # arm-unknown-linux-gnueabihf
+    # armeb-unknown-linux-gnueabi # tier3
+    # # armv4t-unknown-linux-gnueabi # tier3, rustc generate code for armv5t (probably needs to pass +v4t to llvm)
+    # armv5te-unknown-linux-gnueabi
+    # armv7-unknown-linux-gnueabi
+    # armv7-unknown-linux-gnueabihf
     csky-unknown-linux-gnuabiv2 # tier3
-    i586-unknown-linux-gnu
-    i686-unknown-linux-gnu
-    loongarch64-unknown-linux-gnu
-    # m68k-unknown-linux-gnu # tier3, build fail: https://github.com/rust-lang/rust/issues/89498
-    mips-unknown-linux-gnu               # tier3
-    mips64-unknown-linux-gnuabi64        # tier3
-    mips64el-unknown-linux-gnuabi64      # tier3
-    mipsel-unknown-linux-gnu             # tier3
-    mipsisa32r6-unknown-linux-gnu        # tier3
-    mipsisa32r6el-unknown-linux-gnu      # tier3
-    mipsisa64r6-unknown-linux-gnuabi64   # tier3
-    mipsisa64r6el-unknown-linux-gnuabi64 # tier3
-    powerpc-unknown-linux-gnu
-    powerpc-unknown-linux-gnuspe # tier3
-    powerpc64-unknown-linux-gnu
-    powerpc64le-unknown-linux-gnu
-    riscv32gc-unknown-linux-gnu # tier3
-    riscv64gc-unknown-linux-gnu
-    s390x-unknown-linux-gnu
-    sparc-unknown-linux-gnu # tier3
-    sparc64-unknown-linux-gnu
-    thumbv7neon-unknown-linux-gnueabihf
-    x86_64-unknown-linux-gnu
-    x86_64-unknown-linux-gnux32
+    # i586-unknown-linux-gnu
+    # i686-unknown-linux-gnu
+    # loongarch64-unknown-linux-gnu
+    # # m68k-unknown-linux-gnu # tier3, build fail: https://github.com/rust-lang/rust/issues/89498
+    # mips-unknown-linux-gnu               # tier3
+    # mips64-unknown-linux-gnuabi64        # tier3
+    # mips64el-unknown-linux-gnuabi64      # tier3
+    # mipsel-unknown-linux-gnu             # tier3
+    # mipsisa32r6-unknown-linux-gnu        # tier3
+    # mipsisa32r6el-unknown-linux-gnu      # tier3
+    # mipsisa64r6-unknown-linux-gnuabi64   # tier3
+    # mipsisa64r6el-unknown-linux-gnuabi64 # tier3
+    # powerpc-unknown-linux-gnu
+    # powerpc-unknown-linux-gnuspe # tier3
+    # powerpc64-unknown-linux-gnu
+    # powerpc64le-unknown-linux-gnu
+    # riscv32gc-unknown-linux-gnu # tier3
+    # riscv64gc-unknown-linux-gnu
+    # s390x-unknown-linux-gnu
+    # sparc-unknown-linux-gnu # tier3
+    # sparc64-unknown-linux-gnu
+    # thumbv7neon-unknown-linux-gnueabihf
+    # x86_64-unknown-linux-gnu
+    # x86_64-unknown-linux-gnux32
 )
 # Linux (musl)
 linux_musl_targets=(
