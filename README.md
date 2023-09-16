@@ -298,7 +298,6 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 **Supported targets**:
 
-- `asmjs-unknown-emscripten`
 - `wasm32-unknown-emscripten`
 
 ### Windows (MinGW)
