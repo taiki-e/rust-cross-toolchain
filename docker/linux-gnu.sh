@@ -114,6 +114,23 @@ case "${RUST_TARGET}" in
             | tar xzf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
         exit 0
         ;;
+    csky-unknown-linux-gnuabiv2)
+        # https://github.com/rust-lang/rust/blob/b6ab01a7131481b52131a9bd814dc8084052f643/src/doc/rustc/src/platform-support/csky-unknown-linux-gnuabiv2.md
+        toolchain_source_id=1356021/1619528643136
+        toolchain_date=20210423
+        qemu_source_id=1689324918932
+        qemu_date=20230714-0202
+        cc_target="${RUST_TARGET/-unknown/}"
+        gcc_version=6.3.0
+        echo "${cc_target}" >/CC_TARGET
+        echo "${cc_target}" >/APT_TARGET
+        echo "${gcc_version}" >/GCC_VERSION
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/${toolchain_source_id}/csky-linux-gnuabiv2-tools-x86_64-glibc-linux-4.9.56-${toolchain_date}.tar.gz" \
+            | tar xzf - -C "${TOOLCHAIN_DIR}"
+        curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//${qemu_source_id}/xuantie-qemu-x86_64-Ubuntu-18.04-${qemu_date}.tar.gz" \
+            | tar xzf - -C "${TOOLCHAIN_DIR}"
+        exit 0
+        ;;
 esac
 
 case "${RUST_TARGET}" in

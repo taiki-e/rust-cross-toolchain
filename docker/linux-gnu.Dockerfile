@@ -75,7 +75,7 @@ if [[ "${gcc_version}" == "host" ]]; then
     exit 0
 fi
 case "${RUST_TARGET}" in
-    aarch64_be-* | armeb-* | arm-*hf)
+    aarch64_be-* | armeb-* | arm-*hf | csky-*)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \

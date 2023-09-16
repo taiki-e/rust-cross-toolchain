@@ -51,7 +51,7 @@ else
     fi
 fi
 case "${RUST_TARGET}" in
-    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf) sysroot_suffix="${RUST_TARGET}/libc" ;;
+    aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf | csky-unknown-linux-gnuabiv2) sysroot_suffix="${RUST_TARGET}/libc" ;;
     riscv32gc-unknown-linux-gnu) sysroot_suffix="sysroot" ;;
     loongarch64-unknown-linux-gnu) sysroot_suffix="target/usr" ;;
     *) sysroot_suffix="${RUST_TARGET}" ;;
@@ -339,6 +339,7 @@ case "${RUST_TARGET}" in
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
+            csky-*v2) qemu_arch=cskyv2 ;;
             i?86-*) qemu_arch=i386 ;;
             hexagon-*) qemu_arch=hexagon ;;
             loongarch64-*) qemu_arch=loongarch64 ;;

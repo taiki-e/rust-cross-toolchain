@@ -671,7 +671,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('ELF 32-bit MSB')
                 file_header_pat+=('Class:\s+ELF32' 'big endian')
                 ;;
-            arm* | hexagon-* | i?86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
+            arm* | csky-* | hexagon-* | i?86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
                 file_info_pat+=('ELF 32-bit LSB')
                 file_header_pat+=('Class:\s+ELF32' 'little endian')
                 ;;
@@ -813,6 +813,10 @@ case "${RUST_TARGET}" in
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
+            csky-*)
+                file_info_pat+=('C-SKY processor family')
+                file_header_pat+=('Machine:\s+fc')
+                ;;
             hexagon-*)
                 file_info_pat+=('QUALCOMM DSP6')
                 file_header_pat+=('Machine:\s+QUALCOMM DSP6 Processor')
@@ -938,6 +942,7 @@ case "${RUST_TARGET}" in
                     aarch64_be-*) ldso='/lib/ld-linux-aarch64_be\.so\.1' ;;
                     arm*hf | thumbv7neon-*) ldso='/lib/ld-linux-armhf\.so\.3' ;;
                     arm*) ldso='/lib/ld-linux\.so\.3' ;;
+                    csky-*) ldso='/lib/ld\.so\.1' ;;
                     i?86-*) ldso='/lib/ld-linux\.so\.2' ;;
                     loongarch64-*) ldso='/lib64/ld-linux-loongarch-lp64d\.so\.1' ;;
                     mips-* | mipsel-*) ldso='/lib/ld\.so\.1' ;;
