@@ -567,7 +567,11 @@ else
         case "${linker}" in
             # If the linker contains a dot, rustc will misinterpret the linker flavor.
             thumbv8m.*-ld) target_rustflags+=" -C linker-flavor=ld" ;;
-            thumbv8m.*-gcc) target_rustflags+=" -C linker-flavor=gcc" ;;
+            thumbv8m.*-gcc)
+                # TODO: collect2: fatal error: cannot find 'ld'
+                continue
+                target_rustflags+=" -C linker-flavor=gcc"
+                ;;
         esac
         case "${RUST_TARGET}" in
             armeb*)
