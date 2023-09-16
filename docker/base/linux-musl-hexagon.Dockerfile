@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # musl-cross-make doesn't support this target
 #

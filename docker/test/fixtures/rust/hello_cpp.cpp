@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
 #include <iostream>
 
 extern "C" void hello_cpp() {

@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# SPDX-License-Identifier: Apache-2.0 OR MIT
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=18.04

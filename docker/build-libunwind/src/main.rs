@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
 // Adapted from https://github.com/rust-lang/rust/blob/1.70.0/src/bootstrap/llvm.rs#L1140-L1295
 
 use std::{env, ffi::OsStr, path::PathBuf, process::Command};
