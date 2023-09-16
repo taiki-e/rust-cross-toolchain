@@ -58,6 +58,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i386-apple-ios
 - [ ] i586-pc-nto-qnx700
 - [ ] i686-apple-darwin
+- [x] i686-pc-windows-gnullvm
 - [ ] i686-unknown-haiku
 - [x] i686-unknown-netbsd
 - [x] i686-unknown-openbsd
