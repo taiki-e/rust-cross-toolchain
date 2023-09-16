@@ -338,6 +338,7 @@ Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20230614
 **Supported targets**:
 
 - `aarch64-pc-windows-gnullvm`
+- `i686-pc-windows-gnullvm`
 - `x86_64-pc-windows-gnullvm`
 
 ### No-std
