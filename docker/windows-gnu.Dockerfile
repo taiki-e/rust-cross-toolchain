@@ -56,7 +56,7 @@ case "${dpkg_arch##*-}" in
     *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
 esac
 # See https://wiki.winehq.org/Ubuntu when install the latest wine.
-apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     wine-stable \
     wine32 \
     wine64

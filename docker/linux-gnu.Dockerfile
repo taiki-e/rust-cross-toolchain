@@ -104,7 +104,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
 # libpython2.7 is needed for GDB
-RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     libpython2.7
 ARG RUST_TARGET
 COPY /test-base /test-base

@@ -57,7 +57,7 @@ SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
-RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     e2tools
 ARG RUST_TARGET
 COPY --from=ndk /ndk/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot /ndk-sysroot

@@ -69,7 +69,7 @@ case "${RUST_TARGET}" in
     aarch64*) ;;
     *)
         # See https://wiki.winehq.org/Ubuntu when install the latest wine.
-        apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+        apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
             wine-stable \
             wine32 \
             wine64

@@ -40,7 +40,7 @@ esac
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 74DA7924C5513486
 echo "deb https://apt.dilos.org/dilos dilos2 main" >/etc/apt/sources.list.d/dilos.list
 dpkg --add-architecture "${dpkg_arch}"
-apt-get -o Acquire::Retries=10 update -qq
+apt-get -o Acquire::Retries=10 -qq update
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --download-only --no-install-recommends \
     "libc:${dpkg_arch}" \
     "liblgrp:${dpkg_arch}" \

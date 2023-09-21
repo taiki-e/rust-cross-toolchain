@@ -136,7 +136,7 @@ RUN <<EOF
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 94E187AD53A59D1847E4880F8A295C4FB8B190B7
 codename=$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')
 echo "deb http://ppa.launchpad.net/canonical-server/server-backports/ubuntu ${codename} main" >/etc/apt/sources.list.d/server-backports.list
-apt-get -o Acquire::Retries=10 update -qq
+apt-get -o Acquire::Retries=10 -qq update
 # libpython2.7 is needed for GDB
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     libpython2.7 \
