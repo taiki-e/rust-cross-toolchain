@@ -50,6 +50,7 @@ known_target_group=(
     haiku
     hermit
     horizon
+    hurd
     l4re
     nto
     psp

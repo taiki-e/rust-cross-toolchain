@@ -219,6 +219,9 @@ horizon_targets=(
     aarch64-nintendo-switch-freestanding # tier3
     armv6k-nintendo-3ds # tier3
 )
+hurd_targets=(
+    i686-unknown-hurd-gnu # tier3
+)
 l4re_targets=(
     x86_64-unknown-l4re-uclibc # tier3
 )
@@ -332,6 +335,7 @@ targets=(
     ${haiku_targets[@]+"${haiku_targets[@]}"}
     ${hermit_targets[@]+"${hermit_targets[@]}"}
     ${horizon_targets[@]+"${horizon_targets[@]}"}
+    ${hurd_targets[@]+"${hurd_targets[@]}"}
     ${l4re_targets[@]+"${l4re_targets[@]}"}
     ${nto_targets[@]+"${nto_targets[@]}"}
     ${psp_targets[@]+"${psp_targets[@]}"}

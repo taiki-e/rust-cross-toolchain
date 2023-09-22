@@ -60,6 +60,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-apple-darwin
 - [x] i686-pc-windows-gnullvm
 - [ ] i686-unknown-haiku
+- [ ] i686-unknown-hurd-gnu
 - [x] i686-unknown-netbsd
 - [x] i686-unknown-openbsd
 - [ ] i686-uwp-windows-gnu
