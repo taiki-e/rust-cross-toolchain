@@ -326,11 +326,11 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| Mingw-w64 b190082 | N/A | 16.0.6 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 linux (glibc 2.31+) |
+| Mingw-w64 602758b | N/A | 17.0.1 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 linux (glibc 2.31+) |
 
 <!--
-Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20230614/build-mingw-w64.sh#L21
-Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20230614
+Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20230919/build-mingw-w64.sh#L21
+Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20230919
 -->
 
 ([Dockerfile](docker/windows-gnu.Dockerfile))

@@ -9,13 +9,13 @@ ARG RUST_TARGET
 ARG UBUNTU_VERSION=20.04
 ARG TOOLCHAIN_TAG=dev
 
-ARG TOOLCHAIN_VERSION=20230614
+# https://github.com/mstorsjo/llvm-mingw/releases
+ARG TOOLCHAIN_VERSION=20230919
 
 FROM ghcr.io/taiki-e/downloader as toolchain
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 RUN mkdir -p /toolchain
 ARG TOOLCHAIN_VERSION
-# https://github.com/mstorsjo/llvm-mingw/releases
 RUN <<EOF
 dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
