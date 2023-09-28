@@ -37,7 +37,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv6-unknown-freebsd
 - [x] armv6-unknown-netbsd-eabihf
 - [ ] armv6k-nintendo-3ds
-- [ ] armv7-apple-ios
 - [ ] armv7-sony-vita-newlibeabihf
 - [ ] armv7-unknown-freebsd
 - [ ] armv7-unknown-linux-ohos
