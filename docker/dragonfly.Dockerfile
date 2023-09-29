@@ -7,7 +7,7 @@ ARG UBUNTU_VERSION=20.04
 ARG DRAGONFLY_VERSION
 
 FROM ghcr.io/taiki-e/downloader as sysroot
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DRAGONFLY_VERSION
 RUN mkdir -p /sysroot
 # https://mirror-master.dragonflybsd.org/iso-images
@@ -15,7 +15,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
         | bsdtar xjf - -C /sysroot ./lib ./usr/include ./usr/lib
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -30,7 +30,7 @@ RUN --mount=type=bind,target=/docker \
     /docker/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
 RUN /test-base.sh
@@ -40,7 +40,7 @@ RUN /test-base/target.sh
 COPY /test /test
 
 FROM test-base as test-relocated
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG DRAGONFLY_VERSION
@@ -49,7 +49,7 @@ RUN /test/test.sh clang
 RUN touch /DONE
 
 FROM test-base as test
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG DRAGONFLY_VERSION
@@ -60,7 +60,7 @@ RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

@@ -19,20 +19,20 @@ ARG BINUTILS_VERSION=2.33.1
 ARG GCC_VERSION=8.5.0
 
 FROM ghcr.io/taiki-e/downloader as binutils-src
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p /binutils-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
 FROM ghcr.io/taiki-e/downloader as gcc-src
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG GCC_VERSION
 RUN mkdir -p /gcc-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /gcc-src
 
 FROM ghcr.io/taiki-e/downloader as sysroot
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG SYSROOT_VERSION
 RUN mkdir -p /sysroot
 RUN <<EOF
@@ -41,7 +41,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://gi
 EOF
 
 FROM ghcr.io/taiki-e/build-base:alpine as builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apk --no-cache add \
     gmp-dev \
@@ -111,7 +111,7 @@ RUN --mount=type=bind,target=/base \
     /base/common.sh
 
 FROM ubuntu as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"

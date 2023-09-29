@@ -8,7 +8,7 @@
 # - https://github.com/qemu/qemu/blob/v8.0.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
 
 FROM ghcr.io/taiki-e/build-base:alpine as builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR=/toolchain/x86_64-linux-gnu
 RUN mkdir -p /toolchain
@@ -26,7 +26,7 @@ RUN --mount=type=bind,target=/base \
     /base/common.sh
 
 FROM ubuntu as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /toolchain/x86_64-linux-gnu /"${RUST_TARGET}"

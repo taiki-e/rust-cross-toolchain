@@ -4,7 +4,7 @@
 ARG TARGET
 
 FROM ghcr.io/taiki-e/downloader as aarch64-none-elf
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ARM_GCC_VERSION=10.3-2021.07
 RUN mkdir -p /toolchain
@@ -24,7 +24,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://de
 EOF
 
 FROM ghcr.io/taiki-e/downloader as arm-none-eabi
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ARM_GCC_VERSION=10.3-2021.10
 RUN mkdir -p /toolchain
@@ -44,7 +44,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://de
 EOF
 
 FROM ghcr.io/taiki-e/downloader as riscv32-unknown-elf
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_GCC_VERSION=2021.09.21
 RUN mkdir -p /toolchain
@@ -54,7 +54,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
         | tar xzf - --strip-components 1 -C /toolchain
 
 FROM ghcr.io/taiki-e/downloader as riscv64-unknown-elf
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_GCC_VERSION=2021.09.21
 RUN mkdir -p /toolchain
@@ -64,12 +64,12 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
         | tar xzf - --strip-components 1 -C /toolchain
 
 FROM "${TARGET}" as toolchain
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN rm -rf /toolchain/share/{doc,i18n,lintian,locale,man}
 
 FROM ubuntu as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TARGET
 COPY --from=toolchain /toolchain /"${TARGET}"

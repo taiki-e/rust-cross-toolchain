@@ -15,7 +15,7 @@ ARG UBUNTU_VERSION=18.04
 ARG NETBSD_VERSION
 
 FROM ghcr.io/taiki-e/downloader as build-src
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG NETBSD_VERSION
 RUN mkdir -p /build-src
 WORKDIR /build-src
@@ -26,7 +26,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
 WORKDIR /
 
 FROM ghcr.io/taiki-e/downloader as sysroot
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG NETBSD_VERSION
 RUN mkdir -p /sysroot
@@ -64,7 +64,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ft
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     zlib1g-dev
@@ -148,7 +148,7 @@ RUN --mount=type=bind,target=/base \
     /base/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"

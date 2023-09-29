@@ -7,7 +7,7 @@ ARG TOOLCHAIN_TAG=dev
 ARG HOST_ARCH=amd64
 
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"aarch64-none-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as aarch64-toolchain
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=aarch64-none-elf
@@ -17,7 +17,7 @@ FROM aarch64-toolchain as aarch64-unknown-none
 FROM aarch64-toolchain as aarch64-unknown-none-softfloat
 
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"arm-none-eabi-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as arm-toolchain
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=arm-none-eabi
@@ -85,7 +85,7 @@ FROM arm-toolchain as thumbv8m.main-none-eabi
 FROM arm-toolchain as thumbv8m.main-none-eabihf
 
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv32-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as riscv32-toolchain
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=riscv32-unknown-elf
@@ -98,7 +98,7 @@ FROM riscv32-toolchain as riscv32imac-unknown-none-elf
 FROM riscv32-toolchain as riscv32gc-unknown-none-elf
 
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv64-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as riscv64-toolchain
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=riscv64-unknown-elf
@@ -111,13 +111,13 @@ FROM riscv64-toolchain as riscv64imac-unknown-none-elf
 FROM riscv64-toolchain as riscv64gc-unknown-none-elf
 
 FROM "${RUST_TARGET}" as toolchain
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 RUN mv "/$(</CC_TARGET)" "/${RUST_TARGET}"
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -129,7 +129,7 @@ RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 # https://launchpad.net/~canonical-server/+archive/ubuntu/server-backports/+packages
 RUN <<EOF
@@ -159,7 +159,7 @@ COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
 FROM test-base as test-relocated
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
@@ -167,7 +167,7 @@ RUN /test/test.sh gcc
 RUN touch /DONE
 
 FROM test-base as test
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
@@ -177,7 +177,7 @@ RUN /test/test.sh gcc
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

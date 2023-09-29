@@ -18,7 +18,7 @@ ARG MUSL_VERSION
 ARG LINUX_VERSION=headers-4.19.88-1
 
 FROM ghcr.io/taiki-e/build-base:alpine as builder
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MUSL_CROSS_MAKE_REV
 RUN mkdir -p /musl-cross-make
@@ -133,7 +133,7 @@ ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
 EOF
 
 FROM ubuntu as final
-SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
