@@ -99,7 +99,6 @@ ios_targets=(
     aarch64-apple-ios
     aarch64-apple-ios-macabi # tier3
     aarch64-apple-ios-sim
-    armv7-apple-ios # tier3
     armv7s-apple-ios # tier3
     i386-apple-ios # tier3
     x86_64-apple-ios
