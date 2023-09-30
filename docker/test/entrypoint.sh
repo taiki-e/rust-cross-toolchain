@@ -402,7 +402,7 @@ case "${RUST_TARGET}" in
             # We basically set the newer and more powerful CPU as default QEMU_CPU
             # so that we can test more of CPU features. In some contexts, we want to
             # test for a specific CPU, so we allow overrides by user-set QEMU_CPU.
-            qemu_cpu=" --cpu \${QEMU_CPU:-${qemu_cpu}}"
+            qemu_cpu=" -cpu \${QEMU_CPU:-${qemu_cpu}}"
         fi
         case "${RUST_TARGET}" in
             *-android*) ;;
@@ -528,7 +528,7 @@ EOF
             # We basically set the newer and more powerful CPU as default QEMU_CPU
             # so that we can test more of CPU features. In some contexts, we want to
             # test for a specific CPU, so we allow overrides by user-set QEMU_CPU.
-            qemu_cpu=" --cpu \${QEMU_CPU:-${qemu_cpu}}"
+            qemu_cpu=" -cpu \${QEMU_CPU:-${qemu_cpu}}"
         fi
         # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
         [[ -f "${toolchain_dir}/bin/qemu-${qemu_user_arch}" ]] || cp "$(type -P "qemu-${qemu_user_arch}")" "${toolchain_dir}/bin"
