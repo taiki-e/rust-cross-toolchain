@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
+#![warn(rust_2018_idioms)]
+
 use std::env;
 
 fn main() {

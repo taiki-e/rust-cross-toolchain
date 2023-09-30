@@ -2,7 +2,7 @@
 
 #![no_main]
 #![no_std]
-#![warn(rust_2018_idioms, unsafe_op_in_unsafe_fn)]
+#![warn(rust_2018_idioms)]
 
 use semihosting::println;
 
