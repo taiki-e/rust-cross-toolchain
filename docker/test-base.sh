@@ -27,6 +27,4 @@ rust_toolchain_version=nightly
 
 # Install Rust.
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://sh.rustup.rs \
-    | sh -s -- -y --no-modify-path --profile minimal --default-toolchain "${rust_toolchain_version}" --component rust-src
-# shellcheck disable=SC1091
-. "${HOME}/.cargo/env"
+    | sh -s -- -y --profile minimal --default-toolchain "${rust_toolchain_version}" --component rust-src --no-modify-path
