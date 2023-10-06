@@ -284,8 +284,8 @@ none_targets=(
     avr-unknown-gnu-atmega328 # tier3
     bpfeb-unknown-none # tier3
     bpfel-unknown-none # tier3
-    loongarch64-unknown-none # tier3
-    loongarch64-unknown-none-softfloat # tier3
+    loongarch64-unknown-none
+    loongarch64-unknown-none-softfloat
     mipsel-unknown-none # tier3
     msp430-none-elf # tier3
     riscv32i-unknown-none-elf

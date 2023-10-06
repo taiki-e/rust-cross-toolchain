@@ -47,6 +47,8 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] i686-unknown-linux-musl
 - [ ] i686-unknown-uefi
 - [x] loongarch64-unknown-linux-gnu
+- [ ] loongarch64-unknown-none
+- [ ] loongarch64-unknown-none-softfloat
 - [x] mips-unknown-linux-musl
 - [x] mips64-unknown-linux-muslabi64
 - [x] mips64el-unknown-linux-muslabi64
