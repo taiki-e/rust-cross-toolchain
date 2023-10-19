@@ -10,7 +10,7 @@ ARG UBUNTU_VERSION=20.04
 ARG TOOLCHAIN_TAG=dev
 
 # https://github.com/mstorsjo/llvm-mingw/releases
-ARG TOOLCHAIN_VERSION=20230919
+ARG TOOLCHAIN_VERSION=20231017
 
 FROM ghcr.io/taiki-e/downloader as toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
