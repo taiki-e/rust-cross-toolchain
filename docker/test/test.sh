@@ -332,8 +332,8 @@ if [[ -z "${no_std}" ]]; then
     # Build std for tier3 linux-musl targets.
     case "${RUST_TARGET}" in
         *-linux-musl*)
-            rustlib="$(rustc --print sysroot)/lib/rustlib/${RUST_TARGET}"
-            self_contained="${rustlib}/lib/self-contained"
+            target_libdir=$(rustc --print target-libdir --target "${RUST_TARGET}")
+            self_contained="${target_libdir}/self-contained"
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
                     # TODO(powerpc-unknown-linux-musl)
@@ -343,7 +343,7 @@ if [[ -z "${no_std}" ]]; then
                     # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
                     powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-*) ;;
                     *)
-                        rm -rf "${rustlib}"
+                        rm -rf "${target_libdir}"
                         mkdir -p "${self_contained}"
 
                         case "${RUST_TARGET}" in
@@ -369,7 +369,7 @@ EOF
                         RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
                             x cargo build "${build_std[@]}" --target "${RUST_TARGET}" --all-targets --release
                         rm target/"${RUST_TARGET}"/release/deps/*build_std-*
-                        cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${rustlib}/lib"
+                        cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${target_libdir}"
                         popd >/dev/null
 
                         # https://github.com/rust-lang/rust/blob/1.70.0/src/bootstrap/compile.rs#L248-L280
