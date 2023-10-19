@@ -290,7 +290,7 @@ if [[ -f /BUILD_STD ]]; then
             build_std+=(-Z build-std-features=llvm-libunwind)
             ;;
         # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
-        mips-unknown-linux-gnu | mipsel-unknown-linux-gnu | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) build_mode=release ;;
+        mips-*-linux-* | mipsel-*-linux-*) build_mode=release ;;
     esac
 fi
 
@@ -337,11 +337,9 @@ if [[ -z "${no_std}" ]]; then
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
                     # TODO(powerpc-unknown-linux-musl)
-                    # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
                     # TODO(riscv64gc-unknown-linux-musl)
-                    # TODO(s390x-unknown-linux-musl): libunwind build issue since around 2022-12-16
-                    # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
-                    powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-*) ;;
+                    # TODO(powerpc64le,s390x,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
+                    powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-* | mips*) ;;
                     *)
                         rm -rf "${target_libdir}"
                         mkdir -p "${self_contained}"
@@ -446,11 +444,10 @@ EOF
             case "${RUST_TARGET}" in
                 # TODO(hexagon): run-fail (segfault)
                 # TODO(powerpc-unknown-linux-musl)
-                # TODO(powerpc64le-unknown-linux-musl): libunwind build issue since around 2022-12-16
                 # TODO(riscv64gc-unknown-linux-musl)
                 # TODO(s390x-unknown-linux-musl)
-                # TODO(thumbv7neon-unknown-linux-musleabihf): libunwind build issue since around 2022-12-16
-                hexagon-* | powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-*) ;;
+                # TODO(powerpc64le,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
+                hexagon-* | powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-* | mips*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features

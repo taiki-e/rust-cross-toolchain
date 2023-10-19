@@ -53,12 +53,12 @@ linux_musl_targets=(
     hexagon-unknown-linux-musl # tier3
     i586-unknown-linux-musl
     i686-unknown-linux-musl
-    mips-unknown-linux-musl
+    mips-unknown-linux-musl # tier3
     # mips64-openwrt-linux-musl # tier3, TODO: https://github.com/rust-lang/rust/pull/92300
-    mips64-unknown-linux-muslabi64
-    mips64el-unknown-linux-muslabi64
-    mipsel-unknown-linux-musl
-    powerpc-unknown-linux-musl # tier3
+    mips64-unknown-linux-muslabi64   # tier3
+    mips64el-unknown-linux-muslabi64 # tier3
+    mipsel-unknown-linux-musl        # tier3
+    powerpc-unknown-linux-musl       # tier3
     # powerpc64-unknown-linux-musl # tier3, TODO: ABI version 1 is not compatible with ABI version 2 output
     powerpc64le-unknown-linux-musl # tier3
     # riscv32gc-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
