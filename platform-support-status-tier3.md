@@ -67,13 +67,17 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-wrs-vxworks
 - [ ] m68k-unknown-linux-gnu
 - [x] mips-unknown-linux-gnu
+- [x] mips-unknown-linux-musl
 - [x] mips-unknown-linux-uclibc
 - [ ] mips64-openwrt-linux-musl
 - [x] mips64-unknown-linux-gnuabi64
+- [x] mips64-unknown-linux-muslabi64
 - [x] mips64el-unknown-linux-gnuabi64
+- [x] mips64el-unknown-linux-muslabi64
 - [ ] mipsel-sony-psp
 - [ ] mipsel-sony-psx
 - [x] mipsel-unknown-linux-gnu
+- [x] mipsel-unknown-linux-musl
 - [x] mipsel-unknown-linux-uclibc
 - [ ] mipsel-unknown-none
 - [ ] mipsisa32r6-unknown-linux-gnu
