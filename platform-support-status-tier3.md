@@ -9,6 +9,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 
 - [ ] aarch64-apple-ios-macabi
 - [ ] aarch64-apple-tvos
+- [ ] aarch64-apple-tvos-sim
 - [ ] aarch64-apple-watchos-sim
 - [ ] aarch64-fuchsia
 - [ ] aarch64-kmc-solid_asp3
@@ -57,6 +58,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] hexagon-unknown-linux-musl
 - [ ] i386-apple-ios
 - [ ] i586-pc-nto-qnx700
+- [ ] i586-unknown-netbsd
 - [ ] i686-apple-darwin
 - [x] i686-pc-windows-gnullvm
 - [ ] i686-unknown-haiku
