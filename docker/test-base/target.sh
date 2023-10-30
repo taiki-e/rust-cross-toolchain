@@ -64,7 +64,6 @@ for patch in /test-base/patches/*.diff; do
         cat >Cargo.toml <<EOF
 [package]
 name = "fetch-deps"
-version = "0.0.0"
 edition = "2021"
 EOF
         cargo fetch -Z build-std --target "${RUST_TARGET}"

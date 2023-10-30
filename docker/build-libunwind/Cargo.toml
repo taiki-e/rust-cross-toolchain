@@ -1,8 +1,6 @@
 [package]
 name = "build-libunwind"
-version = "0.0.0"
 edition = "2021"
-publish = false
 
 [dependencies]
 anyhow = "1"

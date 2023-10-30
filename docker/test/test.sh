@@ -361,7 +361,6 @@ if [[ -z "${no_std}" ]]; then
                         cat >Cargo.toml <<EOF
 [package]
 name = "build-std"
-version = "0.0.0"
 edition = "2021"
 EOF
                         RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
