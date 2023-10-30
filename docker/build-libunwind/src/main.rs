@@ -2,8 +2,6 @@
 
 // Adapted from https://github.com/rust-lang/rust/blob/1.70.0/src/bootstrap/llvm.rs#L1140-L1295
 
-#![warn(rust_2018_idioms)]
-
 use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 
 use anyhow::Result;
@@ -173,10 +171,7 @@ fn main() -> Result<()> {
         if file.is_file() && file.extension() == Some(OsStr::new("o")) {
             // file name starts with "Unwind-EHABI", "Unwind-seh" or "libunwind"
             let file_name = file.file_name().unwrap().to_str().expect("UTF-8 file name");
-            if cpp_sources
-                .iter()
-                .any(|f| file_name.starts_with(&f[..f.len() - 4]))
-            {
+            if cpp_sources.iter().any(|f| file_name.starts_with(&f[..f.len() - 4])) {
                 cc_cfg.object(&file);
                 count += 1;
             }

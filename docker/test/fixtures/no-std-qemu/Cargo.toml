@@ -2,9 +2,6 @@
 name = "no-std-qemu-test"
 edition = "2021"
 
-[workspace]
-resolver = "2"
-
 [features]
 c = []
 cpp = ["c"]
@@ -20,3 +17,11 @@ semihosting-no-std-test-rt = { git = "https://github.com/taiki-e/semihosting.git
 
 [target.'cfg(all(target_arch = "arm", target_feature = "mclass"))'.dependencies]
 cortex-m-rt = "0.7"
+
+[workspace]
+resolver = "2"
+
+[lints.rust]
+rust_2018_idioms = "warn"
+single_use_lifetimes = "warn"
+unsafe_op_in_unsafe_fn = "warn"

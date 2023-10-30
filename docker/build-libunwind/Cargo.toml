@@ -1,8 +1,16 @@
 [package]
 name = "build-libunwind"
+# TODO: Remove version and publish fields once 1.75 is stable.
+version = "0.0.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 anyhow = "1"
 cc = "1"
 fs-err = "2"
+
+[lints.rust]
+rust_2018_idioms = "warn"
+single_use_lifetimes = "warn"
+unsafe_op_in_unsafe_fn = "warn"

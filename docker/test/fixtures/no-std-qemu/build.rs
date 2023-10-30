@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-#![warn(rust_2018_idioms)]
-
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=int_c.c");
@@ -15,9 +13,6 @@ fn main() {
     }
     #[cfg(feature = "cpp")]
     {
-        cc::Build::new()
-            .cpp(true)
-            .file("int_cpp.cpp")
-            .compile("libint_cpp.a");
+        cc::Build::new().cpp(true).file("int_cpp.cpp").compile("libint_cpp.a");
     }
 }

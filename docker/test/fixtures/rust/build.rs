@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-#![warn(rust_2018_idioms)]
-
 use std::env;
 
 fn main() {
@@ -30,10 +28,7 @@ fn main() {
     }
 
     if cfg!(feature = "cpp") {
-        cc::Build::new()
-            .cpp(true)
-            .file("hello_cpp.cpp")
-            .compile("libhello_cpp.a");
+        cc::Build::new().cpp(true).file("hello_cpp.cpp").compile("libhello_cpp.a");
     } else {
         println!(
             "cargo:warning={}: C++ from Rust for '{target}' is currently disabled",

@@ -10,3 +10,8 @@ cpp = []
 cc = "1"
 # TODO: 0.1.49 fails for android
 cmake = "=0.1.48"
+
+[lints.rust]
+rust_2018_idioms = "warn"
+single_use_lifetimes = "warn"
+unsafe_op_in_unsafe_fn = "warn"
