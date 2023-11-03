@@ -82,6 +82,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] mipsel-unknown-linux-gnu
 - [x] mipsel-unknown-linux-musl
 - [x] mipsel-unknown-linux-uclibc
+- [ ] mipsel-unknown-netbsd
 - [ ] mipsel-unknown-none
 - [ ] mipsisa32r6-unknown-linux-gnu
 - [ ] mipsisa32r6el-unknown-linux-gnu

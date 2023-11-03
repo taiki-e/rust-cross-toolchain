@@ -134,6 +134,7 @@ netbsd_targets=(
     armv7-unknown-netbsd-eabihf # tier3
     i586-unknown-netbsd # tier3
     i686-unknown-netbsd # tier3
+    mipsel-unknown-netbsd # tier3
     powerpc-unknown-netbsd # tier3
     riscv64gc-unknown-netbsd # tier3
     sparc64-unknown-netbsd # tier3
