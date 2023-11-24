@@ -92,6 +92,7 @@ android_targets=(
 )
 macos_targets=(
     aarch64-apple-darwin
+    arm64e-apple-darwin # tier3
     i686-apple-darwin # tier3
     x86_64-apple-darwin
     x86_64h-apple-darwin # tier3
@@ -100,6 +101,7 @@ ios_targets=(
     aarch64-apple-ios
     aarch64-apple-ios-macabi # tier3
     aarch64-apple-ios-sim
+    arm64e-apple-ios # tier3
     armv7s-apple-ios # tier3
     i386-apple-ios # tier3
     x86_64-apple-ios
@@ -134,6 +136,7 @@ netbsd_targets=(
     armv7-unknown-netbsd-eabihf # tier3
     i586-unknown-netbsd # tier3
     i686-unknown-netbsd # tier3
+    mipsel-unknown-netbsd # tier3
     powerpc-unknown-netbsd # tier3
     riscv64gc-unknown-netbsd # tier3
     sparc64-unknown-netbsd # tier3
@@ -154,7 +157,6 @@ dragonfly_targets=(
 solaris_targets=(
     sparcv9-sun-solaris
     x86_64-pc-solaris
-    x86_64-sun-solaris
 )
 illumos_targets=(
     x86_64-unknown-illumos
@@ -184,7 +186,6 @@ wasi_targets=(
     wasm32-wasi-preview1-threads
 )
 emscripten_targets=(
-    asmjs-unknown-emscripten
     wasm32-unknown-emscripten
 )
 wasm_unknown_targets=(
