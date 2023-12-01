@@ -9,7 +9,7 @@ ARG UBUNTU_VERSION=20.04
 # https://github.com/WebAssembly/wasi-sdk/releases
 ARG WASI_SDK_VERSION=20.0
 # https://github.com/bytecodealliance/wasmtime/releases
-ARG WASMTIME_VERSION=14.0.3
+ARG WASMTIME_VERSION=15.0.0
 
 FROM ghcr.io/taiki-e/downloader as wasi-sdk
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
