@@ -17,6 +17,7 @@ linux_gnu_targets=(
     armv7-unknown-linux-gnueabi
     armv7-unknown-linux-gnueabihf
     # csky-unknown-linux-gnuabiv2 # tier3
+    # csky-unknown-linux-gnuabiv2hf # tier3
     i586-unknown-linux-gnu
     i686-unknown-linux-gnu
     loongarch64-unknown-linux-gnu
@@ -65,6 +66,7 @@ linux_musl_targets=(
     riscv64gc-unknown-linux-musl         # tier3
     s390x-unknown-linux-musl             # tier3
     thumbv7neon-unknown-linux-musleabihf # tier3
+    # x86_64-unikraft-linux-musl # tier3, TODO
     x86_64-unknown-linux-musl
 )
 # Linux (uClibc)
@@ -79,6 +81,7 @@ linux_uclibc_targets=(
 linux_ohos_targets=(
     # aarch64-unknown-linux-ohos # tier3
     # armv7-unknown-linux-ohos # tier3
+    # x86_64-unknown-linux-ohos # tier3
 )
 # Android
 android_targets=(
@@ -86,12 +89,14 @@ android_targets=(
     arm-linux-androideabi
     armv7-linux-androideabi
     i686-linux-android
+    # riscv64-linux-android # tier3, TODO
     thumbv7neon-linux-androideabi
     x86_64-linux-android
 )
 # macOS
 macos_targets=(
     # aarch64-apple-darwin
+    # arm64e-apple-darwin # tier3
     # i686-apple-darwin # tier3
     # x86_64-apple-darwin
     # x86_64h-apple-darwin # tier3
@@ -101,7 +106,7 @@ ios_targets=(
     # aarch64-apple-ios
     # aarch64-apple-ios-macabi # tier3
     # aarch64-apple-ios-sim
-    # armv7-apple-ios # tier3
+    # arm64e-apple-ios # tier3
     # armv7s-apple-ios # tier3
     # i386-apple-ios # tier3
     # x86_64-apple-ios
@@ -110,6 +115,7 @@ ios_targets=(
 # tvOS
 tvos_targets=(
     # aarch64-apple-tvos # tier3
+    # aarch64-apple-tvos-sim # tier3
     # x86_64-apple-tvos # tier3
 )
 # watchOS
@@ -137,8 +143,10 @@ netbsd_targets=(
     # aarch64_be-unknown-netbsd # tier3 # TODO: added in NetBSD 10 (currently pre-release)
     armv6-unknown-netbsd-eabihf # tier3
     armv7-unknown-netbsd-eabihf # tier3
-    i686-unknown-netbsd         # tier3
-    powerpc-unknown-netbsd      # tier3
+    # i586-unknown-netbsd         # tier3, TODO
+    i686-unknown-netbsd # tier3
+    # mipsel-unknown-netbsd       # tier3, TODO
+    powerpc-unknown-netbsd # tier3
     # riscv64gc-unknown-netbsd # tier3 # TODO: not found in NetBSD 8/9/10
     sparc64-unknown-netbsd # tier3
     x86_64-unknown-netbsd
@@ -161,7 +169,6 @@ dragonfly_targets=(
 solaris_targets=(
     sparcv9-sun-solaris
     x86_64-pc-solaris
-    x86_64-sun-solaris
 )
 # illumos
 illumos_targets=(
@@ -192,10 +199,10 @@ windows_gnu_targets=(
 # WASI
 wasi_targets=(
     wasm32-wasi
+    # wasm32-wasi-preview1-threads # TODO
 )
 # Emscripten
 emscripten_targets=(
-    # asmjs-unknown-emscripten # TODO: wasm-validator error since around nightly-2023-03-26
     wasm32-unknown-emscripten
 )
 # WebAssembly (unknown OS)
@@ -232,12 +239,17 @@ haiku_targets=(
 # Hermit
 hermit_targets=(
     # aarch64-unknown-hermit # tier3
+    # riscv64gc-unknown-hermit # tier3
     # x86_64-unknown-hermit # tier3
 )
 # Horizon
 horizon_targets=(
     # aarch64-nintendo-switch-freestanding # tier3
     # armv6k-nintendo-3ds # tier3
+)
+# GNU Hurd
+l4re_targets=(
+    # i686-unknown-hurd-gnu # tier3
 )
 # L4Re
 l4re_targets=(
@@ -271,6 +283,9 @@ solid_asp3_targets=(
     # aarch64-kmc-solid_asp3 # tier3
     # armv7a-kmc-solid_asp3-eabi # tier3
     # armv7a-kmc-solid_asp3-eabihf # tier3
+)
+teeos_targets=(
+    # aarch64-unknown-teeos # tier3
 )
 # UEFI
 uefi_targets=(
@@ -309,8 +324,8 @@ none_targets=(
     # avr-unknown-gnu-atmega328 # tier3
     # bpfeb-unknown-none # tier3
     # bpfel-unknown-none # tier3
-    # loongarch64-unknown-none # tier3
-    # loongarch64-unknown-none-softfloat # tier3
+    # loongarch64-unknown-none
+    # loongarch64-unknown-none-softfloat
     # mipsel-unknown-none # tier3
     # msp430-none-elf # tier3
     riscv32i-unknown-none-elf
@@ -319,6 +334,7 @@ none_targets=(
     riscv32imc-unknown-none-elf
     riscv64gc-unknown-none-elf
     riscv64imac-unknown-none-elf
+    # sparc-unknown-none-elf # tier3
     # thumbv4t-none-eabi # tier3
     thumbv5te-none-eabi # tier3
     thumbv6m-none-eabi
@@ -358,6 +374,7 @@ targets=(
     ${haiku_targets[@]+"${haiku_targets[@]}"}
     ${hermit_targets[@]+"${hermit_targets[@]}"}
     ${horizon_targets[@]+"${horizon_targets[@]}"}
+    ${hurd_targets[@]+"${hurd_targets[@]}"}
     ${l4re_targets[@]+"${l4re_targets[@]}"}
     ${nto_targets[@]+"${nto_targets[@]}"}
     ${psp_targets[@]+"${psp_targets[@]}"}
@@ -365,6 +382,7 @@ targets=(
     ${redox_targets[@]+"${redox_targets[@]}"}
     ${sgx_targets[@]+"${sgx_targets[@]}"}
     ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
+    ${teeos_targets[@]+"${teeos_targets[@]}"}
     ${uefi_targets[@]+"${uefi_targets[@]}"}
     ${vita_targets[@]+"${vita_targets[@]}"}
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}

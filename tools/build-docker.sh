@@ -358,7 +358,7 @@ for target in "${targets[@]}"; do
             case "${target}" in
                 # TODO: aarch64
                 # i686-pc-windows-gnu needs to build gcc from source.
-                i686-pc-windows-gnu | aarch64*)
+                i686-pc-windows-gnu | aarch64* | arm64*)
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;

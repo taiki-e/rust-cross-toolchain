@@ -35,7 +35,6 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] armv7a-none-eabi
 - [x] armv7r-none-eabi
 - [x] armv7r-none-eabihf
-- [ ] asmjs-unknown-emscripten
 - [ ] i586-pc-windows-msvc
 - [x] i586-unknown-linux-gnu
 - [x] i586-unknown-linux-musl
@@ -82,7 +81,6 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] x86_64-pc-solaris
 - [x] x86_64-pc-windows-gnu
 - [ ] x86_64-pc-windows-msvc
-- [x] x86_64-sun-solaris
 - [x] x86_64-unknown-freebsd
 - [ ] x86_64-unknown-fuchsia
 - [x] x86_64-unknown-illumos

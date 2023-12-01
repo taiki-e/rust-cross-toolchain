@@ -64,7 +64,6 @@ jobs:
           # Solaris
           - target: sparcv9-sun-solaris
           - target: x86_64-pc-solaris
-          - target: x86_64-sun-solaris
 
           # illumos
           - target: x86_64-unknown-illumos

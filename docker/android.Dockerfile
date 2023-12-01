@@ -44,7 +44,7 @@ esac
 # Lowest API level
 api_level=19
 case "${RUST_TARGET}" in
-    x86_64* | aarch64*) api_level=21 ;;
+    x86_64* | aarch64* | arm64*) api_level=21 ;;
 esac
 echo "${cc_target}${api_level}" >/CC_TARGET
 EOF
@@ -66,7 +66,7 @@ RUN <<EOF
 mkdir -p /system/{bin,lib,lib64}
 # TODO: use 21 instead of 24 for 32-bit targets: libc: error getting old personality value: Operation not permitted
 case "${RUST_TARGET}" in
-    aarch64*)
+    aarch64* | arm64*)
         lib_target=aarch64-linux-android
         arch=arm64-v8a
         img_api_level=24
@@ -95,7 +95,7 @@ esac
 file="${arch}-${img_api_level}_${revision}.zip"
 prefix=''
 case "${RUST_TARGET}" in
-    x86_64* | aarch64*) prefix='64' ;;
+    x86_64* | aarch64* | arm64*) prefix='64' ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused -O "https://dl.google.com/android/repository/sys-img/android/${file}"
 unzip -q "${file}" "${arch}/system.img"

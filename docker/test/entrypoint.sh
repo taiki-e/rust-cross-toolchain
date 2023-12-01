@@ -184,12 +184,6 @@ EOF
         ;;
 esac
 case "${RUST_TARGET}" in
-    asmjs-unknown-emscripten)
-        # emcc: error: wasm2js does not support source maps yet (debug in wasm for now)
-        cat >>"${env_path}" <<EOF
-export RUSTFLAGS="-C debuginfo=0 \${RUSTFLAGS:-}"
-EOF
-        ;;
     mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc)
         case "${cc}" in
             gcc)
@@ -591,7 +585,7 @@ EOF
                 ;;
         esac
         case "${RUST_TARGET}" in
-            aarch64*)
+            aarch64* | arm64*)
                 # Refs: https://gitlab.com/Linaro/windowsonarm/woa-linux/-/blob/master/containers/unified.Dockerfile
                 wine_root=/opt/wine-arm64
                 wine_exe="${wine_root}"/bin/wine

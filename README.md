@@ -241,7 +241,6 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 - `sparcv9-sun-solaris`
 - `x86_64-pc-solaris`
-- `x86_64-sun-solaris`
 
 ### illumos
 

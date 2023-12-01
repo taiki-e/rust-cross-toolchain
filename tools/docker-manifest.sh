@@ -245,7 +245,7 @@ for target in "${targets[@]}"; do
             case "${target}" in
                 # TODO: aarch64
                 # i686-pc-windows-gnu needs to build gcc from source.
-                i686-pc-windows-gnu | aarch64*) arches=(amd64) ;;
+                i686-pc-windows-gnu | aarch64* | arm64*) arches=(amd64) ;;
             esac
             docker_manifest "${target}"
             ;;

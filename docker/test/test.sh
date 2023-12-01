@@ -198,8 +198,7 @@ export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
 
 case "${RUST_TARGET}" in
     wasm*) exe=".wasm" ;;
-    asmjs-*) exe=".js" ;;
-    *-windows-*) exe=".exe" ;;
+    *-windows*) exe=".exe" ;;
     *) exe="" ;;
 esac
 case "${RUST_TARGET}" in
@@ -311,7 +310,7 @@ if [[ -z "${no_std}" ]]; then
                         export WINEPREFIX=/tmp/wine
                         mkdir -p "${WINEPREFIX}"
                         case "${RUST_TARGET}" in
-                            aarch64*) wineboot=/opt/wine-arm64/bin/wineserver ;;
+                            aarch64* | arm64*) wineboot=/opt/wine-arm64/bin/wineserver ;;
                             *) wineboot=wineboot ;;
                         esac
                         if [[ ! -e /WINEBOOT ]]; then
@@ -589,7 +588,7 @@ else
                     case "${RUST_TARGET}" in
                         # TODO: As of qemu 7.2, qemu-system-arm doesn't support Cortex-R machine.
                         armv7r* | armebv7r*) continue ;;
-                        thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | riscv*)
+                        thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | arm64* | riscv*)
                             _linker=link.x
                             target_rustflags+=" -C link-arg=-T${_linker}"
                             ;;
@@ -648,7 +647,7 @@ fi
 # Check the compiled binaries.
 x file "${out_dir}"/*
 case "${RUST_TARGET}" in
-    wasm* | asmjs-* | *-windows-*) ;;
+    wasm* | *-windows*) ;;
     *)
         x readelf --file-header "${out_dir}"/* || true
         x readelf --arch-specific "${out_dir}"/* || true
@@ -1066,7 +1065,6 @@ case "${RUST_TARGET}" in
             fi
         done
         ;;
-    asmjs-*) ;;
     *-windows-gnu*)
         for bin in "${out_dir}"/*; do
             if [[ -x "${bin}" ]]; then
