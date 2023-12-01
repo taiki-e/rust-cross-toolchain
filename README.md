@@ -164,13 +164,13 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.1 | linux (any arch, any libc) |
-| `i686-unknown-freebsd` | 12.4 (default), 13.1 | linux (any arch, any libc) |
-| `powerpc-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
-| `powerpc64-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
-| `powerpc64le-unknown-freebsd` (tier3) | 13.1 | linux (any arch, any libc) |
-| `riscv64gc-unknown-freebsd` (tier3) | 13.1 | x86_64 linux (any libc) |
-| `x86_64-unknown-freebsd` | 12.4 (default), 13.1 | linux (any arch, any libc) |
+| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.2, 14.0 | linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 12.4 (default), 13.2, 14.0 | linux (any arch, any libc) |
+| `powerpc-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | linux (any arch, any libc) |
+| `powerpc64-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | linux (any arch, any libc) |
+| `powerpc64le-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | linux (any arch, any libc) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | x86_64 linux (any libc) |
+| `x86_64-unknown-freebsd` | 12.4 (default), 13.2, 14.0 | linux (any arch, any libc) |
 
 ### NetBSD
 
