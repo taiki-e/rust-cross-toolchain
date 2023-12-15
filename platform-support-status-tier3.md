@@ -69,6 +69,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] i686-unknown-openbsd
 - [ ] i686-uwp-windows-gnu
 - [ ] i686-uwp-windows-msvc
+- [ ] i686-win7-windows-msvc
 - [ ] i686-wrs-vxworks
 - [ ] m68k-unknown-linux-gnu
 - [x] mips-unknown-linux-gnu
@@ -144,5 +145,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] x86_64-unknown-openbsd
 - [ ] x86_64-uwp-windows-gnu
 - [ ] x86_64-uwp-windows-msvc
+- [ ] x86_64-win7-windows-msvc
 - [ ] x86_64-wrs-vxworks
 - [ ] x86_64h-apple-darwin
