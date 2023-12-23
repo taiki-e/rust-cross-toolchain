@@ -120,6 +120,7 @@ tvos_targets=(
 )
 # watchOS
 watchos_targets=(
+    # aarch64-apple-watchos # tier3
     # aarch64-apple-watchos-sim # tier3
     # arm64_32-apple-watchos # tier3
     # armv7k-apple-watchos # tier3
@@ -181,10 +182,12 @@ windows_msvc_targets=(
     # i586-pc-windows-msvc
     # i686-pc-windows-msvc
     # i686-uwp-windows-msvc # tier3
+    # i686-win7-windows-msvc # tier3
     # thumbv7a-pc-windows-msvc # tier3
     # thumbv7a-uwp-windows-msvc # tier3
     # x86_64-pc-windows-msvc
     # x86_64-uwp-windows-msvc # tier3
+    # x86_64-win7-windows-msvc # tier3
 )
 # Windows (MinGW)
 windows_gnu_targets=(
@@ -324,6 +327,7 @@ none_targets=(
     # avr-unknown-gnu-atmega328 # tier3
     # bpfeb-unknown-none # tier3
     # bpfel-unknown-none # tier3
+    # hexagon-unknown-none-elf # tier3
     # loongarch64-unknown-none
     # loongarch64-unknown-none-softfloat
     # mipsel-unknown-none # tier3
@@ -331,6 +335,7 @@ none_targets=(
     riscv32i-unknown-none-elf
     riscv32im-unknown-none-elf # tier3
     riscv32imac-unknown-none-elf
+    # riscv32imafc-unknown-none-elf # TODO: mis-matched ISA version 2.0 for 'i' extension, the output version is 2.1
     riscv32imc-unknown-none-elf
     riscv64gc-unknown-none-elf
     riscv64imac-unknown-none-elf
