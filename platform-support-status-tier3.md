@@ -18,6 +18,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] aarch64-pc-windows-gnullvm
 - [x] aarch64-unknown-freebsd
 - [ ] aarch64-unknown-hermit
+- [ ] aarch64-unknown-illumos
 - [ ] aarch64-unknown-linux-gnu_ilp32
 - [ ] aarch64-unknown-linux-ohos
 - [x] aarch64-unknown-netbsd
