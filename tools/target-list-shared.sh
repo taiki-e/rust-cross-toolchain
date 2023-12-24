@@ -173,6 +173,7 @@ solaris_targets=(
 )
 # illumos
 illumos_targets=(
+    # aarch64-unknown-illumos # tier3, TODO: https://github.com/rust-lang/rust/pull/112936#issuecomment-1867038646
     x86_64-unknown-illumos
 )
 # Windows (MSVC)
