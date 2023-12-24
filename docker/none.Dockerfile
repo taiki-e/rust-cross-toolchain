@@ -156,7 +156,8 @@ ARG RUST_TARGET
 COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test
-COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
+# TODO: "qemu-armeb: Error mapping file: Operation not permitted" error in 8.2
+COPY --from=ghcr.io/taiki-e/qemu-user:8.1 /usr/bin/qemu-* /usr/bin/
 
 FROM test-base as test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
