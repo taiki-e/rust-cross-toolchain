@@ -1,9 +1,6 @@
 [package]
 name = "build-libunwind"
-# TODO: Remove version and publish fields once 1.75 is stable.
-version = "0.0.0"
 edition = "2021"
-publish = false
 
 [dependencies]
 anyhow = "1"
