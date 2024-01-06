@@ -380,8 +380,8 @@ EOF
                         case "${RUST_TARGET}" in
                             hexagon-*)
                                 cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtbegin-hexagon.o "${self_contained}"/crtbegin.o
-                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtend-hexagon.o "${self_contained}"/crtend.o
+                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib/linux"/clang_rt.crtbegin-hexagon.o "${self_contained}"/crtbegin.o
+                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib/linux"/clang_rt.crtend-hexagon.o "${self_contained}"/crtend.o
                                 ;;
                             *)
                                 cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
