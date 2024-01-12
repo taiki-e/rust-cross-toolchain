@@ -204,6 +204,7 @@ cuda_targets=(
 )
 espidf_targets=(
     riscv32imac-esp-espidf # tier3
+    riscv32imafc-esp-espidf # tier3
     riscv32imc-esp-espidf # tier3
 )
 fuchsia_targets=(
