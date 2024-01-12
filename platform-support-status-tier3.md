@@ -114,6 +114,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] riscv32im-unknown-none-elf
 - [ ] riscv32imac-esp-espidf
 - [ ] riscv32imac-unknown-xous-elf
+- [ ] riscv32imafc-esp-espidf
 - [ ] riscv32imc-esp-espidf
 - [ ] riscv64-linux-android
 - [x] riscv64gc-unknown-freebsd
