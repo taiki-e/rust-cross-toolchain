@@ -1,8 +1,8 @@
-diff --git a/src/sys/unix/thread.rs b/src/sys/unix/thread.rs
-index 29db946..5b29775 100644
---- a/src/sys/unix/thread.rs
-+++ b/src/sys/unix/thread.rs
-@@ -384,7 +384,7 @@ pub fn available_parallelism() -> io::Result<NonZeroUsize> {
+diff --git a/src/sys/pal/unix/thread.rs b/src/sys/pal/unix/thread.rs
+index 7e4a01a..ed769d9 100644
+--- a/src/sys/pal/unix/thread.rs
++++ b/src/sys/pal/unix/thread.rs
+@@ -388,7 +388,7 @@ pub fn available_parallelism() -> io::Result<NonZeroUsize> {
                      if !set.is_null() {
                          let mut count: usize = 0;
                          if libc::pthread_getaffinity_np(libc::pthread_self(), libc::_cpuset_size(set), set) == 0 {
@@ -11,22 +11,20 @@ index 29db946..5b29775 100644
                                  match libc::_cpuset_isset(i, set) {
                                      -1 => break,
                                      0 => continue,
-diff --git a/src/sys/unix/thread_parking/netbsd.rs b/src/sys/unix/thread_parking/netbsd.rs
-index 3be0812..7c4ae97 100644
---- a/src/sys/unix/thread_parking/netbsd.rs
-+++ b/src/sys/unix/thread_parking/netbsd.rs
-@@ -1,4 +1,4 @@
--use crate::ffi::{c_int, c_void};
-+use crate::ffi::{c_int, c_long, c_void};
- use crate::ptr;
- use crate::time::Duration;
- use libc::{_lwp_self, clockid_t, lwpid_t, time_t, timespec, CLOCK_MONOTONIC};
-@@ -34,7 +34,7 @@ pub fn park_timeout(dur: Duration, hint: usize) {
+diff --git a/src/sys/pal/unix/thread_parking/netbsd.rs b/src/sys/pal/unix/thread_parking/netbsd.rs
+index 3be0812..90f809a 100644
+--- a/src/sys/pal/unix/thread_parking/netbsd.rs
++++ b/src/sys/pal/unix/thread_parking/netbsd.rs
+@@ -34,7 +34,11 @@ pub fn park_timeout(dur: Duration, hint: usize) {
          // Saturate so that the operation will definitely time out
          // (even if it is after the heat death of the universe).
          tv_sec: dur.as_secs().try_into().ok().unwrap_or(time_t::MAX),
 -        tv_nsec: dur.subsec_nanos().into(),
-+        tv_nsec: dur.subsec_nanos().try_into().ok().unwrap_or(c_long::MAX),
++        tv_nsec: dur
++            .subsec_nanos()
++            .try_into()
++            .ok()
++            .unwrap_or(libc::c_long::MAX),
      };
 
      // Timeout needs to be mutable since it is modified on NetBSD 9.0 and
