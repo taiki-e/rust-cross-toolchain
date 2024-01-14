@@ -85,9 +85,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      - uses: taiki-e/github-actions/checkout@main
       - uses: taiki-e/github-actions/free-device-space@main
       - uses: taiki-e/github-actions/setup-docker@main
       - run: |
