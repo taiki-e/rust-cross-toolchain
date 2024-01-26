@@ -7,7 +7,7 @@
 ARG UBUNTU_VERSION=20.04
 
 # https://github.com/WebAssembly/wasi-sdk/releases
-ARG WASI_SDK_VERSION=20.0
+ARG WASI_SDK_VERSION=21.0
 # https://github.com/bytecodealliance/wasmtime/releases
 ARG WASMTIME_VERSION=17.0.0
 
