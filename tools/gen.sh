@@ -63,6 +63,7 @@ known_target_group=(
     vita
     vxworks
     xous
+    zkvm
     none
 )
 

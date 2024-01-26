@@ -258,6 +258,7 @@ for target in "${targets[@]}"; do
                 # https://www.freebsd.org/security/unsupported
                 # https://endoflife.date/freebsd
                 # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
+                # TODO: 12.4 was EoL on 2023-12-31.
                 freebsd_versions=("12.4" "13.2" "14.0")
             fi
             default_freebsd_version="12"

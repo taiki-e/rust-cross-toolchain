@@ -111,6 +111,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] powerpc64le-unknown-linux-musl
 - [x] riscv32gc-unknown-linux-gnu
 - [ ] riscv32gc-unknown-linux-musl
+- [ ] riscv32im-risc0-zkvm-elf
 - [x] riscv32im-unknown-none-elf
 - [ ] riscv32imac-esp-espidf
 - [ ] riscv32imac-unknown-xous-elf
@@ -133,6 +134,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
 - [x] thumbv7neon-unknown-linux-musleabihf
+- [ ] wasm32-wasi-preview2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos

@@ -188,6 +188,7 @@ windows_gnu_targets=(
 wasi_targets=(
     wasm32-wasi
     wasm32-wasi-preview1-threads
+    wasm32-wasi-preview2 # tier3
 )
 emscripten_targets=(
     wasm32-unknown-emscripten
@@ -279,6 +280,9 @@ vxworks_targets=(
 xous_targets=(
     riscv32imac-unknown-xous-elf # tier3
 )
+zkvm_targets=(
+    riscv32im-risc0-zkvm-elf # tier3
+)
 none_targets=(
     aarch64-unknown-none
     aarch64-unknown-none-softfloat
@@ -358,5 +362,6 @@ targets=(
     ${vita_targets[@]+"${vita_targets[@]}"}
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}
     ${xous_targets[@]+"${xous_targets[@]}"}
+    ${zkvm_targets[@]+"${zkvm_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
 )
