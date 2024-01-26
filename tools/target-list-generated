@@ -188,6 +188,7 @@ windows_gnu_targets=(
 wasi_targets=(
     wasm32-wasi
     wasm32-wasi-preview1-threads
+    wasm32-wasi-preview2 # tier3
 )
 emscripten_targets=(
     wasm32-unknown-emscripten
@@ -317,6 +318,9 @@ none_targets=(
     thumbv8m.main-none-eabihf
     x86_64-unknown-none
 )
+zkvm_targets=(
+    riscv32im-risc0-zkvm-elf # tier3
+)
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
@@ -359,4 +363,5 @@ targets=(
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}
     ${xous_targets[@]+"${xous_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
+    ${zkvm_targets[@]+"${zkvm_targets[@]}"}
 )
