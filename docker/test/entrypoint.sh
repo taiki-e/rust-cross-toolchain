@@ -461,7 +461,7 @@ EOF
                     # Cortex-M3 (ARMv7-M): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7m_none_eabi.rs
                     thumbv7m-none-eabi) qemu_cpu=cortex-m3 ;;
                     # Cortex-M23 (ARMv8-M Baseline): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_base_none_eabi.rs
-                    # TODO: As of QEMU 8.0, QEMU doesn't support -cpu cortex-m23
+                    # TODO: As of QEMU 8.2, QEMU doesn't support -cpu cortex-m23
                     thumbv8m.base-none-eabi) qemu_cpu=cortex-m33 ;;
                     # Cortex-M33 (ARMV8-M Mainline):
                     # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_main_none_eabi.rs
@@ -475,7 +475,7 @@ EOF
                     thumb*) qemu_machine=lm3s6965evb ;;
                     # Cortex-a
                     armv7a-*) qemu_machine=xilinx-zynq-a9 ;;
-                    # TODO: As of qemu 7.2, qemu-system-arm doesn't support Cortex-R machine.
+                    # TODO: As of QEMU 7.2, qemu-system-arm doesn't support Cortex-R machine.
                     arm*v7r-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac

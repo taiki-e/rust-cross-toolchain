@@ -586,7 +586,7 @@ else
                 qemu-system)
                     cargo_args+=(--features qemu-system)
                     case "${RUST_TARGET}" in
-                        # TODO: As of qemu 7.2, qemu-system-arm doesn't support Cortex-R machine.
+                        # TODO: As of QEMU 7.2, qemu-system-arm doesn't support Cortex-R machine.
                         armv7r* | armebv7r*) continue ;;
                         thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | arm64* | riscv*)
                             _linker=link.x

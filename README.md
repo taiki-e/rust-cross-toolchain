@@ -37,7 +37,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | glibc | GCC | host |
 | ------ | ----- | --- | ---- |
@@ -88,7 +88,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/linux-musl.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | host |
 | ------ | ---- |
@@ -119,7 +119,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/linux-uclibc.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `armv5te-unknown-linux-uclibceabi` (tier3)
 - `armv7-unknown-linux-uclibceabi` (tier3)
@@ -139,7 +139,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/android.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | API level |
 | ------ | ------- |
@@ -160,7 +160,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/freebsd.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | version | host |
 | ------ | ------- | ---- |
@@ -182,7 +182,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/netbsd.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | version |
 | ------ | ------- |
@@ -205,7 +205,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/openbsd.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | version | host |
 | ------ | ------- | ---- |
@@ -225,7 +225,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/dragonfly.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `x86_64-unknown-dragonfly` (tier3)
 
@@ -237,7 +237,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/solaris.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `sparcv9-sun-solaris`
 - `x86_64-pc-solaris`
@@ -250,7 +250,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ([Dockerfile](docker/illumos.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `x86_64-unknown-illumos`
 
@@ -267,7 +267,7 @@ TODO: I guess libc from https://static.redox-os.org/toolchain is for the latest 
 https://gitlab.redox-os.org/redox-os/redox/-/releases
 -->
 
-**Supported targets**:
+**Supported targets:**
 
 - `x86_64-unknown-redox`
 
@@ -283,7 +283,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 ([Dockerfile](docker/wasi.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `wasm32-wasi`
 
@@ -295,7 +295,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 ([Dockerfile](docker/emscripten.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `wasm32-unknown-emscripten`
 
@@ -314,7 +314,7 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 
 ([Dockerfile](docker/windows-gnu.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | host |
 | ------ | ---- |
@@ -334,7 +334,7 @@ Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20231128
 
 ([Dockerfile](docker/windows-gnu.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 - `aarch64-pc-windows-gnullvm`
 - `i686-pc-windows-gnullvm`
@@ -350,7 +350,7 @@ Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20231128
 
 ([Dockerfile](docker/none.Dockerfile))
 
-**Supported targets**:
+**Supported targets:**
 
 | target | GCC | run | host |
 | ------ | --- | ---- | ---- |
