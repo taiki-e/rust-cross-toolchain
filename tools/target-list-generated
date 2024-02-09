@@ -188,7 +188,6 @@ windows_gnu_targets=(
 wasi_targets=(
     wasm32-wasi
     wasm32-wasi-preview1-threads
-    wasm32-wasi-preview2 # tier3
 )
 emscripten_targets=(
     wasm32-unknown-emscripten
@@ -294,6 +293,7 @@ none_targets=(
     armv7a-none-eabihf # tier3
     armv7r-none-eabi
     armv7r-none-eabihf
+    armv8r-none-eabihf # tier3
     avr-unknown-gnu-atmega328 # tier3
     bpfeb-unknown-none # tier3
     bpfel-unknown-none # tier3

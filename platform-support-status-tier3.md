@@ -54,6 +54,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] armv7a-none-eabihf
 - [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
+- [ ] armv8r-none-eabihf
 - [ ] avr-unknown-gnu-atmega328
 - [ ] bpfeb-unknown-none
 - [ ] bpfel-unknown-none
@@ -134,7 +135,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
 - [x] thumbv7neon-unknown-linux-musleabihf
-- [ ] wasm32-wasi-preview2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos
