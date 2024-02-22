@@ -38,8 +38,8 @@ else
 fi
 
 # https://github.com/rust-lang/rust/blob/HEAD/Cargo.lock
-libc_version=0.2.150
-compiler_builtins_version=0.1.103
+libc_version=0.2.153
+compiler_builtins_version=0.1.108
 sysroot=$(rustc --print sysroot)
 for patch in /test-base/patches/*.diff; do
     set +x
