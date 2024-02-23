@@ -8,7 +8,7 @@ cpp = []
 
 [build-dependencies]
 # https://github.com/rust-lang/cc-rs/issues/959
-cc = "=1.0.83"
+cc = "=1.0.86"
 # TODO: 0.1.49 fails for android
 cmake = "=0.1.48"
 
