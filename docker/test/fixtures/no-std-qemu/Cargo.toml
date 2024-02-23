@@ -10,7 +10,7 @@ qemu-user = ["semihosting-no-std-test-rt/qemu-user"]
 
 [build-dependencies]
 # https://github.com/rust-lang/cc-rs/issues/959
-cc = "=1.0.83"
+cc = "=1.0.86"
 
 [dependencies]
 semihosting = { version = "0.1", features = ["stdio", "panic-handler"] }
