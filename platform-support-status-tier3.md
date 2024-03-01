@@ -135,6 +135,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
 - [x] thumbv7neon-unknown-linux-musleabihf
+- [ ] wasm32-wasip2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos
