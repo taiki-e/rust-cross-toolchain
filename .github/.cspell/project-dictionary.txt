@@ -36,6 +36,7 @@ Icelake
 INLINES
 isnan
 isystem
+keyrings
 keyserver
 lclang
 LDFLAGS
@@ -134,6 +135,7 @@ virt
 wasmtime
 wchar
 WINEBOOT
+winehq
 WINEPATH
 WINEPREFIX
 wineserver

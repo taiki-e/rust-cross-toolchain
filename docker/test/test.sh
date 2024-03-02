@@ -259,20 +259,24 @@ case "${RUST_TARGET}" in
     #         /usr/src/lib/libm/src/s_fmin.c:35: undefined reference to `__isnan'
     sparc64-unknown-openbsd) no_build_test=1 ;;
 esac
-# Whether or not to run the test.
-no_run_test=""
-case "${RUST_TARGET}" in
-    # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
-    powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
-esac
 # Whether or not to run the compiled binaries.
 no_run="1"
 case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
+    # TODO(windows-gnu): https://github.com/rust-lang/rust/pull/121317
+    # wine: Call from 00006FFFFFC4FCF8 to unimplemented function KERNEL32.dll.WaitOnAddress, aborting
+    # wine: Call from 00006FFFFFC4FCF8 to unimplemented function KERNEL32.dll.WakeByAddressSingle, aborting
+    x86_64-pc-windows-gnu) ;;
     # TODO(redox):
     *-unknown-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
+esac
+# Whether or not to run the test.
+no_run_test=""
+case "${RUST_TARGET}" in
+    # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
+    powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
 esac
 
 build_mode=debug
@@ -1077,7 +1081,9 @@ case "${RUST_TARGET}" in
                 assert_file_info 'for MS Windows' "${bin}"
             else
                 case "${RUST_TARGET}" in
-                    aarch64-*) assert_file_info 'data' "${bin}" ;; # TODO: ?
+                    # TODO: on ubuntu 22.04+
+                    # aarch64-*) assert_file_info 'Aarch64 COFF object file' "${bin}" ;;
+                    aarch64-*) assert_file_info 'data' "${bin}" ;;
                     i686-*) assert_file_info 'Intel 80386 COFF object file' "${bin}" ;;
                     x86_64*) assert_file_info 'Intel amd64 COFF object file' "${bin}" ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;

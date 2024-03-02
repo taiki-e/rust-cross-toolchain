@@ -55,11 +55,19 @@ case "${dpkg_arch##*-}" in
         ;;
     *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
 esac
-# See https://wiki.winehq.org/Ubuntu when install the latest wine.
+# Install the latest wine: https://wiki.winehq.org/Ubuntu
+codename=$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')
+mkdir -pm755 /etc/apt/keyrings
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://dl.winehq.org/wine-builds/winehq.key \
+    | tee /etc/apt/keyrings/winehq-archive.key >/dev/null
+curl --proto '=https' --tlsv1.2 -fsSLR --retry 10 --retry-connrefused "https://dl.winehq.org/wine-builds/ubuntu/dists/${codename}/winehq-${codename}.sources" \
+    | tee "/etc/apt/sources.list.d/winehq-${codename}.sources" >/dev/null
 apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    wine-stable \
-    wine32 \
-    wine64
+    winehq-stable \
+# apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+#     wine-stable \
+#     wine32 \
+#     wine64
 wine --version
 EOF
 ARG RUST_TARGET
