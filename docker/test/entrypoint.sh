@@ -219,6 +219,13 @@ export CFLAGS_${rust_target_lower}="-march=armv7-a+vfpv3 -mfloat-abi=hard \${CFL
 export CXXFLAGS_${rust_target_lower}="-march=armv7-a+vfpv3 -mfloat-abi=hard \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
+    armv8r-none-eabihf)
+        # https://github.com/rust-lang/rust/blob/026b3b8e955e0571db39aa96fc9d7aba25cc4d66/compiler/rustc_target/src/spec/targets/armv8r_none_eabihf.rs
+        cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-march=armv8-r+fp-armv8,-fp64,-d32 -mfloat-abi=hard \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=armv8-r+fp-armv8,-fp64,-d32 -mfloat-abi=hard \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+        ;;
     aarch64-unknown-none-softfloat)
         # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L164-L165
         cat >>"${env_path}" <<EOF
@@ -446,6 +453,8 @@ EOF
                     # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7r_none_eabihf.rs
                     # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armebv7r_none_eabihf.rs
                     armv7r-none-eabihf | armebv7r-none-eabihf) qemu_cpu=cortex-r5f ;;
+                    # https://github.com/rust-lang/rust/blob/026b3b8e955e0571db39aa96fc9d7aba25cc4d66/compiler/rustc_target/src/spec/targets/armv8r_none_eabihf.rs
+                    armv8r-none-eabihf | armebv8r-none-eabihf) qemu_cpu=cortex-r52 ;;
                     # TODO: https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv4t_none_eabi.rs
                     # TODO: https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv4t_none_eabi.rs
                     armv4t-none-eabi | thumbv4t-none-eabi) ;; # TODO
@@ -476,7 +485,7 @@ EOF
                     # Cortex-a
                     armv7a-*) qemu_machine=xilinx-zynq-a9 ;;
                     # TODO: As of QEMU 7.2, qemu-system-arm doesn't support Cortex-R machine.
-                    arm*v7r-*) ;;
+                    arm*v[7-8]r-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;

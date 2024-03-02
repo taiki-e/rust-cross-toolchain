@@ -326,6 +326,7 @@ none_targets=(
     armv7a-none-eabihf # tier3
     armv7r-none-eabi
     armv7r-none-eabihf
+    armv8r-none-eabihf # tier3
     # avr-unknown-gnu-atmega328 # tier3
     # bpfeb-unknown-none # tier3
     # bpfel-unknown-none # tier3
