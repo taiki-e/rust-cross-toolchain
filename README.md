@@ -41,37 +41,37 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | glibc | GCC | host |
 | ------ | ----- | --- | ---- |
-| `aarch64-unknown-linux-gnu` | 2.27 (x86_64 host) / host (aarch64 host) | 7.4.0 (x86_64 host) / host (aarch64 host) | x86_64 linux (glibc 2.27+) |
-| `aarch64_be-unknown-linux-gnu` (tier3) | 2.31 | 10.2.1 | x86_64 linux (glibc 2.27+) |
-| `arm-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `arm-unknown-linux-gnueabihf` | 2.24 | 9.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `armeb-unknown-linux-gnueabi` (tier3) | 2.25 | 7.5.0 | x86_64 linux (glibc 2.27+) |
-| `armv5te-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv7-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv7-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `i586-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `i686-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `loongarch64-unknown-linux-gnu` | 2.36 | 13.0.0 | x86_64 linux (any libc) |
-| `mips-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mips64-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mips64el-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mipsel-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `mipsisa32r6-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
-| `mipsisa32r6el-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
-| `mipsisa64r6-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
-| `mipsisa64r6el-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 linux (glibc 2.31+) |
-| `powerpc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `powerpc-unknown-linux-gnuspe` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `powerpc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `powerpc64le-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `riscv32gc-unknown-linux-gnu` (tier3) | 2.33 | 11.1.0 | x86_64 linux (glibc 2.27+) |
-| `riscv64gc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `s390x-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `sparc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `sparc-unknown-linux-gnu` (tier3) | 2.27 | 7.4.0 | x86_64 linux (glibc 2.27+) |
-| `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
-| `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 linux (glibc 2.27+) |
-| `x86_64-unknown-linux-gnux32` | 2.27 | 7.4.0 | x86_64/aarch64 linux (glibc 2.27+) |
+| `aarch64-unknown-linux-gnu` | 2.27 (x86_64 host) / host (aarch64 host) | 7.4.0 (x86_64 host) / host (aarch64 host) | x86_64 Linux (glibc 2.27+) |
+| `aarch64_be-unknown-linux-gnu` (tier3) | 2.31 | 10.2.1 | x86_64 Linux (glibc 2.27+) |
+| `arm-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `arm-unknown-linux-gnueabihf` | 2.24 | 9.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armeb-unknown-linux-gnueabi` (tier3) | 2.25 | 7.5.0 | x86_64 Linux (glibc 2.27+) |
+| `armv5te-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv7-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv7-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `i586-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `i686-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `loongarch64-unknown-linux-gnu` | 2.36 | 13.0.0 | x86_64 Linux (any libc) |
+| `mips-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `mips64-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `mips64el-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `mipsel-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `mipsisa32r6-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
+| `mipsisa32r6el-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
+| `mipsisa64r6-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
+| `mipsisa64r6el-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
+| `powerpc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `powerpc-unknown-linux-gnuspe` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `powerpc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `powerpc64le-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `riscv32gc-unknown-linux-gnu` (tier3) | 2.33 | 11.1.0 | x86_64 Linux (glibc 2.27+) |
+| `riscv64gc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `s390x-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `sparc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `sparc-unknown-linux-gnu` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
+| `thumbv7neon-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `x86_64-unknown-linux-gnu` | host (x86_64 host) / 2.27 (aarch64 host) | host (x86_64 host) / 7.4.0 (aarch64 host) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `x86_64-unknown-linux-gnux32` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 
 [1] [Since nightly-2023-07-05](https://github.com/rust-lang/compiler-team/issues/648), mips{,el}-unknown-linux-gnu requires release mode for building std<br>
 
@@ -82,7 +82,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | musl 1.2.3 | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] | [4] |
 
 [1] Except for hexagon-unknown-linux-musl<br>
-[2] 16.0.5 for hexagon-unknown-linux-musl, otherwise host<br>
+[2] 17.0.0-rc3 for hexagon-unknown-linux-musl, otherwise host<br>
 [3] hexagon-unknown-linux-musl requires release mode for building test<br>
 [4] See target list below for details<br>
 
@@ -92,30 +92,30 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | host |
 | ------ | ---- |
-| `aarch64-unknown-linux-musl` | x86_64 linux (any libc) |
-| `arm-unknown-linux-musleabi` | x86_64 linux (any libc) |
-| `arm-unknown-linux-musleabihf` | x86_64 linux (any libc) |
-| `armv5te-unknown-linux-musleabi` | x86_64 linux (any libc) |
-| `armv7-unknown-linux-musleabi` | x86_64 linux (any libc) |
-| `armv7-unknown-linux-musleabihf` | x86_64 linux (any libc) |
-| `hexagon-unknown-linux-musl` (tier3) | x86_64 linux (glibc 2.27+) |
-| `i586-unknown-linux-musl` | x86_64 linux (any libc) |
-| `i686-unknown-linux-musl` | x86_64 linux (any libc) |
-| `mips-unknown-linux-musl` | x86_64 linux (any libc) |
-| `mips64-unknown-linux-muslabi64` | x86_64 linux (any libc) |
-| `mips64el-unknown-linux-muslabi64` | x86_64 linux (any libc) |
-| `mipsel-unknown-linux-musl` | x86_64 linux (any libc) |
-| `powerpc-unknown-linux-musl` (tier3) | x86_64 linux (any libc) |
-| `powerpc64le-unknown-linux-musl` (tier3) | x86_64 linux (any libc) |
-| `s390x-unknown-linux-musl` (tier3) | x86_64 linux (any libc) |
-| `thumbv7neon-unknown-linux-musleabihf` (tier3) | x86_64 linux (any libc) |
-| `x86_64-unknown-linux-musl` | x86_64 linux (any libc) |
+| `aarch64-unknown-linux-musl` | x86_64 Linux (any libc) |
+| `arm-unknown-linux-musleabi` | x86_64 Linux (any libc) |
+| `arm-unknown-linux-musleabihf` | x86_64 Linux (any libc) |
+| `armv5te-unknown-linux-musleabi` | x86_64 Linux (any libc) |
+| `armv7-unknown-linux-musleabi` | x86_64 Linux (any libc) |
+| `armv7-unknown-linux-musleabihf` | x86_64 Linux (any libc) |
+| `hexagon-unknown-linux-musl` (tier3) | x86_64 Linux (glibc 2.27+) |
+| `i586-unknown-linux-musl` | x86_64 Linux (any libc) |
+| `i686-unknown-linux-musl` | x86_64 Linux (any libc) |
+| `mips-unknown-linux-musl` | x86_64 Linux (any libc) |
+| `mips64-unknown-linux-muslabi64` | x86_64 Linux (any libc) |
+| `mips64el-unknown-linux-muslabi64` | x86_64 Linux (any libc) |
+| `mipsel-unknown-linux-musl` | x86_64 Linux (any libc) |
+| `powerpc-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
+| `powerpc64le-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
+| `s390x-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
+| `thumbv7neon-unknown-linux-musleabihf` (tier3) | x86_64 Linux (any libc) |
+| `x86_64-unknown-linux-musl` | x86_64 Linux (any libc) |
 
 ### Linux (uClibc)
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 linux (glibc 2.17+) |
+| uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 Linux (glibc 2.17+) |
 
 ([Dockerfile](docker/linux-uclibc.Dockerfile))
 
@@ -133,7 +133,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| [1] | N/A | 14.0.6 | ? (libc++) | ✓ (qemu) | x86_64 linux (glibc 2.17+) |
+| [1] | N/A | 14.0.6 | ? (libc++) | ✓ (qemu) | x86_64 Linux (glibc 2.17+) |
 
 [1] See target list below for details<br>
 
@@ -164,19 +164,19 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.2, 14.0 | linux (any arch, any libc) |
-| `i686-unknown-freebsd` | 12.4 (default), 13.2, 14.0 | linux (any arch, any libc) |
-| `powerpc-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | linux (any arch, any libc) |
-| `powerpc64-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | linux (any arch, any libc) |
-| `powerpc64le-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | linux (any arch, any libc) |
-| `riscv64gc-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | x86_64 linux (any libc) |
-| `x86_64-unknown-freebsd` | 12.4 (default), 13.2, 14.0 | linux (any arch, any libc) |
+| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.2, 14.0 | Linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 12.4 (default), 13.2, 14.0 | Linux (any arch, any libc) |
+| `powerpc-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | Linux (any arch, any libc) |
+| `powerpc64-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | Linux (any arch, any libc) |
+| `powerpc64le-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.2 (default), 14.0 | x86_64 Linux (any libc) |
+| `x86_64-unknown-freebsd` | 12.4 (default), 13.2, 14.0 | Linux (any arch, any libc) |
 
 ### NetBSD
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| netbsd [1] | 7.5.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.27+) |
+| netbsd [1] | 7.5.0 | host | ✓ (libstdc++) |  | x86_64 Linux (glibc 2.27+) |
 
 [1] See target list below for details<br>
 
@@ -209,19 +209,19 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | linux (any arch, any libc) |
-| `i686-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | linux (any arch, any libc) |
-| `powerpc-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | linux (any arch, any libc) |
-| `powerpc64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | linux (any arch, any libc) |
-| `riscv64gc-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | x86_64 linux (any libc) |
-| `x86_64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | linux (any arch, any libc) |
+| `aarch64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
+| `powerpc64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | x86_64 Linux (any libc) |
+| `x86_64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
 
 ### DragonFly BSD
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| dragonfly 6.4.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | linux (any arch, any libc) |
+| dragonfly 6.4.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | Linux (any arch, any libc) |
 
 ([Dockerfile](docker/dragonfly.Dockerfile))
 
@@ -233,7 +233,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| solaris 2.10 | 8.5.0 |  | ✓ (libstdc++) |  | x86_64 linux (any libc) |
+| solaris 2.10 | 8.5.0 |  | ✓ (libstdc++) |  | x86_64 Linux (any libc) |
 
 ([Dockerfile](docker/solaris.Dockerfile))
 
@@ -246,7 +246,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| solaris 2.10 | 8.5.0 | host | ✓ (libstdc++) |  | x86_64 linux (any libc) |
+| solaris 2.10 | 8.5.0 | host | ✓ (libstdc++) |  | x86_64 Linux (any libc) |
 
 ([Dockerfile](docker/illumos.Dockerfile))
 
@@ -258,7 +258,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| redox 0.8.0 | 13.2.0 | host | ✓ (libstdc++) |  | x86_64 linux (glibc 2.35+) |
+| redox 0.8.0 | 13.2.0 | host | ✓ (libstdc++) |  | x86_64 Linux (glibc 2.35+) |
 
 ([Dockerfile](docker/redox.Dockerfile))
 
@@ -275,10 +275,10 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| wasi-sdk 20 (wasi-libc 1dfe5c3) | N/A | 16.0.0 | ? (libc++) | ✓ (wasmtime) | x86_64 linux (glibc 2.27+) |
+| wasi-sdk 21 (wasi-libc c5264e2) | N/A | 17.0.6 | ? (libc++) | ✓ (wasmtime) | x86_64 Linux (glibc 2.27+) |
 
 <!--
-clang version and wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-20/src
+clang version and wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-21/src
 -->
 
 ([Dockerfile](docker/wasi.Dockerfile))
@@ -291,7 +291,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| emscripten 2.0.5 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 linux (glibc 2.27+) |
+| emscripten 2.0.5 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 Linux (glibc 2.27+) |
 
 ([Dockerfile](docker/emscripten.Dockerfile))
 
@@ -303,11 +303,11 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| Mingw-w64 7.0.0 | 9.3.0 | host | ✓ (libstdc++) | ✓ (wine) | [1] |
+| Mingw-w64 8.0.0 | 10.3.0 | host | ✓ (libstdc++) | ✓ (wine) | [1] |
 
 <!--
-Mingw-w64 version: https://packages.ubuntu.com/en/focal/mingw-w64-common
-GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
+Mingw-w64 version: https://packages.ubuntu.com/en/jammy/mingw-w64-common
+GCC version: https://packages.ubuntu.com/en/jammy/gcc-mingw-w64-base
 -->
 
 [1] See target list below for details<br>
@@ -318,14 +318,14 @@ GCC version: https://packages.ubuntu.com/en/focal/gcc-mingw-w64-base
 
 | target | host |
 | ------ | ---- |
-| `x86_64-pc-windows-gnu` | x86_64/aarch64 linux (glibc 2.31+) |
-| `i686-pc-windows-gnu` | x86_64 linux (glibc 2.31+) |
+| `x86_64-pc-windows-gnu` | x86_64/aarch64 Linux (glibc 2.35+) |
+| `i686-pc-windows-gnu` | x86_64 Linux (glibc 2.35+) |
 
 ### Windows (LLVM MinGW)
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| Mingw-w64 7ea930b | N/A | 17.0.6 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 linux (glibc 2.31+) |
+| Mingw-w64 7ea930b | N/A | 17.0.6 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 Linux (glibc 2.31+) |
 
 <!--
 Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20231128/build-mingw-w64.sh#L21
@@ -354,26 +354,26 @@ Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20231128
 
 | target | GCC | run | host |
 | ------ | --- | ---- | ---- |
-| `aarch64-unknown-none` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `aarch64-unknown-none-softfloat` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armebv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armebv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv5te-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv7a-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv7a-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `armv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `riscv32i-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-| `riscv32im-unknown-none-elf` (tier3) | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-| `riscv32imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-| `riscv32imc-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-| `riscv64gc-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-| `riscv64imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 linux (glibc 2.27+) |
-| `thumbv5te-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv6m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv7em-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv7em-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv7m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv8m.base-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv8m.main-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
-| `thumbv8m.main-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 linux (glibc 2.27+) |
+| `aarch64-unknown-none` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `aarch64-unknown-none-softfloat` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armebv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armebv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv5te-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv7a-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv7a-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `riscv32i-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
+| `riscv32im-unknown-none-elf` (tier3) | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
+| `riscv32imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
+| `riscv32imc-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
+| `riscv64gc-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
+| `riscv64imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
+| `thumbv5te-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv6m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv7em-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv7em-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv7m-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv8m.base-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv8m.main-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `thumbv8m.main-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
