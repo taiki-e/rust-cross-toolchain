@@ -13,8 +13,8 @@ ARG RUST_TARGET
 ARG TOOLCHAIN_DIR=/toolchain/x86_64-linux-gnu
 RUN mkdir -p /toolchain
 # https://codelinaro.jfrog.io/ui/native/codelinaro-toolchain-for-hexagon
-ARG LLVM_VERSION=16.0.6
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://codelinaro.jfrog.io/artifactory/codelinaro-toolchain-for-hexagon/v${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-cross-${RUST_TARGET}.tar.xz" \
+ARG LLVM_VERSION=17.0.0-rc3
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://codelinaro.jfrog.io/artifactory/codelinaro-toolchain-for-hexagon/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-cross-hexagon-unknown-linux-musl.tar.xz" \
         | tar xJf - --strip-components 1 -C /toolchain
 
 RUN <<EOF
