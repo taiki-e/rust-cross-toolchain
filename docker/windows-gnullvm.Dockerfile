@@ -6,7 +6,7 @@
 # - https://github.com/rust-lang/rust/blob/1.70.0/src/doc/rustc/src/platform-support/pc-windows-gnullvm.md
 
 ARG RUST_TARGET
-ARG UBUNTU_VERSION=20.04
+ARG UBUNTU_VERSION=22.04
 ARG TOOLCHAIN_TAG=dev
 
 # https://github.com/mstorsjo/llvm-mingw/releases

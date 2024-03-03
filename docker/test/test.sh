@@ -265,10 +265,6 @@ case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
-    # TODO(windows-gnu): https://github.com/rust-lang/rust/pull/121317
-    # wine: Call from 00006FFFFFC4FCF8 to unimplemented function KERNEL32.dll.WaitOnAddress, aborting
-    # wine: Call from 00006FFFFFC4FCF8 to unimplemented function KERNEL32.dll.WakeByAddressSingle, aborting
-    x86_64-pc-windows-gnu) ;;
     # TODO(redox):
     *-unknown-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
 esac
@@ -1081,9 +1077,7 @@ case "${RUST_TARGET}" in
                 assert_file_info 'for MS Windows' "${bin}"
             else
                 case "${RUST_TARGET}" in
-                    # TODO: on ubuntu 22.04+
-                    # aarch64-*) assert_file_info 'Aarch64 COFF object file' "${bin}" ;;
-                    aarch64-*) assert_file_info 'data' "${bin}" ;;
+                    aarch64-*) assert_file_info 'Aarch64 COFF object file' "${bin}" ;;
                     i686-*) assert_file_info 'Intel 80386 COFF object file' "${bin}" ;;
                     x86_64*) assert_file_info 'Intel amd64 COFF object file' "${bin}" ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;

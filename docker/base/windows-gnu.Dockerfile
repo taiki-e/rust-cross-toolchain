@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
-ARG UBUNTU_VERSION=20.04
+ARG UBUNTU_VERSION=22.04
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
