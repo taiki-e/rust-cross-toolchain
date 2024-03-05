@@ -20,7 +20,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-unknown-hermit
 - [ ] aarch64-unknown-illumos
 - [ ] aarch64-unknown-linux-gnu_ilp32
-- [ ] aarch64-unknown-linux-ohos
 - [x] aarch64-unknown-netbsd
 - [ ] aarch64-unknown-nto-qnx710
 - [x] aarch64-unknown-openbsd
@@ -44,7 +43,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv6k-nintendo-3ds
 - [ ] armv7-sony-vita-newlibeabihf
 - [ ] armv7-unknown-freebsd
-- [ ] armv7-unknown-linux-ohos
 - [x] armv7-unknown-linux-uclibceabi
 - [x] armv7-unknown-linux-uclibceabihf
 - [x] armv7-unknown-netbsd-eabihf
@@ -148,7 +146,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-unknown-haiku
 - [ ] x86_64-unknown-hermit
 - [ ] x86_64-unknown-l4re-uclibc
-- [ ] x86_64-unknown-linux-ohos
 - [x] x86_64-unknown-openbsd
 - [ ] x86_64-uwp-windows-gnu
 - [ ] x86_64-uwp-windows-msvc
