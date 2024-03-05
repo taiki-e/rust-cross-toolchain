@@ -15,6 +15,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] aarch64-unknown-fuchsia
 - [x] aarch64-unknown-linux-gnu
 - [x] aarch64-unknown-linux-musl
+- [ ] aarch64-unknown-linux-ohos
 - [x] aarch64-unknown-none
 - [x] aarch64-unknown-none-softfloat
 - [ ] aarch64-unknown-uefi
@@ -32,6 +33,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] armv7-unknown-linux-gnueabihf
 - [x] armv7-unknown-linux-musleabi
 - [x] armv7-unknown-linux-musleabihf
+- [ ] armv7-unknown-linux-ohos
 - [x] armv7a-none-eabi
 - [x] armv7r-none-eabi
 - [x] armv7r-none-eabihf
@@ -75,6 +77,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] wasm32-unknown-unknown
 - [x] wasm32-wasi
 - [ ] wasm32-wasi-preview1-threads
+- [ ] wasm32-wasip1
 - [ ] x86_64-apple-darwin
 - [ ] x86_64-apple-ios
 - [ ] x86_64-fortanix-unknown-sgx
@@ -88,6 +91,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] x86_64-unknown-linux-gnu
 - [x] x86_64-unknown-linux-gnux32
 - [x] x86_64-unknown-linux-musl
+- [ ] x86_64-unknown-linux-ohos
 - [x] x86_64-unknown-netbsd
 - [ ] x86_64-unknown-none
 - [x] x86_64-unknown-redox

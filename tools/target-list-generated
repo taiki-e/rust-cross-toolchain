@@ -77,9 +77,9 @@ linux_uclibc_targets=(
     mipsel-unknown-linux-uclibc # tier3
 )
 linux_ohos_targets=(
-    aarch64-unknown-linux-ohos # tier3
-    armv7-unknown-linux-ohos # tier3
-    x86_64-unknown-linux-ohos # tier3
+    aarch64-unknown-linux-ohos
+    armv7-unknown-linux-ohos
+    x86_64-unknown-linux-ohos
 )
 android_targets=(
     aarch64-linux-android
@@ -188,6 +188,7 @@ windows_gnu_targets=(
 wasi_targets=(
     wasm32-wasi
     wasm32-wasi-preview1-threads
+    wasm32-wasip1
     wasm32-wasip2 # tier3
 )
 emscripten_targets=(
