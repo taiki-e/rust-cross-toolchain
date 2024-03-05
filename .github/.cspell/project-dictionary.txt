@@ -15,7 +15,6 @@ crti
 crtn
 CURDIR
 CXXSTDLIB
-debuginfo
 dilos
 distro
 earmv
