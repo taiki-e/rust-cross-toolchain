@@ -286,6 +286,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 **Supported targets:**
 
 - `wasm32-wasi`
+- `wasm32-wasip1`
 
 ### Emscripten
 

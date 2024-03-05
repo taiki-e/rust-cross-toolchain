@@ -204,7 +204,9 @@ windows_gnu_targets=(
 # WASI
 wasi_targets=(
     wasm32-wasi
-    # wasm32-wasi-preview1-threads # TODO
+    # wasm32-wasi-preview1-threads
+    wasm32-wasip1
+    # wasm32-wasip2 # tier3
 )
 # Emscripten
 emscripten_targets=(
