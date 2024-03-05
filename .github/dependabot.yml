@@ -6,6 +6,10 @@ updates:
       interval: daily
     commit-message:
       prefix: ''
+    ignore:
+      # See Cargo.toml.
+      - dependency-name: cc
+      - dependency-name: cmake
     labels: []
   # crates with [workspace] table are not recognized by the above 'directory: /'
   - package-ecosystem: cargo
@@ -14,6 +18,9 @@ updates:
       interval: daily
     commit-message:
       prefix: ''
+    ignore:
+      # See Cargo.toml.
+      - dependency-name: cc
     labels: []
   - package-ecosystem: github-actions
     directory: /
