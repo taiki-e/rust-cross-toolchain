@@ -7,8 +7,7 @@
 linux_gnu_targets=(
     aarch64-unknown-linux-gnu
     # aarch64-unknown-linux-gnu_ilp32 # tier3
-    # TODO: core_simd bug https://github.com/rust-lang/portable-simd/pull/396
-    # aarch64_be-unknown-linux-gnu # tier3
+    aarch64_be-unknown-linux-gnu # tier3
     # aarch64_be-unknown-linux-gnu_ilp32 # tier3
     arm-unknown-linux-gnueabi
     arm-unknown-linux-gnueabihf
