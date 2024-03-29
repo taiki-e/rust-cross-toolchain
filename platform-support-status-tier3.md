@@ -74,6 +74,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-uwp-windows-msvc
 - [ ] i686-win7-windows-msvc
 - [ ] i686-wrs-vxworks
+- [ ] loongarch64-unknown-linux-musl
 - [ ] m68k-unknown-linux-gnu
 - [x] mips-unknown-linux-gnu
 - [x] mips-unknown-linux-musl
@@ -113,6 +114,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32gc-unknown-linux-musl
 - [ ] riscv32im-risc0-zkvm-elf
 - [x] riscv32im-unknown-none-elf
+- [ ] riscv32ima-unknown-none-elf
 - [ ] riscv32imac-esp-espidf
 - [ ] riscv32imac-unknown-xous-elf
 - [ ] riscv32imafc-esp-espidf
