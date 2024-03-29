@@ -8,10 +8,11 @@
 
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 
-# Use the version that contains a patch that fixes CVE-2020-28928.
-ARG MUSL_CROSS_MAKE_REV=dea0b17b01ab1293cb2d32c406b5dc86a86c13f3
-# Available versions: https://github.com/richfelker/musl-cross-make/tree/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/hashes
-# Default: https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/Makefile
+# Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add binutils 2.36.1 hash for riscv.
+# https://github.com/taiki-e/musl-cross-make/tree/dev
+ARG MUSL_CROSS_MAKE_REV=09328999fa03502bb460951d6841d009eddcb081
+# Available versions: https://github.com/richfelker/musl-cross-make/tree/HEAD/hashes
+# Default: https://github.com/richfelker/musl-cross-make/blob/HEAD/Makefile
 ARG BINUTILS_VERSION=2.33.1
 ARG GCC_VERSION=9.4.0
 ARG MUSL_VERSION
