@@ -10,6 +10,7 @@ ARG UBUNTU_VERSION=22.04
 ARG TOOLCHAIN_TAG=dev
 
 # https://github.com/mstorsjo/llvm-mingw/releases
+# NB: When updating this, the reminder to update Clang/Mingw version in README.md.
 ARG TOOLCHAIN_VERSION=20231128
 
 FROM ghcr.io/taiki-e/downloader as toolchain

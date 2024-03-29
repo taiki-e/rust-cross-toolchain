@@ -275,7 +275,7 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| wasi-sdk 21 (wasi-libc c5264e2) | N/A | 17.0.6 | ? (libc++) | ✓ (wasmtime) | x86_64 Linux (glibc 2.27+) |
+| WASI SDK 21 (wasi-libc c5264e2) | N/A | 17.0.6 | ? (libc++) | ✓ (wasmtime) | x86_64 Linux (glibc 2.27+) |
 
 <!--
 clang version and wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-21/src

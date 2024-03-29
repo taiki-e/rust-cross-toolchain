@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 ARG RUST_TARGET
+# NB: When updating this, the reminder to update GCC/Mingw version in README.md.
 ARG UBUNTU_VERSION=22.04
 ARG TOOLCHAIN_TAG=dev
 ARG HOST_ARCH=amd64
