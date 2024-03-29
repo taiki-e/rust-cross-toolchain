@@ -54,6 +54,7 @@ linux_musl_targets=(
     hexagon-unknown-linux-musl # tier3
     i586-unknown-linux-musl
     i686-unknown-linux-musl
+    loongarch64-unknown-linux-musl # tier3
     mips-unknown-linux-musl # tier3
     mips64-openwrt-linux-musl # tier3
     mips64-unknown-linux-muslabi64 # tier3
@@ -188,8 +189,8 @@ windows_gnu_targets=(
 )
 wasi_targets=(
     wasm32-wasi
-    wasm32-wasi-preview1-threads
     wasm32-wasip1
+    wasm32-wasip1-threads
     wasm32-wasip2 # tier3
 )
 emscripten_targets=(
@@ -307,6 +308,7 @@ none_targets=(
     msp430-none-elf # tier3
     riscv32i-unknown-none-elf
     riscv32im-unknown-none-elf # tier3
+    riscv32ima-unknown-none-elf # tier3
     riscv32imac-unknown-none-elf
     riscv32imafc-unknown-none-elf
     riscv32imc-unknown-none-elf

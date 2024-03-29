@@ -203,7 +203,9 @@ windows_gnu_targets=(
 # WASI
 wasi_targets=(
     wasm32-wasi
-    # wasm32-wasi-preview1-threads # TODO
+    # wasm32-wasip1 # TODO: blocked on the release of https://github.com/WebAssembly/wasi-sdk/pull/386
+    # wasm32-wasip1-threads
+    # wasm32-wasip2 # tier3
 )
 # Emscripten
 emscripten_targets=(
