@@ -160,9 +160,9 @@ for target in "${targets[@]}"; do
             ubuntu_version=18.04
             case "${target}" in
                 # NB: When updating this, the reminder to update tools/update-manifest.sh.
-                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc-* | powerpc64-* | sparc-* | sparc64-* | m68k-*)
                     # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
-                    # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
+                    # powerpc-*|powerpc64-*|sparc-*|sparc64-*|m68k-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;

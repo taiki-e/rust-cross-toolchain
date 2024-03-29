@@ -1,0 +1,36 @@
+diff --git a/src/sys/pal/unix/os.rs b/src/sys/pal/unix/os.rs
+index 0b9c802..a8cce73 100644
+--- a/src/sys/pal/unix/os.rs
++++ b/src/sys/pal/unix/os.rs
+@@ -598,11 +598,15 @@ pub unsafe fn environ() -> *mut *const *const c_char {
+     ptr::addr_of_mut!(environ)
+ }
+
++#[cfg(not(target_arch = "m68k"))] // TODO: rustc-LLVM ERROR: Cannot select: 0x7f6132367a80: ch = AtomicStore
+ static ENV_LOCK: RwLock<()> = RwLock::new(());
+
++#[cfg(not(target_arch = "m68k"))]
+ pub fn env_read_lock() -> impl Drop {
+     ENV_LOCK.read().unwrap_or_else(PoisonError::into_inner)
+ }
++#[cfg(target_arch = "m68k")]
++pub fn env_read_lock() -> impl Sized {}
+
+ /// Returns a vector of (variable, value) byte-vector pairs for all the
+ /// environment variables of the current process.
+@@ -663,6 +667,7 @@ pub fn getenv(k: &OsStr) -> Option<OsString> {
+ pub fn setenv(k: &OsStr, v: &OsStr) -> io::Result<()> {
+     run_with_cstr(k.as_bytes(), &|k| {
+         run_with_cstr(v.as_bytes(), &|v| {
++            #[cfg(not(target_arch = "m68k"))]
+             let _guard = ENV_LOCK.write();
+             cvt(unsafe { libc::setenv(k.as_ptr(), v.as_ptr(), 1) }).map(drop)
+         })
+@@ -671,6 +676,7 @@ pub fn setenv(k: &OsStr, v: &OsStr) -> io::Result<()> {
+
+ pub fn unsetenv(n: &OsStr) -> io::Result<()> {
+     run_with_cstr(n.as_bytes(), &|nbuf| {
++        #[cfg(not(target_arch = "m68k"))]
+         let _guard = ENV_LOCK.write();
+         cvt(unsafe { libc::unsetenv(nbuf.as_ptr()) }).map(drop)
+     })

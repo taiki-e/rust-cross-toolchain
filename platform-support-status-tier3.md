@@ -75,7 +75,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-win7-windows-msvc
 - [ ] i686-wrs-vxworks
 - [ ] loongarch64-unknown-linux-musl
-- [ ] m68k-unknown-linux-gnu
+- [x] m68k-unknown-linux-gnu
 - [x] mips-unknown-linux-gnu
 - [x] mips-unknown-linux-musl
 - [x] mips-unknown-linux-uclibc

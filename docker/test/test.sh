@@ -290,6 +290,13 @@ if [[ -f /BUILD_STD ]]; then
             ;;
         # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
         mips-* | mipsel-*) build_mode=release ;;
+        # TODO(m68k): rustc-LLVM ERROR: Cannot select: 0x7f6132367a80: ch = AtomicStore
+        # https://github.com/rust-lang/rust/issues/89498
+        m68k-*)
+            export RUSTFLAGS="${RUSTFLAGS:-} -C target-cpu=M68020"
+            export CARGO_PROFILE_RELEASE_LTO=true
+            build_mode=release
+            ;;
     esac
 fi
 
