@@ -10,8 +10,9 @@ FROM ghcr.io/taiki-e/downloader as sysroot
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DRAGONFLY_VERSION
 RUN mkdir -p /sysroot
-# https://mirror-master.dragonflybsd.org/iso-images
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://mirror-master.dragonflybsd.org/iso-images/dfly-x86_64-${DRAGONFLY_VERSION}_REL.iso.bz2" \
+# https://mirror-master.dragonflybsd.org/iso-images's certificate has expired...
+# https://cdimage.debian.org/mirror/dragonflybsd.org/iso-images
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cdimage.debian.org/mirror/dragonflybsd.org/iso-images/dfly-x86_64-${DRAGONFLY_VERSION}_REL.iso.bz2" \
         | bsdtar xjf - -C /sysroot ./lib ./usr/include ./usr/lib
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
