@@ -24,11 +24,9 @@ WORKDIR /build-libunwind
 ARG CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
 ARG CARGO_PROFILE_RELEASE_DEBUG=1
 ARG CARGO_PROFILE_RELEASE_LTO=true
-ARG CARGO_PROFILE_RELEASE_OPT_LEVEL=z
 ARG RUSTFLAGS='-C target-feature=+crt-static -C link-self-contained=yes'
 RUN cargo build --release --target "$(rustc -Vv | grep host | sed 's/host: //')"
 RUN mv target/x86_64-unknown-linux-musl/release/build-libunwind /usr/local/bin/
-RUN strip /usr/local/bin/build-libunwind
 WORKDIR /
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
