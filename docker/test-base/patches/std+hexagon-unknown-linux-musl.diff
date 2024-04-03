@@ -1,24 +1,24 @@
 diff --git a/src/sys/pal/unix/thread.rs b/src/sys/pal/unix/thread.rs
-index 2af6382..acf3ecb 100644
+index 7d25c97..9060fe9 100644
 --- a/src/sys/pal/unix/thread.rs
 +++ b/src/sys/pal/unix/thread.rs
-@@ -225,7 +225,9 @@ pub fn set_name(_name: &CStr) {
+@@ -228,8 +228,9 @@ pub fn set_name(_name: &CStr) {
          // Newlib, Emscripten, and VxWorks have no way to set a thread name.
      }
- 
--    #[cfg(target_os = "linux")]
-+    // Qualcomm fork of musl doesn't have pthread_getname_np.
-+    // https://github.com/quic/musl/blob/7243e0d3a9d7e0f08d21fc194a05749e0bb26725/include/pthread.h
-+    #[cfg(all(target_os = "linux", not(target_arch = "hexagon")))]
-     pub fn get_name() -> Option<CString> {
-         const TASK_COMM_LEN: usize = 16;
-         let mut name = vec![0u8; TASK_COMM_LEN];
-@@ -253,7 +255,7 @@ pub fn get_name() -> Option<CString> {
+
++    // Qualcomm fork of musl doesn't have pthread_getname_np. https://github.com/quic/musl/blob/7243e0d3a9d7e0f08d21fc194a05749e0bb26725/include/pthread.h
+     #[cfg(any(
+-        target_os = "linux",
++        all(target_os = "linux", not(target_arch = "hexagon")),
+         target_os = "freebsd",
+         target_os = "netbsd",
+         target_os = "solaris",
+@@ -285,7 +286,7 @@ pub fn get_name() -> Option<CString> {
      }
- 
+
      #[cfg(not(any(
 -        target_os = "linux",
 +        all(target_os = "linux", not(target_arch = "hexagon")),
+         target_os = "freebsd",
+         target_os = "netbsd",
          target_os = "macos",
-         target_os = "ios",
-         target_os = "tvos",
