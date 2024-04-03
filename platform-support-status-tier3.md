@@ -29,7 +29,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-wrs-vxworks
 - [x] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
-- [ ] aarch64_be-unknown-netbsd
+- [x] aarch64_be-unknown-netbsd
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin
 - [ ] arm64e-apple-ios
@@ -63,7 +63,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] hexagon-unknown-none-elf
 - [ ] i386-apple-ios
 - [ ] i586-pc-nto-qnx700
-- [ ] i586-unknown-netbsd
+- [x] i586-unknown-netbsd
 - [ ] i686-apple-darwin
 - [x] i686-pc-windows-gnullvm
 - [ ] i686-unknown-haiku
@@ -89,7 +89,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] mipsel-unknown-linux-gnu
 - [x] mipsel-unknown-linux-musl
 - [x] mipsel-unknown-linux-uclibc
-- [ ] mipsel-unknown-netbsd
+- [x] mipsel-unknown-netbsd
 - [ ] mipsel-unknown-none
 - [ ] mipsisa32r6-unknown-linux-gnu
 - [ ] mipsisa32r6el-unknown-linux-gnu

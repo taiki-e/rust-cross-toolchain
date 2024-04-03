@@ -289,7 +289,7 @@ if [[ -f /BUILD_STD ]]; then
             build_std+=(-Z build-std-features=llvm-libunwind)
             ;;
         # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
-        mips-*-linux-* | mipsel-*-linux-*) build_mode=release ;;
+        mips-* | mipsel-*) build_mode=release ;;
     esac
 fi
 
@@ -768,7 +768,7 @@ case "${RUST_TARGET}" in
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7_linux_androideabi.rs#L21
                             # https://github.com/rust-lang/rust/pull/33414
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7_unknown_netbsd_eabihf.rs#L13
-                            *-android*) fp_arch='(VFPv3|VFPv3-D16)' ;;
+                            *-android* | *-netbsd*) fp_arch='(VFPv3|VFPv3-D16)' ;;
                             # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs#L22-L31
                             thumbv7em-*) fp_arch=VFPv4-D16 ;;
                             *) fp_arch=VFPv3-D16 ;;
@@ -827,6 +827,8 @@ case "${RUST_TARGET}" in
                 case "${RUST_TARGET}" in
                     # TODO(linux-uclibc): should be soft-float
                     *-linux-musl*) arch_specific_pat+=('FP ABI: Soft float') ;;
+                    # TODO(netbsd):
+                    *-netbsd*) arch_specific_pat+=('FP ABI: Hard float (\(double precision\)|\(32-bit CPU, Any FPU\))') ;;
                     *) arch_specific_pat+=('FP ABI: Hard float \(32-bit CPU, Any FPU\)') ;;
                 esac
                 ;;

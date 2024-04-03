@@ -19,10 +19,16 @@ SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG NETBSD_VERSION
 RUN mkdir -p /build-src
 WORKDIR /build-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/src.tgz" | tar xzf -
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/gnusrc.tgz" | tar xzf -
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/sharesrc.tgz" | tar xzf -
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/source/sets/syssrc.tgz" | tar xzf -
+RUN <<EOF
+case "${NETBSD_VERSION}" in
+    [1-8].*) base_url=https://archive.netbsd.org/pub/NetBSD-archive ;;
+    *) base_url=https://ftp.netbsd.org/pub/NetBSD ;;
+esac
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url}/NetBSD-${NETBSD_VERSION}/source/sets/src.tgz" | tar xzf -
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url}/NetBSD-${NETBSD_VERSION}/source/sets/gnusrc.tgz" | tar xzf -
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url}/NetBSD-${NETBSD_VERSION}/source/sets/sharesrc.tgz" | tar xzf -
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url}/NetBSD-${NETBSD_VERSION}/source/sets/syssrc.tgz" | tar xzf -
+EOF
 WORKDIR /
 
 FROM ghcr.io/taiki-e/downloader as sysroot
@@ -39,6 +45,7 @@ case "${RUST_TARGET}" in
     armv6-*) netbsd_arch=evbarm-earmv6hf ;;
     armv7-*) netbsd_arch=evbarm-earmv7hf ;;
     i?86-*) netbsd_arch=i386 ;;
+    mipsel-*) netbsd_arch=evbmips-mipsel ;;
     powerpc-*) netbsd_arch=evbppc ;;
     riscv32*) netbsd_arch=riscv-riscv32 ;;
     riscv64*) netbsd_arch=riscv-riscv64 ;;
@@ -47,19 +54,31 @@ case "${RUST_TARGET}" in
     x86_64*) netbsd_arch=amd64 ;;
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-ext=.tgz
-cmd=xzf
+ext=tar.xz
 case "${RUST_TARGET}" in
     sparc64-* | x86_64*)
-        if [[ "${NETBSD_VERSION}" != "8"* ]]; then
-            ext=.tar.xz
-            cmd=xJf
-        fi
+        case "${NETBSD_VERSION}" in
+            [1-8].*) ext=tgz ;;
+        esac
         ;;
+    aarch64-* | aarch64_be-*)
+        case "${NETBSD_VERSION}" in
+            [1-9].*) ext=tgz ;;
+        esac
+        ;;
+    *) ext=tgz ;;
 esac
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/base${ext}" \
+case "${ext}" in
+    tar.xz) cmd=xJf ;;
+    *) cmd=xzf ;;
+esac
+case "${NETBSD_VERSION}" in
+    [1-8].*) base_url=https://archive.netbsd.org/pub/NetBSD-archive ;;
+    *) base_url=https://ftp.netbsd.org/pub/NetBSD ;;
+esac
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url}/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/base.${ext}" \
     | tar "${cmd}" - -C /sysroot ./lib ./usr/include ./usr/lib
-curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/comp${ext}" \
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url}/NetBSD-${NETBSD_VERSION}/${netbsd_arch}/binary/sets/comp.${ext}" \
     | tar "${cmd}" - -C /sysroot ./usr/include ./usr/lib
 EOF
 
@@ -83,6 +102,7 @@ case "${RUST_TARGET}" in
     armv6-*) cc_target=armv6--netbsdelf-eabihf ;;
     armv7-*) cc_target=armv7--netbsdelf-eabihf ;;
     i?86-*) cc_target=i486--netbsdelf ;;
+    mipsel-*) cc_target=mipsel--netbsd ;;
     powerpc-*) cc_target=powerpc--netbsd ;;
     riscv32*) cc_target=riscv32--netbsd ;;
     riscv64*) cc_target=riscv64--netbsd ;;
@@ -109,6 +129,7 @@ case "${RUST_TARGET}" in
     armv6-*) args=(-m evbarm -a earmv6hf) ;;
     armv7-*) args=(-m evbarm -a earmv7hf) ;;
     i?86-*) args=(-m i386) ;;
+    mipsel-*) args=(-m evbmips -a mipsel) ;;
     powerpc-*) args=(-m evbppc) ;;
     riscv32*) args=(-m riscv -a riscv32) ;;
     riscv64*) args=(-m riscv -a riscv64) ;;
@@ -127,6 +148,7 @@ WORKDIR /
 RUN <<EOF
 case "${RUST_TARGET}" in
     armv7-*) common_flags=" -march=armv7-a -mthumb -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
+    mips-* | mipsel-*) common_flags=" -march=mips32r2" ;;
 esac
 cc_target=$(</CC_TARGET)
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" <<EOF2

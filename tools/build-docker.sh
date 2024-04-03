@@ -247,10 +247,10 @@ for target in "${targets[@]}"; do
                 freebsd_versions=("${FREEBSD_VERSION}")
             else
                 # FreeBSD have binary compatibility with previous releases.
-                # Therefore, the default is FreeBSD 12 that is the minimum supported version.
-                # However, we don't support FreeBSD 12 for the following targets, because:
+                # Therefore, the default is the minimum supported version.
+                # However, we don't support old FreeBSD for the following targets:
                 # - powerpc,powerpc64: FreeBSD 12 uses gcc instead of clang.
-                # - powerpc64le,riscv64: not available in FreeBSD 12.
+                # - powerpc64le,riscv64: available on FreeBSD 13+.
                 # See also https://www.freebsd.org/releases/13.0R/announce.
                 #
                 # Supported releases: https://www.freebsd.org/security/#sup
@@ -259,16 +259,17 @@ for target in "${targets[@]}"; do
                 # https://endoflife.date/freebsd
                 # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
                 # TODO: 12.4 was EoL on 2023-12-31.
+                # TODO: 13.2 will be EoL on 2024-06-30.
                 freebsd_versions=("12.4" "13.2" "14.0")
             fi
-            default_freebsd_version="12"
+            default_freebsd_version=12
             for freebsd_version in "${freebsd_versions[@]}"; do
                 case "${target}" in
-                    powerpc-* | powerpc64-* | powerpc64le-* | riscv64*)
-                        default_freebsd_version="13"
-                        if [[ "${freebsd_version}" == "12"* ]]; then
-                            continue
-                        fi
+                    powerpc* | riscv64*)
+                        default_freebsd_version=13
+                        case "${freebsd_version}" in
+                            12.*) continue ;;
+                        esac
                         ;;
                 esac
                 build "freebsd" "${target}" "${freebsd_version%%.*}" "${default_freebsd_version}" \
@@ -280,27 +281,33 @@ for target in "${targets[@]}"; do
                 netbsd_versions=("${NETBSD_VERSION}")
             else
                 # NetBSD have binary compatibility with previous releases.
-                # Therefore, the default is NetBSD 8 that is the minimum supported version.
-                # However, we cannot support old NetBSD for the following targets, because:
-                # - aarch64: not available in NetBSD 8.
-                # - aarch64_be: not available in NetBSD 8/9.
-                # See also https://www.netbsd.org/releases/formal-9/NetBSD-9.0.html.
+                # Therefore, the default is the minimum supported version.
+                # However, we cannot support old NetBSD for the following targets:
+                # - aarch64: available on NetBSD 9+ https://www.netbsd.org/releases/formal-9/NetBSD-9.0.html
+                # - aarch64_be: available on NetBSD 10+ https://www.netbsd.org/releases/formal-10/NetBSD-10.0.html
                 #
                 # Supported releases: https://www.netbsd.org/releases
                 # NetBSD 7 was EoL on 2020-06-30.
                 # https://www.netbsd.org/releases/formal.html
                 # https://endoflife.date/netbsd
                 # NB: When updating this, the reminder to update docker/base/build-docker.sh, tools/docker-manifest.sh, and README.md.
-                netbsd_versions=("8" "9")
+                # TODO: 8 will be EoL on 2024-04-28.
+                netbsd_versions=("8" "9" "10")
             fi
-            default_netbsd_version="8"
+            default_netbsd_version=8
             for netbsd_version in "${netbsd_versions[@]}"; do
                 case "${target}" in
                     aarch64-*)
-                        default_netbsd_version="9"
-                        if [[ "${netbsd_version}" == "8"* ]]; then
-                            continue
-                        fi
+                        default_netbsd_version=9
+                        case "${netbsd_version}" in
+                            8) continue ;;
+                        esac
+                        ;;
+                    aarch64_be-*)
+                        default_netbsd_version=10
+                        case "${netbsd_version}" in
+                            [8-9]) continue ;;
+                        esac
                         ;;
                 esac
                 build "netbsd" "${target}" "${netbsd_version%%.*}" "${default_netbsd_version}" \

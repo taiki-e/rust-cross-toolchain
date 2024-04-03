@@ -1,0 +1,17 @@
+diff --git a/src/sys/pal/unix/thread_parking/netbsd.rs b/src/sys/pal/unix/thread_parking/netbsd.rs
+index 3be0812..90f809a 100644
+--- a/src/sys/pal/unix/thread_parking/netbsd.rs
++++ b/src/sys/pal/unix/thread_parking/netbsd.rs
+@@ -34,7 +34,11 @@ pub fn park_timeout(dur: Duration, hint: usize) {
+         // Saturate so that the operation will definitely time out
+         // (even if it is after the heat death of the universe).
+         tv_sec: dur.as_secs().try_into().ok().unwrap_or(time_t::MAX),
+-        tv_nsec: dur.subsec_nanos().into(),
++        tv_nsec: dur
++            .subsec_nanos()
++            .try_into()
++            .ok()
++            .unwrap_or(libc::c_long::MAX),
+     };
+
+     // Timeout needs to be mutable since it is modified on NetBSD 9.0 and

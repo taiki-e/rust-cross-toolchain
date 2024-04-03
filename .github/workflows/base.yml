@@ -54,9 +54,12 @@ jobs:
 
           # NetBSD
           - target: aarch64-unknown-netbsd # tier3
+          - target: aarch64_be-unknown-netbsd # tier3
           - target: armv6-unknown-netbsd-eabihf # tier3
           - target: armv7-unknown-netbsd-eabihf # tier3
+          - target: i586-unknown-netbsd # tier3
           - target: i686-unknown-netbsd # tier3
+          - target: mipsel-unknown-netbsd # tier3
           - target: powerpc-unknown-netbsd # tier3
           - target: sparc64-unknown-netbsd # tier3
           - target: x86_64-unknown-netbsd

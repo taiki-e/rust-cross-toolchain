@@ -186,13 +186,16 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version |
 | ------ | ------- |
-| `aarch64-unknown-netbsd` (tier3) | 9.3 |
-| `armv6-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.3 |
-| `armv7-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.3 |
-| `i686-unknown-netbsd` (tier3) | 8.2 (default), 9.3 |
-| `powerpc-unknown-netbsd` (tier3) | 8.2 (default), 9.3 |
-| `sparc64-unknown-netbsd` (tier3) | 8.2 (default), 9.3 |
-| `x86_64-unknown-netbsd` | 8.2 (default), 9.3 |
+| `aarch64-unknown-netbsd` (tier3) | 9.3 (default), 10.0 |
+| `aarch64_be-unknown-netbsd` (tier3) | 10.0 |
+| `armv6-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `armv7-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `i586-unknown-netbsd` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `i686-unknown-netbsd` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `mipsel-unknown-netbsd` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `powerpc-unknown-netbsd` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `sparc64-unknown-netbsd` (tier3) | 8.2 (default), 9.3, 10.0 |
+| `x86_64-unknown-netbsd` | 8.2 (default), 9.3, 10.0 |
 
 ### OpenBSD
 

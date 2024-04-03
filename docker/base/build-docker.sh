@@ -118,14 +118,19 @@ case "${target}" in
             netbsd_versions=("${NETBSD_VERSION}")
         else
             # NB: When updating this, the reminder to update tools/build-docker.sh.
-            netbsd_versions=("8.2" "9.3")
+            netbsd_versions=("9.3" "10.0")
         fi
         for netbsd_version in "${netbsd_versions[@]}"; do
             case "${target}" in
                 aarch64-*)
-                    if [[ "${netbsd_version}" == "8"* ]]; then
-                        continue
-                    fi
+                    case "${netbsd_version}" in
+                        8.*) continue ;;
+                    esac
+                    ;;
+                aarch64_be-*)
+                    case "${netbsd_version}" in
+                        [8-9].*) continue ;;
+                    esac
                     ;;
             esac
             build "netbsd" "${target}" "${netbsd_version%%.*}" \

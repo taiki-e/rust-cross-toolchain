@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
+# - https://doc.rust-lang.org/nightly/rustc/platform-support/netbsd.html
 # - https://github.com/rust-lang/rust/blob/1.66.0/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
 
 # When using clang:
@@ -35,6 +36,7 @@ case "${RUST_TARGET}" in
     armv6-*) cc_target=armv6--netbsdelf-eabihf ;;
     armv7-*) cc_target=armv7--netbsdelf-eabihf ;;
     i?86-*) cc_target=i486--netbsdelf ;;
+    mipsel-*) cc_target=mipsel--netbsd ;;
     powerpc-*) cc_target=powerpc--netbsd ;;
     riscv32*) cc_target=riscv32--netbsd ;;
     riscv64*) cc_target=riscv64--netbsd ;;

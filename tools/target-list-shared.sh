@@ -54,6 +54,7 @@ linux_musl_targets=(
     hexagon-unknown-linux-musl # tier3
     i586-unknown-linux-musl
     i686-unknown-linux-musl
+    # loongarch64-unknown-linux-musl # tier3
     mips-unknown-linux-musl # tier3
     # mips64-openwrt-linux-musl # tier3, TODO: https://github.com/rust-lang/rust/pull/92300
     mips64-unknown-linux-muslabi64   # tier3
@@ -140,14 +141,14 @@ freebsd_targets=(
 )
 # NetBSD
 netbsd_targets=(
-    aarch64-unknown-netbsd # tier3
-    # aarch64_be-unknown-netbsd # tier3 # TODO: added in NetBSD 10 (currently pre-release)
+    aarch64-unknown-netbsd      # tier3
+    aarch64_be-unknown-netbsd   # tier3
     armv6-unknown-netbsd-eabihf # tier3
     armv7-unknown-netbsd-eabihf # tier3
-    # i586-unknown-netbsd         # tier3, TODO
-    i686-unknown-netbsd # tier3
-    # mipsel-unknown-netbsd       # tier3, TODO
-    powerpc-unknown-netbsd # tier3
+    i586-unknown-netbsd         # tier3
+    i686-unknown-netbsd         # tier3
+    mipsel-unknown-netbsd       # tier3
+    powerpc-unknown-netbsd      # tier3
     # riscv64gc-unknown-netbsd # tier3 # TODO: not found in NetBSD 8/9/10
     sparc64-unknown-netbsd # tier3
     x86_64-unknown-netbsd
@@ -227,6 +228,7 @@ cuda_targets=(
 # ESP-IDF
 espidf_targets=(
     # riscv32imac-esp-espidf # tier3
+    # riscv32imafc-esp-espidf # tier3
     # riscv32imc-esp-espidf # tier3
 )
 # Fuchsia
@@ -315,6 +317,9 @@ vxworks_targets=(
 xous_targets=(
     # riscv32imac-unknown-xous-elf # tier3
 )
+zkvm_targets=(
+    # riscv32im-risc0-zkvm-elf # tier3
+)
 # no-std
 none_targets=(
     aarch64-unknown-none
@@ -327,6 +332,7 @@ none_targets=(
     armv7a-none-eabihf # tier3
     armv7r-none-eabi
     armv7r-none-eabihf
+    # armv8r-none-eabihf # tier3
     # avr-unknown-gnu-atmega328 # tier3
     # bpfeb-unknown-none # tier3
     # bpfel-unknown-none # tier3

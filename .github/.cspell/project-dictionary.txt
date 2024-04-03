@@ -23,6 +23,7 @@ elfv
 emcc
 EMSDK
 evbarm
+evbmips
 evbppc
 fexceptions
 ffreestanding
@@ -30,6 +31,7 @@ fmin
 fstrict
 funwind
 fvisibility
+gnusrc
 HWCAPS
 Icelake
 INLINES
@@ -115,12 +117,14 @@ rcrt
 rtti
 Scrt
 secureplt
+sharesrc
 sjlj
 softfp
 solarish
 stdarch
 stdlib
 strnlen
+syssrc
 SYSV
 TOOLDIR
 uclibcgnueabi
