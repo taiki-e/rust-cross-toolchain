@@ -10,8 +10,11 @@ FROM ghcr.io/taiki-e/downloader as toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 RUN mkdir -p /toolchain
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://static.redox-os.org/toolchain/${RUST_TARGET}/relibc-install.tar.gz" \
+# Use mirror: https://github.com/rust-lang/rust/commit/abd265ed0ed4fff89f87772150da1f66c863d7e1
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ci-mirrors.rust-lang.org/rustc/2022-11-27-relibc-install.tar.gz" \
         | tar xzf - -C /toolchain
+# RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://static.redox-os.org/toolchain/${RUST_TARGET}/relibc-install.tar.gz" \
+#         | tar xzf - -C /toolchain
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
