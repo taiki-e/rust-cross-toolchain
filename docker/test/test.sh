@@ -604,8 +604,8 @@ else
                     case "${RUST_TARGET}" in
                         # TODO: As of QEMU 8.2, qemu-system-arm doesn't support Cortex-R machine.
                         # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (ARMv8-R AArch32)
-                        armv7r* | armebv7r*) continue ;;
-                        thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | arm64* | riscv*)
+                        armv[7-8]r* | armebv[7-8]r*) continue ;;
+                        thumbv[6-8]m* | thumbv7em* | aarch64* | arm64* | riscv*)
                             _linker=link.x
                             target_rustflags+=" -C link-arg=-T${_linker}"
                             ;;
@@ -802,7 +802,7 @@ case "${RUST_TARGET}" in
                     arm*v7* | thumbv7*) ;;
                     thumbv8m*hf) arch_specific_pat+=('Tag_FP_arch: FPv5/FP-D16 for ARMv8') ;;
                     thumbv8m*) ;;
-                    armeb-*) ;;
+                    armeb-* | armv8*) ;;
                     arm-*hf | armv6*hf)
                         for bin in "${out_dir}"/*; do
                             if [[ "${RUST_TARGET}" == *"-linux-musl"* ]] && [[ "${bin}" == *"-static" ]]; then

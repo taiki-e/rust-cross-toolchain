@@ -219,6 +219,13 @@ export CFLAGS_${rust_target_lower}="-march=armv7-a+vfpv3 -mfloat-abi=hard \${CFL
 export CXXFLAGS_${rust_target_lower}="-march=armv7-a+vfpv3 -mfloat-abi=hard \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
+    armv8r-none-eabihf)
+        # https://github.com/rust-lang/rust/blob/026b3b8e955e0571db39aa96fc9d7aba25cc4d66/compiler/rustc_target/src/spec/targets/armv8r_none_eabihf.rs
+        cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-march=armv8-r+fp-armv8,-fp64,-d32 -mfloat-abi=hard \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=armv8-r+fp-armv8,-fp64,-d32 -mfloat-abi=hard \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+        ;;
     aarch64-unknown-none-softfloat)
         # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L135
         cat >>"${env_path}" <<EOF
@@ -444,6 +451,8 @@ EOF
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7r_none_eabihf.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armebv7r_none_eabihf.rs
                     armv7r-none-eabihf | armebv7r-none-eabihf) qemu_cpu=cortex-r5f ;;
+                    # https://github.com/rust-lang/rust/blob/026b3b8e955e0571db39aa96fc9d7aba25cc4d66/compiler/rustc_target/src/spec/targets/armv8r_none_eabihf.rs
+                    armv8r-none-eabihf | armebv8r-none-eabihf) qemu_cpu=cortex-r52 ;;
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv4t_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv4t_none_eabi.rs
                     armv4t-none-eabi | thumbv4t-none-eabi) ;; # TODO
@@ -475,7 +484,7 @@ EOF
                     armv7a-*) qemu_machine=xilinx-zynq-a9 ;;
                     # TODO: As of QEMU 8.2, qemu-system-arm doesn't support Cortex-R machine.
                     # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (ARMv8-R AArch32)
-                    arm*v7r-*) ;;
+                    arm*v[7-8]r-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;

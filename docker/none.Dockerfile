@@ -75,6 +75,7 @@ FROM arm-toolchain AS armv7a-none-eabi
 FROM arm-toolchain AS armv7a-none-eabihf
 FROM arm-toolchain AS armv7r-none-eabi
 FROM arm-toolchain AS armv7r-none-eabihf
+FROM arm-toolchain as armv8r-none-eabihf
 FROM arm-toolchain AS thumbv5te-none-eabi
 FROM arm-toolchain AS thumbv6m-none-eabi
 FROM arm-toolchain AS thumbv7em-none-eabi

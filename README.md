@@ -373,6 +373,7 @@ Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20240619
 | `armv7a-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
 | `armv7r-none-eabi` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
 | `armv7r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
+| `armv8r-none-eabihf` | 10.3.1 | ✓ (qemu) | x86_64/aarch64 Linux (glibc 2.27+) |
 | `riscv32i-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
 | `riscv32im-unknown-none-elf` (tier3) | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |
 | `riscv32imac-unknown-none-elf` | 11.1.0 | ✓ (qemu) | x86_64 Linux (glibc 2.27+) |

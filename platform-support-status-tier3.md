@@ -55,7 +55,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] armv7a-none-eabihf
 - [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
-- [ ] armv8r-none-eabihf
+- [x] armv8r-none-eabihf
 - [ ] avr-unknown-gnu-atmega328
 - [ ] bpfeb-unknown-none
 - [ ] bpfel-unknown-none
