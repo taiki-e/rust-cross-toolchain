@@ -10,6 +10,8 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-apple-ios-macabi
 - [ ] aarch64-apple-tvos
 - [ ] aarch64-apple-tvos-sim
+- [ ] aarch64-apple-visionos
+- [ ] aarch64-apple-visionos-sim
 - [ ] aarch64-apple-watchos
 - [ ] aarch64-apple-watchos-sim
 - [ ] aarch64-fuchsia

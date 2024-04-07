@@ -120,6 +120,10 @@ watchos_targets=(
     armv7k-apple-watchos # tier3
     x86_64-apple-watchos-sim # tier3
 )
+visionos_targets=(
+    aarch64-apple-visionos # tier3
+    aarch64-apple-visionos-sim # tier3
+)
 freebsd_targets=(
     aarch64-unknown-freebsd # tier3
     armv6-unknown-freebsd # tier3
@@ -336,6 +340,7 @@ targets=(
     ${ios_targets[@]+"${ios_targets[@]}"}
     ${tvos_targets[@]+"${tvos_targets[@]}"}
     ${watchos_targets[@]+"${watchos_targets[@]}"}
+    ${visionos_targets[@]+"${visionos_targets[@]}"}
     ${freebsd_targets[@]+"${freebsd_targets[@]}"}
     ${netbsd_targets[@]+"${netbsd_targets[@]}"}
     ${openbsd_targets[@]+"${openbsd_targets[@]}"}

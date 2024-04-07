@@ -27,6 +27,7 @@ known_target_group=(
     ios
     tvos
     watchos
+    visionos
     # BSD
     freebsd
     netbsd

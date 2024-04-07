@@ -49,6 +49,7 @@ if [[ $# -gt 0 ]]; then
             ios) targets+=(${ios_targets[@]+"${ios_targets[@]}"}) ;;
             tvos) targets+=(${tvos_targets[@]+"${tvos_targets[@]}"}) ;;
             watchos) targets+=(${watchos_targets[@]+"${watchos_targets[@]}"}) ;;
+            visionos) targets+=(${visionos_targets[@]+"${visionos_targets[@]}"}) ;;
             freebsd) targets+=(${freebsd_targets[@]+"${freebsd_targets[@]}"}) ;;
             netbsd) targets+=(${netbsd_targets[@]+"${netbsd_targets[@]}"}) ;;
             openbsd) targets+=(${openbsd_targets[@]+"${openbsd_targets[@]}"}) ;;

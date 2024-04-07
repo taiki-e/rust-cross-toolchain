@@ -3,6 +3,8 @@
 # shellcheck shell=bash # not executable
 # shellcheck disable=SC2034
 
+# TODO: auto generate from target-list-unsupported list?
+
 # Linux (glibc)
 linux_gnu_targets=(
     aarch64-unknown-linux-gnu
@@ -126,6 +128,11 @@ watchos_targets=(
     # arm64_32-apple-watchos # tier3
     # armv7k-apple-watchos # tier3
     # x86_64-apple-watchos-sim # tier3
+)
+# visionOS
+visionos_targets=(
+    # aarch64-apple-visionos # tier3
+    # aarch64-apple-visionos-sim # tier3
 )
 # FreeBSD
 freebsd_targets=(
@@ -370,6 +377,7 @@ targets=(
     ${ios_targets[@]+"${ios_targets[@]}"}
     ${tvos_targets[@]+"${tvos_targets[@]}"}
     ${watchos_targets[@]+"${watchos_targets[@]}"}
+    ${visionos_targets[@]+"${visionos_targets[@]}"}
     ${freebsd_targets[@]+"${freebsd_targets[@]}"}
     ${netbsd_targets[@]+"${netbsd_targets[@]}"}
     ${openbsd_targets[@]+"${openbsd_targets[@]}"}
