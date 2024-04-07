@@ -124,11 +124,6 @@ for target in "${targets[@]}"; do
                     # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
                     arches=(amd64)
                     ;;
-                mips*)
-                    # gcc-(mips|mipsel|mips64|mips64el|mipsisa32r6|mipsisa32r6el)-linux-gnu for arm64 host is not available in ubuntu 20.04.
-                    # TODO: consider using debian bullseye that has the same glibc version as ubuntu 20.04.
-                    arches=(amd64)
-                    ;;
             esac
             docker_manifest "${target}"
             ;;

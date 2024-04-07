@@ -159,11 +159,11 @@ for target in "${targets[@]}"; do
     case "${target}" in
         *-linux-gnu*)
             ubuntu_version=18.04
+            # NB: When updating this, the reminder to update tools/update-manifest.sh.
             case "${target}" in
-                # NB: When updating this, the reminder to update tools/update-manifest.sh.
-                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc-* | powerpc64-* | sparc-* | sparc64-*)
+                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
                     # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
-                    # powerpc-*|powerpc64-*|sparc-*|sparc64-*: gcc-(powerpc|powerpc64|sparc64)-linux-gnu(spe) for arm64 host is not available in ubuntu 20.04.
+                    # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 22.04.
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;
@@ -180,10 +180,12 @@ for target in "${targets[@]}"; do
                     ;;
                 aarch64)
                     case "${target}" in
-                        # gcc-(mips|mipsel|mips64|mips64el|mipsisa32r6|mipsisa32r6el)-linux-gnu for arm64 host is not available in ubuntu 20.04.
-                        # TODO: consider using debian bullseye that has the same glibc version as ubuntu 20.04.
-                        mips*)
-                            # ubuntu_version=21.04
+                        # gcc-(mips|mipsel|mips64|mips64el|mipsisa32r6|mipsisa32r6el)-linux-gnu for arm64 host is available on ubuntu 21.04+.
+                        mips*) ubuntu_version=22.04 ;;
+                        # gcc-(powerpc|sparc64)-linux-gnu for arm64 host is available on ubuntu 23.10+.
+                        powerpc-* | sparc-* | sparc64-*)
+                            # TODO: use 24.04 once released
+                            # ubuntu_version=23.10
                             continue
                             ;;
                     esac

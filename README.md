@@ -52,14 +52,14 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `i586-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `i686-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `loongarch64-unknown-linux-gnu` | 2.36 | 13.0.0 | x86_64 Linux (any libc) |
-| `mips-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
-| `mips64-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
-| `mips64el-unknown-linux-gnuabi64` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
-| `mipsel-unknown-linux-gnu` (tier3) [1] | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
-| `mipsisa32r6-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
-| `mipsisa32r6el-unknown-linux-gnu` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
-| `mipsisa64r6-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
-| `mipsisa64r6el-unknown-linux-gnuabi64` (tier3) | 2.31 | 9.3.0 | x86_64 Linux (glibc 2.31+) |
+| `mips-unknown-linux-gnu` (tier3) [1] | 2.27 (x86_64 host) / 2.35 (aarch64 host) | 7.4.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.27+) / aarch64 Linux (glibc 2.35+) |
+| `mips64-unknown-linux-gnuabi64` (tier3) | 2.27 (x86_64 host) / 2.35 (aarch64 host) | 7.4.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.27+) / aarch64 Linux (glibc 2.35+) |
+| `mips64el-unknown-linux-gnuabi64` (tier3) | 2.27 (x86_64 host) / 2.35 (aarch64 host) | 7.4.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.27+) / aarch64 Linux (glibc 2.35+) |
+| `mipsel-unknown-linux-gnu` (tier3) [1] | 2.27 (x86_64 host) / 2.35 (aarch64 host) | 7.4.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.27+) / aarch64 Linux (glibc 2.35+) |
+| `mipsisa32r6-unknown-linux-gnu` (tier3) | 2.31 (x86_64 host) / 2.35 (aarch64 host) | 9.3.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.31+) / aarch64 Linux (glibc 2.35+) |
+| `mipsisa32r6el-unknown-linux-gnu` (tier3) | 2.31 (x86_64 host) / 2.35 (aarch64 host) | 9.3.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.31+) / aarch64 Linux (glibc 2.35+) |
+| `mipsisa64r6-unknown-linux-gnuabi64` (tier3) | 2.31 (x86_64 host) / 2.35 (aarch64 host) | 9.3.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.31+) / aarch64 Linux (glibc 2.35+) |
+| `mipsisa64r6el-unknown-linux-gnuabi64` (tier3) | 2.31 (x86_64 host) / 2.35 (aarch64 host) | 9.3.0 (x86_64 host) / 11.2.0 (aarch64 host) | x86_64 Linux (glibc 2.31+) / aarch64 Linux (glibc 2.35+) |
 | `powerpc-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
 | `powerpc-unknown-linux-gnuspe` (tier3) | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
 | `powerpc64-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64 Linux (glibc 2.27+) |
