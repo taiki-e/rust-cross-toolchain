@@ -10,7 +10,8 @@ cpp = []
 # https://github.com/rust-lang/cc-rs/issues/959
 cc = "=1.0.83"
 # TODO: 0.1.49 fails for android
-cmake = "=0.1.48"
+# cmake = "=0.1.48"
+cmake = { git = "https://github.com/rust-lang/cmake-rs.git", rev = "00e6b220342a8b0ec4548071928ade38fd5f691b" } # cmake-rs 0.1.48 + https://github.com/rust-lang/cmake-rs/pull/146
 
 [lints.rust]
 rust_2018_idioms = "warn"
