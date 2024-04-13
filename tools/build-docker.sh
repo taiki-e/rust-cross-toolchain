@@ -342,9 +342,9 @@ for target in "${targets[@]}"; do
                 # https://en.wikipedia.org/wiki/OpenBSD#Releases
                 # https://endoflife.date/openbsd
                 # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-                openbsd_versions=("7.3" "7.4")
+                openbsd_versions=("7.4" "7.5")
             fi
-            default_openbsd_version="7.3"
+            default_openbsd_version="7.4"
             for openbsd_version in "${openbsd_versions[@]}"; do
                 build "openbsd" "${target}" "${openbsd_version}" "${default_openbsd_version}" \
                     --build-arg "OPENBSD_VERSION=${openbsd_version}"

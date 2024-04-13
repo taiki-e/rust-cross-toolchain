@@ -212,13 +212,13 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
-| `i686-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
-| `powerpc-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
-| `powerpc64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
-| `riscv64gc-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | x86_64 Linux (any libc) |
-| `x86_64-unknown-openbsd` (tier3) | 7.3 (default), 7.4 | Linux (any arch, any libc) |
+| `aarch64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
+| `powerpc64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | x86_64 Linux (any libc) |
+| `x86_64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
 
 ### DragonFly BSD
 
