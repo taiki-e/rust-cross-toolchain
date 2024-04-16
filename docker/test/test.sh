@@ -234,7 +234,8 @@ case "${RUST_TARGET}" in
     # TODO(android):
     # TODO(aarch64-unknown-openbsd): clang segfault
     # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
-    arm*-android* | thumb*-android* | i686-*-android* | aarch64-unknown-openbsd | sparc64-unknown-openbsd) no_cpp=1 ;;
+    # TODO(wasm32-wasip1-threads): not output
+    arm*-android* | thumb*-android* | i686-*-android* | aarch64-unknown-openbsd | sparc64-unknown-openbsd | wasm32-wasip1-threads) no_cpp=1 ;;
     # TODO(redox): /x86_64-unknown-redox/x86_64-unknown-redox/include/bits/wchar.h:12:28: error: cannot combine with previous 'int' declaration specifier
     *-redox*)
         case "${cc}" in
@@ -272,7 +273,8 @@ esac
 no_run_test=""
 case "${RUST_TARGET}" in
     # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
-    powerpc-unknown-linux-gnuspe) no_run_test=1 ;;
+    # TODO(wasm32-wasip1-threads): failed to invoke command default
+    powerpc-unknown-linux-gnuspe | wasm32-wasip1-threads) no_run_test=1 ;;
 esac
 
 build_mode=debug
@@ -280,6 +282,8 @@ build_std=()
 if [[ -f /BUILD_STD ]]; then
     if [[ -n "${no_std}" ]]; then
         build_std=(-Z build-std="core,alloc")
+    elif rustc --print cfg --target "${RUST_TARGET}" | grep -q 'panic="abort"'; then
+        build_std=(-Z build-std="std,panic_abort")
     else
         build_std=(-Z build-std)
     fi
