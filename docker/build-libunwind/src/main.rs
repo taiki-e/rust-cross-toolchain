@@ -35,7 +35,7 @@ fn main() -> Result<()> {
     let target = &target.unwrap_or_else(usage);
     let target_lower = &target.replace(['-', '.'], "_");
     let out_dir = &out_dir.unwrap_or_else(usage);
-    let rustc = &env::var_os("RUSTC").unwrap_or_else(|| "rustc".into());
+    let rustc = "rustc";
     let host = &match host {
         Some(host) => host,
         None => {
