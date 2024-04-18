@@ -306,10 +306,9 @@ case "${RUST_TARGET}" in
     *-unknown-linux-* | *-android*)
         case "${RUST_TARGET}" in
             aarch64* | arm64*)
-                qemu_arch="${RUST_TARGET%%-*}"
                 case "${RUST_TARGET}" in
-                    arm64*be*) qemu_arch=aarch64_be ;;
-                    arm64*) qemu_arch=aarch64 ;;
+                    aarch64_be-*) qemu_arch=aarch64_be ;;
+                    *) qemu_arch=aarch64 ;;
                 esac
                 qemu_cpu=neoverse-v1
                 ;;
@@ -420,10 +419,9 @@ EOF
         case "${RUST_TARGET}" in
             aarch64* | arm64*)
                 qemu_system_arch=aarch64
-                qemu_user_arch="${RUST_TARGET%%-*}"
                 case "${RUST_TARGET}" in
-                    arm64*be*) qemu_user_arch=aarch64_be ;;
-                    arm64*) qemu_user_arch=aarch64 ;;
+                    aarch64_be-*) qemu_user_arch=aarch64_be ;;
+                    *) qemu_user_arch=aarch64 ;;
                 esac
                 qemu_machine=raspi3b
                 ;;
