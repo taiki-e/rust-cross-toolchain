@@ -311,7 +311,7 @@ none_targets=(
     mipsel-unknown-none # tier3
     msp430-none-elf # tier3
     riscv32i-unknown-none-elf
-    riscv32im-unknown-none-elf # tier3
+    riscv32im-unknown-none-elf
     riscv32ima-unknown-none-elf # tier3
     riscv32imac-unknown-none-elf
     riscv32imafc-unknown-none-elf

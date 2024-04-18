@@ -55,6 +55,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] powerpc64-unknown-linux-gnu
 - [x] powerpc64le-unknown-linux-gnu
 - [x] riscv32i-unknown-none-elf
+- [x] riscv32im-unknown-none-elf
 - [x] riscv32imac-unknown-none-elf
 - [ ] riscv32imafc-unknown-none-elf
 - [x] riscv32imc-unknown-none-elf
