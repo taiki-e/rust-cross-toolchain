@@ -58,7 +58,7 @@ case "${dpkg_arch##*-}" in
     *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
 esac
 # Install the latest wine: https://wiki.winehq.org/Ubuntu
-codename=$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')
+codename=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d= -f2)
 mkdir -pm755 /etc/apt/keyrings
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused https://dl.winehq.org/wine-builds/winehq.key \
     | tee /etc/apt/keyrings/winehq-archive.key >/dev/null

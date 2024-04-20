@@ -134,7 +134,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # https://launchpad.net/~canonical-server/+archive/ubuntu/server-backports/+packages
 RUN <<EOF
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 94E187AD53A59D1847E4880F8A295C4FB8B190B7
-codename=$(grep '^VERSION_CODENAME=' /etc/os-release | sed 's/^VERSION_CODENAME=//')
+codename=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d= -f2)
 echo "deb http://ppa.launchpad.net/canonical-server/server-backports/ubuntu ${codename} main" >/etc/apt/sources.list.d/server-backports.list
 apt-get -o Acquire::Retries=10 -qq update
 # libpython2.7 is needed for GDB

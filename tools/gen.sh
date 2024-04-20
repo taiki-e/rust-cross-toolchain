@@ -73,7 +73,7 @@ mkdir -p tmp/gen/os
 # shellcheck disable=SC2207
 rustc_targets=($(rustc --print target-list))
 # shellcheck disable=SC2207
-rustup_targets=($(rustup target list | sed 's/ .*//g'))
+rustup_targets=($(rustup target list | cut -d' ' -f1))
 for target_spec in $(rustc -Z unstable-options --print all-target-specs-json | jq -c '. | to_entries | .[]'); do
     target=$(jq <<<"${target_spec}" -r '.key')
     target_spec=$(jq <<<"${target_spec}" -c '.value')

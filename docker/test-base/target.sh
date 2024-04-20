@@ -31,7 +31,7 @@ export RUSTUP_MAX_RETRIES=10
 # shellcheck disable=SC1091
 . "${HOME}/.cargo/env"
 
-if rustup target list | sed 's/ .*//g' | grep -Eq "^${RUST_TARGET}$"; then
+if rustup target list | cut -d' ' -f1 | grep -Eq "^${RUST_TARGET}$"; then
     rustup target add "${RUST_TARGET}"
 else
     touch /BUILD_STD

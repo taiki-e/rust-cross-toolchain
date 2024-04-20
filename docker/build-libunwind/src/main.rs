@@ -39,7 +39,7 @@ fn main() -> Result<()> {
     let host = &match host {
         Some(host) => host,
         None => {
-            let output = Command::new(rustc).args(["--version", "--verbose"]).output()?;
+            let output = Command::new(rustc).arg("-vV").output()?;
             assert!(output.status.success());
             String::from_utf8(output.stdout)?
                 .lines()
