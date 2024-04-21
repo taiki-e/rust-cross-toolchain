@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://doc.rust-lang.org/nightly/rustc/platform-support/netbsd.html
+# - https://github.com/rust-lang/rust/blob/c4f112af6e503c2b3e908af7dddd1b8ea99ed60c/src/doc/rustc/src/platform-support/netbsd.md
 # - https://github.com/rust-lang/rust/blob/1.66.0/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
 
 # When using clang:

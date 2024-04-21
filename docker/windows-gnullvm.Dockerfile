@@ -3,7 +3,7 @@
 
 # Refs:
 # - https://github.com/mstorsjo/llvm-mingw
-# - https://github.com/rust-lang/rust/blob/1.70.0/src/doc/rustc/src/platform-support/pc-windows-gnullvm.md
+# - https://github.com/rust-lang/rust/blob/1.77.0/src/doc/rustc/src/platform-support/pc-windows-gnullvm.md
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=22.04
@@ -87,6 +87,7 @@ case "${RUST_TARGET}" in
 esac
 EOF
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-aarch64 /usr/bin/
+# https://www.linaro.org/blog/emulate-windows-on-arm
 COPY --from=linaro/wine-arm64 /opt/wine-arm64 /opt/wine-arm64
 RUN <<EOF
 case "${RUST_TARGET}" in
