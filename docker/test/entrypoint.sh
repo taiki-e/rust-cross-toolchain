@@ -542,7 +542,7 @@ EOF
 set -eu
 toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
 export QEMU_AUDIO_DRV="${QEMU_AUDIO_DRV:-none}"
-exec qemu-system-${qemu_system_arch}${qemu_cpu:-} -M ${qemu_machine} -display none -semihosting -kernel "\$@"
+exec qemu-system-${qemu_system_arch} -M ${qemu_machine}${qemu_cpu:-} -display none -semihosting -kernel "\$@"
 EOF
                 chmod +x "${toolchain_dir}/bin/${runner_qemu_system}"
                 cat "${toolchain_dir}/bin/${runner_qemu_system}"
