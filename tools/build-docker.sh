@@ -163,7 +163,7 @@ for target in "${targets[@]}"; do
             case "${target}" in
                 aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
                     # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
-                    # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 22.04.
+                    # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;
@@ -183,11 +183,7 @@ for target in "${targets[@]}"; do
                         # gcc-(mips|mipsel|mips64|mips64el|mipsisa32r6|mipsisa32r6el)-linux-gnu for arm64 host is available on ubuntu 21.04+.
                         mips*) ubuntu_version=22.04 ;;
                         # gcc-(powerpc|sparc64)-linux-gnu for arm64 host is available on ubuntu 23.10+.
-                        powerpc-* | sparc-* | sparc64-*)
-                            # TODO: use 24.04 once released
-                            # ubuntu_version=23.10
-                            continue
-                            ;;
+                        powerpc-* | sparc-* | sparc64-*) ubuntu_version=24.04 ;;
                     esac
                     ;;
             esac
