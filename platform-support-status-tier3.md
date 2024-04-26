@@ -17,7 +17,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-fuchsia
 - [ ] aarch64-kmc-solid_asp3
 - [ ] aarch64-nintendo-switch-freestanding
-- [x] aarch64-pc-windows-gnullvm
 - [x] aarch64-unknown-freebsd
 - [ ] aarch64-unknown-hermit
 - [ ] aarch64-unknown-illumos
@@ -67,7 +66,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i586-pc-nto-qnx700
 - [x] i586-unknown-netbsd
 - [ ] i686-apple-darwin
-- [x] i686-pc-windows-gnullvm
 - [ ] i686-unknown-haiku
 - [ ] i686-unknown-hurd-gnu
 - [x] i686-unknown-netbsd
@@ -144,7 +142,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-apple-watchos-sim
 - [ ] x86_64-fuchsia
 - [ ] x86_64-pc-nto-qnx710
-- [x] x86_64-pc-windows-gnullvm
 - [ ] x86_64-unikraft-linux-musl
 - [x] x86_64-unknown-dragonfly
 - [ ] x86_64-unknown-haiku
