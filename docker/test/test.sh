@@ -575,8 +575,6 @@ else
         case "${RUST_TARGET}" in
             armeb*)
                 case "${linker}" in
-                    # TODO: lld doesn't support big-endian arm https://groups.google.com/g/clang-built-linux/c/XkHn49b_TnI/m/S-3yh7H1BgAJ
-                    rust-lld) continue ;;
                     *-ld) target_rustflags+=" -C link-arg=-EB" ;;
                     *-gcc) target_rustflags+=" -C link-arg=-mbig-endian" ;;
                 esac
