@@ -11,6 +11,8 @@ ARG FREEBSD_VERSION
 # https://ftp.gnu.org/gnu/binutils
 ARG BINUTILS_VERSION=2.37
 
+# TODO(fortran)
+
 FROM ghcr.io/taiki-e/downloader as binutils-src
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION

@@ -100,7 +100,7 @@ cd /tmp/gcc-build
     --disable-multilib \
     --disable-nls \
     --disable-shared \
-    --enable-languages=c,c++ \
+    --enable-languages=c,c++,fortran \
     --enable-tls \
     &>build.log || (tail <build.log -5000 && exit 1)
 make -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)

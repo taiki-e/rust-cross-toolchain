@@ -153,9 +153,14 @@ echo "${gcc_version}" >/GCC_VERSION
 mkdir -p /tmp/toolchain
 cd /tmp/toolchain
 apt-get -o Acquire::Retries=10 -qq update
+packages=("g++-${multilib:+multilib-}${apt_target/_/-}")
+if [[ -z "${multilib:-}" ]]; then
+    # TODO(fortran)
+    packages+=("gfortran-${apt_target/_/-}")
+fi
 # shellcheck disable=SC2046
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
-    "g++-${multilib:+multilib-}${apt_target/_/-}" \
+    "${packages[@]}" \
     | grep '^\w' \
     | grep -E "${apt_target/_/-}|${lib_arch}-cross")
 set +x

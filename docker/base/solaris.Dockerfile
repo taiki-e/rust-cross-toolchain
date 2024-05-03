@@ -156,7 +156,7 @@ cd /tmp/gcc-build
     --disable-lto \
     --disable-multilib \
     --disable-nls \
-    --enable-languages=c,c++ \
+    --enable-languages=c,c++,fortran \
     &>build.log || (tail <build.log -5000 && exit 1)
 make -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
 make -p "${TOOLCHAIN_DIR}" &>build.log || (tail <build.log -5000 && exit 1)

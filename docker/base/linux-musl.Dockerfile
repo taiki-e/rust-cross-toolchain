@@ -76,7 +76,7 @@ COMMON_CONFIG += CFLAGS="-g1 -O2" CXXFLAGS="-g1 -O2" LDFLAGS="-s -static --stati
 COMMON_CONFIG += --disable-nls
 COMMON_CONFIG += --with-debug-prefix-map=\$(CURDIR)=
 GCC_CONFIG += --enable-default-pie --enable-static-pie
-GCC_CONFIG += --enable-languages=c,c++
+GCC_CONFIG += --enable-languages=c,c++,fortran
 GCC_CONFIG += --disable-libquadmath --disable-libquadmath-support --disable-decimal-float
 GCC_CONFIG += --disable-multilib
 EOF2

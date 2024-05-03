@@ -23,6 +23,7 @@ RUN <<EOF
 arch="${RUST_TARGET%%-*}"
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances \
     "g++-mingw-w64-${arch/_/-}" \
+    "gfortran-mingw-w64-${arch/_/-}" \
     | grep '^\w' \
     | grep 'mingw')
 EOF
@@ -43,7 +44,7 @@ apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 build-dep -y gcc-mingw-w64-i68
 cd gcc-mingw-w64-*
 # Use dwarf2 exceptions instead of sjlj exceptions.
 sed -i -e 's/libgcc_s_sjlj-1/libgcc_s_dw2-1/g' debian/gcc-mingw-w64-i686.install*
-# Apply a patch to disable x86_64 packages, languages other than c/c++,
+# Apply a patch to disable x86_64 packages, languages other than c/c++/fortran,
 # sjlj exceptions, and enable dwarf2 exceptions.
 patch -p1 </base/windows-gnu-gcc-mingw-i686.diff
 dpkg-buildpackage -B -us -uc -nc -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
