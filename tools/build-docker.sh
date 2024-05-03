@@ -170,6 +170,10 @@ for target in "${targets[@]}"; do
                     esac
                     ;;
             esac
+            case "${target}" in
+                # old file command doesn't support loongarch64
+                loongarch64-*) ubuntu_version=22.04 ;;
+            esac
             case "${arch}" in
                 # Note: gcc-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.
                 x86_64)
@@ -186,10 +190,6 @@ for target in "${targets[@]}"; do
                         powerpc-* | sparc-* | sparc64-*) ubuntu_version=24.04 ;;
                     esac
                     ;;
-            esac
-            case "${target}" in
-                # old file command doesn't support loongarch64
-                loongarch64-*) ubuntu_version=22.04 ;;
             esac
             build "linux-gnu" "${target}" \
                 --build-arg "DISTRO_VERSION=${ubuntu_version}"

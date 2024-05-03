@@ -25,6 +25,16 @@ x() {
         )
     fi
 }
+retry() {
+    for i in {1..10}; do
+        if "$@"; then
+            return 0
+        else
+            sleep "${i}"
+        fi
+    done
+    "$@"
+}
 
 if [[ "${1:-}" == "-"* ]]; then
     cat <<EOF
@@ -107,7 +117,10 @@ docker_manifest() {
     done
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
         for tag in "${tags[@]}"; do
-            x docker manifest push --purge "${tag}"
+            (
+                set -x
+                retry docker manifest push --purge "${tag}"
+            )
         done
     fi
 }
