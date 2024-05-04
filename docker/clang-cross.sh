@@ -27,7 +27,8 @@ case "${RUST_TARGET}" in
 esac
 
 case "${RUST_TARGET}" in
-    *-unknown-linux-*)
+    *-android*) ;;
+    *-linux-*)
         case "${RUST_TARGET}" in
             arm-*hf) common_flags+=" -march=armv6 -marm -mfpu=vfp -mfloat-abi=hard" ;;
             arm-*) common_flags+=" -march=armv6 -marm -mfloat-abi=soft" ;;

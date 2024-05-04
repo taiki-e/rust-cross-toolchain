@@ -267,7 +267,7 @@ case "${RUST_TARGET}" in
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
     # TODO(redox):
-    *-unknown-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
+    *-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
 esac
 # Whether or not to run the test.
 no_run_test=""

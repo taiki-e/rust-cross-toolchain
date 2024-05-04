@@ -303,7 +303,7 @@ case "${dpkg_arch##*-}" in
     *) bail "unsupported architecture '${dpkg_arch}'" ;;
 esac
 case "${RUST_TARGET}" in
-    *-unknown-linux-* | *-android*)
+    *-linux-* | *-android*)
         case "${RUST_TARGET}" in
             aarch64* | arm64*)
                 case "${RUST_TARGET}" in
