@@ -7,7 +7,7 @@ fn main() {
     println!("cargo:rerun-if-changed=hello_c.c");
     println!("cargo:rerun-if-changed=hello_cpp.cpp");
     println!("cargo:rerun-if-changed=libhello_cmake");
-    println!("cargo:rustc-check-cfg=cfg(no_c, no_cmake)");
+    println!("cargo:rustc-check-cfg=cfg(no_c,no_cmake)");
 
     let target = &*env::var("TARGET").expect("TARGET not set");
     let target_arch = &*env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH not set");
