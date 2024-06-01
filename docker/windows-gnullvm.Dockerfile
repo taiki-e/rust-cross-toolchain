@@ -11,7 +11,7 @@ ARG TOOLCHAIN_TAG=dev
 
 # https://github.com/mstorsjo/llvm-mingw/releases
 # NB: When updating this, the reminder to update Clang/Mingw version in README.md.
-ARG TOOLCHAIN_VERSION=20240502
+ARG TOOLCHAIN_VERSION=20240518
 
 FROM ghcr.io/taiki-e/downloader as toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
