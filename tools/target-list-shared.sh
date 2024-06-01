@@ -86,6 +86,10 @@ linux_ohos_targets=(
     # armv7-unknown-linux-ohos # tier3
     # x86_64-unknown-linux-ohos # tier3
 )
+# Linux (no libc)
+linux_none_targets=(
+    # x86_64-unknown-linux-none # tier3
+)
 # Android
 android_targets=(
     aarch64-linux-android

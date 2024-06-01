@@ -207,6 +207,7 @@ case "${RUST_TARGET}" in
 esac
 no_std=""
 case "${RUST_TARGET}" in
+    *-linux-none*) ;;
     # https://github.com/rust-lang/rust/blob/1.70.0/library/std/build.rs#L41
     *-none* | *-uefi* | *-psp* | *-psx* | *-cuda* | avr-*) no_std=1 ;;
 esac

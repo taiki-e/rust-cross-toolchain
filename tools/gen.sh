@@ -21,6 +21,7 @@ known_target_group=(
     linux_musl
     linux_uclibc
     linux_ohos
+    linux_none
     android
     # Darwin
     macos
@@ -83,6 +84,9 @@ for target_spec in $(rustc -Z unstable-options --print all-target-specs-json | j
     fi
     env=$(jq <<<"${target_spec}" -r '.env')
     if [[ "${env}" == "null" ]]; then
+        env=none
+    fi
+    if [[ "${env}" == "none" ]] && [[ "${os}" != "linux" ]]; then
         case "${target}" in
             wasm*-unknown-unknown) echo "${target}" >>"tmp/gen/os/wasm_unknown" ;;
             *) echo "${target}" >>"tmp/gen/os/${os}" ;;

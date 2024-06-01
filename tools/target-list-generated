@@ -82,6 +82,9 @@ linux_ohos_targets=(
     armv7-unknown-linux-ohos
     x86_64-unknown-linux-ohos
 )
+linux_none_targets=(
+    x86_64-unknown-linux-none # tier3
+)
 android_targets=(
     aarch64-linux-android
     arm-linux-androideabi
@@ -335,6 +338,7 @@ targets=(
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
     ${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}
     ${linux_ohos_targets[@]+"${linux_ohos_targets[@]}"}
+    ${linux_none_targets[@]+"${linux_none_targets[@]}"}
     ${android_targets[@]+"${android_targets[@]}"}
     ${macos_targets[@]+"${macos_targets[@]}"}
     ${ios_targets[@]+"${ios_targets[@]}"}
