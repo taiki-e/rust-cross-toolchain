@@ -38,7 +38,6 @@ Icelake
 INLINES
 isnan
 isystem
-keyrings
 keyserver
 lclang
 LDFLAGS
@@ -111,7 +110,6 @@ octeon
 opensbi
 PCREL
 pkgconfig
-posix
 powerpcspe
 raspi
 rcrt
