@@ -337,7 +337,7 @@ Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20240518/build-mi
 Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20240518
 -->
 
-([Dockerfile](docker/windows-gnu.Dockerfile))
+([Dockerfile](docker/windows-gnullvm.Dockerfile))
 
 **Supported targets:**
 
