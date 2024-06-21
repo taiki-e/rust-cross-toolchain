@@ -192,6 +192,7 @@ illumos_targets=(
 windows_msvc_targets=(
     # aarch64-pc-windows-msvc
     # aarch64-uwp-windows-msvc # tier3
+    # arm64ec-pc-windows-msvc
     # i586-pc-windows-msvc
     # i686-pc-windows-msvc
     # i686-uwp-windows-msvc # tier3
@@ -241,6 +242,9 @@ espidf_targets=(
     # riscv32imac-esp-espidf # tier3
     # riscv32imafc-esp-espidf # tier3
     # riscv32imc-esp-espidf # tier3
+    # xtensa-esp32-espidf # tier3
+    # xtensa-esp32s2-espidf # tier3
+    # xtensa-esp32s3-espidf # tier3
 )
 # Fuchsia
 fuchsia_targets=(
@@ -291,6 +295,7 @@ psx_targets=(
 # Redox
 redox_targets=(
     # aarch64-unknown-redox # tier3
+    # i686-unknown-redox # tier3
     x86_64-unknown-redox
 )
 # SGX
@@ -370,6 +375,9 @@ none_targets=(
     thumbv8m.main-none-eabi
     thumbv8m.main-none-eabihf
     # x86_64-unknown-none
+    # xtensa-esp32-none-elf # tier3
+    # xtensa-esp32s2-none-elf # tier3
+    # xtensa-esp32s3-none-elf # tier3
 )
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}

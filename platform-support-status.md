@@ -25,6 +25,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] arm-unknown-linux-gnueabihf
 - [x] arm-unknown-linux-musleabi
 - [x] arm-unknown-linux-musleabihf
+- [ ] arm64ec-pc-windows-msvc
 - [x] armebv7r-none-eabi
 - [x] armebv7r-none-eabihf
 - [x] armv5te-unknown-linux-gnueabi
