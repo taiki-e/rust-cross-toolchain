@@ -27,7 +27,7 @@ ARG FREEBSD_VERSION
 RUN mkdir -p /sysroot
 # Download FreeBSD libraries and header files.
 # https://download.freebsd.org/ftp/releases
-# - As of 13.2, base.txz for armv{6,7} is not distributed.
+# - As of 14.1, base.txz for armv{6,7} is not distributed.
 # - Use bsdtar to avoid "unknown extended header keyword" warning.
 RUN <<EOF
 case "${RUST_TARGET}" in

@@ -183,7 +183,7 @@ for target in "${targets[@]}"; do
                 freebsd_versions=("${FREEBSD_VERSION}")
             else
                 # NB: When updating this, the reminder to update tools/build-docker.sh.
-                freebsd_versions=("12.4" "13.2" "14.0")
+                freebsd_versions=("12.4" "13.3" "14.0")
             fi
             default_freebsd_version=12
             for freebsd_version in "${freebsd_versions[@]}"; do

@@ -257,9 +257,9 @@ for target in "${targets[@]}"; do
                 # https://www.freebsd.org/security/unsupported
                 # https://endoflife.date/freebsd
                 # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-                # TODO: 12.4 was EoL on 2023-12-31.
-                # TODO: 13.2 will be EoL on 2024-06-30.
-                freebsd_versions=("12.4" "13.2" "14.0")
+                # TODO: 12 was EoL on 2023-12-31.
+                # TODO: 14.0 will be EoL on 2024-09-30.
+                freebsd_versions=("12.4" "13.3" "14.0")
             fi
             default_freebsd_version=12
             for freebsd_version in "${freebsd_versions[@]}"; do
@@ -290,7 +290,7 @@ for target in "${targets[@]}"; do
                 # https://www.netbsd.org/releases/formal.html
                 # https://endoflife.date/netbsd
                 # NB: When updating this, the reminder to update docker/base/build-docker.sh, tools/docker-manifest.sh, and README.md.
-                # TODO: 8 will be EoL on 2024-04-28.
+                # TODO: 8 was EoL on 2024-04-28.
                 netbsd_versions=("8" "9" "10")
             fi
             default_netbsd_version=8
