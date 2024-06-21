@@ -26,7 +26,7 @@ ARG CARGO_PROFILE_RELEASE_DEBUG=1
 ARG CARGO_PROFILE_RELEASE_LTO=true
 ARG RUSTFLAGS='-C target-feature=+crt-static -C link-self-contained=yes'
 RUN cargo build --release --target "$(rustc -vV | grep '^host:' | cut -d' ' -f2)"
-RUN mv target/x86_64-unknown-linux-musl/release/build-libunwind /usr/local/bin/
+RUN mv target/"$(rustc -vV | grep '^host:' | cut -d' ' -f2)"/release/build-libunwind /usr/local/bin/
 WORKDIR /
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
