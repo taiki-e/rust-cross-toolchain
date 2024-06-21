@@ -118,7 +118,7 @@ case "${target}" in
             netbsd_versions=("${NETBSD_VERSION}")
         else
             # NB: When updating this, the reminder to update tools/build-docker.sh.
-            netbsd_versions=("9.3" "10.0")
+            netbsd_versions=("9.4" "10.0")
         fi
         for netbsd_version in "${netbsd_versions[@]}"; do
             case "${target}" in
