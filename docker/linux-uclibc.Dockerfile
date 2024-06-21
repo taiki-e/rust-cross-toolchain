@@ -14,7 +14,7 @@ ARG UBUNTU_VERSION=20.04
 ARG TOOLCHAIN_VERSION=2020.08-1
 ARG GCC_VERSION=10.2.0
 
-FROM ghcr.io/taiki-e/downloader as toolchain
+FROM ghcr.io/taiki-e/downloader AS toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 RUN mkdir -p /toolchain
@@ -35,7 +35,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://to
     | tar xjf - --strip-components 1 -C /toolchain
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -77,7 +77,7 @@ RUN --mount=type=bind,target=/docker \
     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
     /docker/clang-cross.sh
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -88,7 +88,7 @@ RUN /test-base/target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -97,7 +97,7 @@ RUN /test/test.sh gcc
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -108,7 +108,7 @@ RUN /test/test.sh gcc
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

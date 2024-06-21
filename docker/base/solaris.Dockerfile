@@ -12,20 +12,20 @@ ARG BINUTILS_VERSION=2.33.1
 # https://ftp.gnu.org/gnu/gcc
 ARG GCC_VERSION=8.5.0
 
-FROM ghcr.io/taiki-e/downloader as binutils-src
+FROM ghcr.io/taiki-e/downloader AS binutils-src
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p /binutils-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
-FROM ghcr.io/taiki-e/downloader as gcc-src
+FROM ghcr.io/taiki-e/downloader AS gcc-src
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG GCC_VERSION
 RUN mkdir -p /gcc-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /gcc-src
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as sysroot
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS sysroot
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -97,7 +97,7 @@ EOF
 WORKDIR /
 
 # TODO: "error: Building GCC requires GMP 4.2+, MPFR 2.4.0+ and MPC 0.8.0+." on the latest alpine
-FROM ghcr.io/taiki-e/build-base@sha256:13b4216cb5813be57dfa09afc872dfd42a54f855ccf4110887914ba37dcc06ee as builder
+FROM ghcr.io/taiki-e/build-base@sha256:13b4216cb5813be57dfa09afc872dfd42a54f855ccf4110887914ba37dcc06ee AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apk --no-cache add \
@@ -166,7 +166,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu as final
+FROM ubuntu AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

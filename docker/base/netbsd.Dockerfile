@@ -16,7 +16,7 @@ ARG NETBSD_VERSION
 
 # TODO(fortran)
 
-FROM ghcr.io/taiki-e/downloader as build-src
+FROM ghcr.io/taiki-e/downloader AS build-src
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG NETBSD_VERSION
 RUN mkdir -p /build-src
@@ -33,7 +33,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url
 EOF
 WORKDIR /
 
-FROM ghcr.io/taiki-e/downloader as sysroot
+FROM ghcr.io/taiki-e/downloader AS sysroot
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG NETBSD_VERSION
@@ -84,7 +84,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url
     | tar "${cmd}" - -C /sysroot ./usr/include ./usr/lib
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
@@ -171,7 +171,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

@@ -6,7 +6,7 @@
 
 ARG UBUNTU_VERSION=22.04
 
-FROM ghcr.io/taiki-e/downloader as toolchain
+FROM ghcr.io/taiki-e/downloader AS toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 RUN mkdir -p /toolchain
@@ -16,7 +16,7 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
 # RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://static.redox-os.org/toolchain/${RUST_TARGET}/relibc-install.tar.gz" \
 #         | tar xzf - -C /toolchain
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -33,7 +33,7 @@ RUN --mount=type=bind,target=/docker \
     CXXFLAGS="-std=c++14 -isystem\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
     /docker/clang-cross.sh
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -43,7 +43,7 @@ COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -52,7 +52,7 @@ RUN /test/test.sh gcc
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -63,7 +63,7 @@ RUN /test/test.sh gcc
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

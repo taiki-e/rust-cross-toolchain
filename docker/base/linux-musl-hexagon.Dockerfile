@@ -7,7 +7,7 @@
 # - https://codelinaro.jfrog.io/ui/native/codelinaro-toolchain-for-hexagon
 # - https://github.com/qemu/qemu/blob/v8.0.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
 
-FROM ghcr.io/taiki-e/build-base:alpine as builder
+FROM ghcr.io/taiki-e/build-base:alpine AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR=/toolchain/x86_64-linux-gnu
@@ -25,7 +25,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu as final
+FROM ubuntu AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

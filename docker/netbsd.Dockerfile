@@ -18,9 +18,9 @@ ARG HOST_ARCH=amd64
 # See tools/build-docker.sh
 ARG NETBSD_VERSION
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${NETBSD_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${NETBSD_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS toolchain
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -58,7 +58,7 @@ export COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain
 /docker/clang-cross.sh
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -68,7 +68,7 @@ COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -78,7 +78,7 @@ RUN /test/test.sh gcc
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -90,7 +90,7 @@ RUN /test/test.sh gcc
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

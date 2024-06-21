@@ -6,17 +6,17 @@ ARG UBUNTU_VERSION=18.04
 ARG TOOLCHAIN_TAG=dev
 ARG HOST_ARCH=amd64
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"aarch64-none-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as aarch64-toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"aarch64-none-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS aarch64-toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=aarch64-none-elf
 echo "${cc_target}" >/CC_TARGET
 EOF
-FROM aarch64-toolchain as aarch64-unknown-none
-FROM aarch64-toolchain as aarch64-unknown-none-softfloat
+FROM aarch64-toolchain AS aarch64-unknown-none
+FROM aarch64-toolchain AS aarch64-unknown-none-softfloat
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"arm-none-eabi-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as arm-toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"arm-none-eabi-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS arm-toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
@@ -68,55 +68,55 @@ case "${RUST_TARGET}" in
         ;;
 esac
 EOF
-FROM arm-toolchain as armv5te-none-eabi
-FROM arm-toolchain as armebv7r-none-eabi
-FROM arm-toolchain as armebv7r-none-eabihf
-FROM arm-toolchain as armv7a-none-eabi
-FROM arm-toolchain as armv7a-none-eabihf
-FROM arm-toolchain as armv7r-none-eabi
-FROM arm-toolchain as armv7r-none-eabihf
-FROM arm-toolchain as thumbv5te-none-eabi
-FROM arm-toolchain as thumbv6m-none-eabi
-FROM arm-toolchain as thumbv7em-none-eabi
-FROM arm-toolchain as thumbv7em-none-eabihf
-FROM arm-toolchain as thumbv7m-none-eabi
-FROM arm-toolchain as thumbv8m.base-none-eabi
-FROM arm-toolchain as thumbv8m.main-none-eabi
-FROM arm-toolchain as thumbv8m.main-none-eabihf
+FROM arm-toolchain AS armv5te-none-eabi
+FROM arm-toolchain AS armebv7r-none-eabi
+FROM arm-toolchain AS armebv7r-none-eabihf
+FROM arm-toolchain AS armv7a-none-eabi
+FROM arm-toolchain AS armv7a-none-eabihf
+FROM arm-toolchain AS armv7r-none-eabi
+FROM arm-toolchain AS armv7r-none-eabihf
+FROM arm-toolchain AS thumbv5te-none-eabi
+FROM arm-toolchain AS thumbv6m-none-eabi
+FROM arm-toolchain AS thumbv7em-none-eabi
+FROM arm-toolchain AS thumbv7em-none-eabihf
+FROM arm-toolchain AS thumbv7m-none-eabi
+FROM arm-toolchain AS thumbv8m.base-none-eabi
+FROM arm-toolchain AS thumbv8m.main-none-eabi
+FROM arm-toolchain AS thumbv8m.main-none-eabihf
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv32-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as riscv32-toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv32-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS riscv32-toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=riscv32-unknown-elf
 echo "${cc_target}" >/CC_TARGET
 EOF
-FROM riscv32-toolchain as riscv32i-unknown-none-elf
-FROM riscv32-toolchain as riscv32im-unknown-none-elf
-FROM riscv32-toolchain as riscv32imc-unknown-none-elf
-FROM riscv32-toolchain as riscv32imac-unknown-none-elf
-FROM riscv32-toolchain as riscv32gc-unknown-none-elf
+FROM riscv32-toolchain AS riscv32i-unknown-none-elf
+FROM riscv32-toolchain AS riscv32im-unknown-none-elf
+FROM riscv32-toolchain AS riscv32imc-unknown-none-elf
+FROM riscv32-toolchain AS riscv32imac-unknown-none-elf
+FROM riscv32-toolchain AS riscv32gc-unknown-none-elf
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv64-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as riscv64-toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"riscv64-unknown-elf-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS riscv64-toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 cc_target=riscv64-unknown-elf
 echo "${cc_target}" >/CC_TARGET
 EOF
-FROM riscv64-toolchain as riscv64i-unknown-none-elf
-FROM riscv64-toolchain as riscv64im-unknown-none-elf
-FROM riscv64-toolchain as riscv64imc-unknown-none-elf
-FROM riscv64-toolchain as riscv64imac-unknown-none-elf
-FROM riscv64-toolchain as riscv64gc-unknown-none-elf
+FROM riscv64-toolchain AS riscv64i-unknown-none-elf
+FROM riscv64-toolchain AS riscv64im-unknown-none-elf
+FROM riscv64-toolchain AS riscv64imc-unknown-none-elf
+FROM riscv64-toolchain AS riscv64imac-unknown-none-elf
+FROM riscv64-toolchain AS riscv64gc-unknown-none-elf
 
-FROM "${RUST_TARGET}" as toolchain
+FROM "${RUST_TARGET}" AS toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 RUN mv "/$(</CC_TARGET)" "/${RUST_TARGET}"
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -128,7 +128,7 @@ COPY --from=toolchain /CC_TARGET /
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 # https://launchpad.net/~canonical-server/+archive/ubuntu/server-backports/+packages
@@ -159,7 +159,7 @@ COPY /test /test
 # TODO: "qemu-armeb: Error mapping file: Operation not permitted" error in 8.2
 COPY --from=ghcr.io/taiki-e/qemu-user:8.1 /usr/bin/qemu-* /usr/bin/
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -167,7 +167,7 @@ COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh gcc
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -177,7 +177,7 @@ RUN /test/check.sh
 RUN /test/test.sh gcc
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

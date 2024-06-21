@@ -13,7 +13,7 @@ ARG TOOLCHAIN_TAG=dev
 # NB: When updating this, the reminder to update Clang/Mingw version in README.md.
 ARG TOOLCHAIN_VERSION=20240619
 
-FROM ghcr.io/taiki-e/downloader as toolchain
+FROM ghcr.io/taiki-e/downloader AS toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 RUN mkdir -p /toolchain
 ARG TOOLCHAIN_VERSION
@@ -28,7 +28,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://gi
     | tar xJf - --strip-components 1 -C /toolchain
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -48,7 +48,7 @@ EOF
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ENV HOME=/tmp/home
@@ -102,7 +102,7 @@ COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -110,7 +110,7 @@ COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -120,7 +120,7 @@ RUN /test/check.sh
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

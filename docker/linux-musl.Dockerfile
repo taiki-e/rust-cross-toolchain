@@ -15,9 +15,9 @@ ARG HOST_ARCH=amd64
 ARG MUSL_VERSION
 ARG GCC_VERSION=9.4.0
 
-FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${MUSL_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" as toolchain
+FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${MUSL_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS toolchain
 
-FROM rust:alpine as build-libunwind
+FROM rust:alpine AS build-libunwind
 SHELL ["/bin/sh", "-eux", "-c"]
 COPY /build-libunwind /build-libunwind
 WORKDIR /build-libunwind
@@ -29,7 +29,7 @@ RUN cargo build --release --target "$(rustc -vV | grep '^host:' | cut -d' ' -f2)
 RUN mv target/"$(rustc -vV | grep '^host:' | cut -d' ' -f2)"/release/build-libunwind /usr/local/bin/
 WORKDIR /
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -74,7 +74,7 @@ case "${RUST_TARGET}" in
 esac
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -86,7 +86,7 @@ COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 COPY --from=build-libunwind /usr/local/bin/build-libunwind /usr/local/bin/
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -101,7 +101,7 @@ EOF
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -118,7 +118,7 @@ EOF
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

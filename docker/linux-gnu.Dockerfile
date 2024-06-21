@@ -4,7 +4,7 @@
 ARG DISTRO=ubuntu
 ARG DISTRO_VERSION=18.04
 
-FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -98,7 +98,7 @@ case "${RUST_TARGET}" in
 esac
 EOF
 
-FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -120,7 +120,7 @@ RUN /test-base/target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -137,7 +137,7 @@ esac
 EOF
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -163,7 +163,7 @@ EOF
 # EOF
 COPY --from=test-relocated /DONE /
 
-FROM "${DISTRO}":"${DISTRO_VERSION}" as final
+FROM "${DISTRO}":"${DISTRO_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

@@ -15,7 +15,7 @@ ARG HOST_ARCH=amd64
 
 ARG NDK_VERSION
 
-FROM ghcr.io/taiki-e/downloader as ndk
+FROM ghcr.io/taiki-e/downloader AS ndk
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG NDK_VERSION
 RUN mkdir -p /ndk
@@ -28,7 +28,7 @@ rm "${ndk_file}"
 mv android-ndk-* ndk
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -52,7 +52,7 @@ EOF
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -117,7 +117,7 @@ RUN /test-base/target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -125,7 +125,7 @@ COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -135,7 +135,7 @@ RUN /test/check.sh
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

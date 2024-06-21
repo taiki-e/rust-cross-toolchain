@@ -11,14 +11,14 @@ ARG OPENBSD_VERSION
 # https://ftp.gnu.org/gnu/binutils
 ARG BINUTILS_VERSION=2.37
 
-FROM ghcr.io/taiki-e/downloader as binutils-src
+FROM ghcr.io/taiki-e/downloader AS binutils-src
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p /binutils-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
 
-FROM ghcr.io/taiki-e/downloader as sysroot
+FROM ghcr.io/taiki-e/downloader AS sysroot
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG OPENBSD_VERSION
@@ -45,7 +45,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cd
     | tar xzf - -C /sysroot ./usr/include ./usr/lib
 EOF
 
-FROM ghcr.io/taiki-e/build-base:alpine as builder
+FROM ghcr.io/taiki-e/build-base:alpine AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -93,7 +93,7 @@ case "${RUST_TARGET}" in
 esac
 EOF
 
-FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" as test-base
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 COPY /test-base.sh /
@@ -103,7 +103,7 @@ COPY /test-base /test-base
 RUN /test-base/target.sh
 COPY /test /test
 
-FROM test-base as test-relocated
+FROM test-base AS test-relocated
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -111,7 +111,7 @@ COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh clang
 RUN touch /DONE
 
-FROM test-base as test
+FROM test-base AS test
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -121,7 +121,7 @@ RUN /test/check.sh
 RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
-FROM ubuntu:"${UBUNTU_VERSION}" as final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
