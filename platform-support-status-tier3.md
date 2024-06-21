@@ -34,7 +34,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin
 - [ ] arm64e-apple-ios
-- [ ] arm64ec-pc-windows-msvc
 - [x] armeb-unknown-linux-gnueabi
 - [ ] armv4t-none-eabi
 - [ ] armv4t-unknown-linux-gnueabi
@@ -70,6 +69,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-unknown-hurd-gnu
 - [x] i686-unknown-netbsd
 - [x] i686-unknown-openbsd
+- [ ] i686-unknown-redox
 - [ ] i686-uwp-windows-gnu
 - [ ] i686-uwp-windows-msvc
 - [ ] i686-win7-windows-msvc
@@ -154,3 +154,9 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-win7-windows-msvc
 - [ ] x86_64-wrs-vxworks
 - [ ] x86_64h-apple-darwin
+- [ ] xtensa-esp32-espidf
+- [ ] xtensa-esp32-none-elf
+- [ ] xtensa-esp32s2-espidf
+- [ ] xtensa-esp32s2-none-elf
+- [ ] xtensa-esp32s3-espidf
+- [ ] xtensa-esp32s3-none-elf
