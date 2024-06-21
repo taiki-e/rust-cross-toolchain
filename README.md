@@ -330,11 +330,11 @@ GCC version: https://packages.ubuntu.com/en/jammy/gcc-mingw-w64-base
 
 | libc | GCC | clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| Mingw-w64 dbda83c | N/A | 18.1.6 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 Linux (glibc 2.17+) |
+| Mingw-w64 7c9cfe6 | N/A | 18.1.8 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 Linux (glibc 2.17+) |
 
 <!--
-Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20240518/build-mingw-w64.sh#L21
-Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20240518
+Mingw-w64 version: https://github.com/mstorsjo/llvm-mingw/blob/20240619/build-mingw-w64.sh#L21
+Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20240619
 -->
 
 ([Dockerfile](docker/windows-gnullvm.Dockerfile))
