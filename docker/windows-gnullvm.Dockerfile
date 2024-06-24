@@ -118,14 +118,7 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
-RUN <<EOF
-dpkg_arch=$(dpkg --print-architecture)
-case "${dpkg_arch##*-}" in
-    # TODO: do not skip if actual host is arm64
-    arm64) exit 0 ;;
-esac
-/test/test.sh clang
-EOF
+RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final

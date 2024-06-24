@@ -271,6 +271,12 @@ case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
+    aarch64-pc-windows-gnullvm)
+        # TODO: aarch64 host
+        case "${dpkg_arch##*-}" in
+            amd64) no_run="" ;;
+        esac
+        ;;
     # TODO(redox):
     *-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
 esac
