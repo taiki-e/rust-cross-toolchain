@@ -21,6 +21,7 @@ COPY --from=emsdk /emsdk "${TOOLCHAIN_DIR}"
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
+ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \

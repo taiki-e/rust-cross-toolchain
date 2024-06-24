@@ -101,6 +101,7 @@ EOF
 FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
+ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh
 # libpython2.7 is needed for GDB

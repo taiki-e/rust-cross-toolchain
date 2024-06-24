@@ -300,7 +300,7 @@ dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) host_arch=x86_64 ;;
     arm64) host_arch=aarch64 ;;
-    *) bail "unsupported architecture '${dpkg_arch}'" ;;
+    *) bail "unsupported host architecture '${dpkg_arch}'" ;;
 esac
 case "${RUST_TARGET}" in
     *-linux-* | *-android*)
@@ -592,12 +592,22 @@ EOF
                 wine_root=/opt/wine-arm64
                 wine_exe="${wine_root}"/bin/wine
                 qemu_arch=aarch64
-                for bin in wine wineserver wine-preloader; do
-                    sed -i "s/qemu-${qemu_arch}-static/qemu-${qemu_arch}/g" "${wine_root}/bin/${bin}"
-                done
-                cp "${wine_root}"/lib/ld-linux-aarch64.so.1 /lib/
-                [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
-                "qemu-${qemu_arch}" --version
+                case "${host_arch}" in
+                    x86_64)
+                        for bin in wine wineserver wine-preloader; do
+                            sed -i "s/qemu-${qemu_arch}-static/qemu-${qemu_arch}/g" "${wine_root}/bin/${bin}"
+                        done
+                        cp "${wine_root}"/lib/ld-linux-aarch64.so.1 /lib/
+                        [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
+                        "qemu-${qemu_arch}" --version
+                        ;;
+                    aarch64)
+                        for bin in wine wineserver wine-preloader; do
+                            sed -i "s/qemu-${qemu_arch}-static//g" "${wine_root}/bin/${bin}"
+                        done
+                        ;;
+                    *) bail "unsupported host architecture '${host_arch}'" ;;
+                esac
                 ;;
             *) wine_exe=wine ;;
         esac

@@ -150,6 +150,7 @@ mv "opensbi-${OPENSBI_VERSION}-rv-bin/share/opensbi/ilp32/generic/firmware/fw_dy
 mv "opensbi-${OPENSBI_VERSION}-rv-bin/share/opensbi/ilp32/generic/firmware/fw_dynamic.elf" /usr/share/qemu/opensbi-riscv32-generic-fw_dynamic.elf
 rm -rf "opensbi-${OPENSBI_VERSION}-rv-bin"
 EOF
+ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh none
 ARG RUST_TARGET

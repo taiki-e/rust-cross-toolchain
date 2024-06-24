@@ -8,6 +8,8 @@ trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 
 # Test the toolchain.
 
+set -x
+
 x() {
     local cmd="$1"
     shift
@@ -17,6 +19,7 @@ x() {
     )
 }
 bail() {
+    set +x
     echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
     exit 1
 }
@@ -179,9 +182,10 @@ dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) ;;
     *)
-        # TODO: don't skip if actual host is arm64
-        echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-        exit 0
+        if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
+            echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+            exit 0
+        fi
         ;;
 esac
 if [[ -n "${NO_RUN:-}" ]]; then
@@ -314,9 +318,9 @@ if [[ -z "${no_std}" ]]; then
                         mkdir -p "${HOME}"/.wine
                         export WINEPREFIX=/tmp/wine
                         mkdir -p "${WINEPREFIX}"
+                        wineboot=wineboot
                         case "${RUST_TARGET}" in
                             aarch64* | arm64*) wineboot=/opt/wine-arm64/bin/wineserver ;;
-                            *) wineboot=wineboot ;;
                         esac
                         if [[ ! -e /WINEBOOT ]]; then
                             x "${wineboot}" &>/dev/null
@@ -326,9 +330,10 @@ if [[ -z "${no_std}" ]]; then
                 esac
                 ;;
             *)
-                # TODO: don't skip if actual host is arm64
-                echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-                runner=""
+                if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
+                    echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+                    runner=""
+                fi
                 ;;
         esac
     fi
@@ -539,12 +544,14 @@ EOF
     fi
     popd >/dev/null
 else
+    runner="1"
     case "${dpkg_arch##*-}" in
-        amd64) runner="1" ;;
+        amd64) ;;
         *)
-            # TODO: don't skip if actual host is arm64
-            echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-            runner=""
+            if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
+                echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+                runner=""
+            fi
             ;;
     esac
 
@@ -648,6 +655,7 @@ else
 fi
 
 # Check the compiled binaries.
+set +x
 x file "${out_dir}"/*
 case "${RUST_TARGET}" in
     wasm* | *-windows*) ;;

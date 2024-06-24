@@ -52,6 +52,7 @@ FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ENV HOME=/tmp/home
+ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh
 ARG RUST_TARGET
@@ -117,7 +118,14 @@ ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
-RUN /test/test.sh clang
+RUN <<EOF
+dpkg_arch=$(dpkg --print-architecture)
+case "${dpkg_arch##*-}" in
+    # TODO: do not skip if actual host is arm64
+    arm64) exit 0 ;;
+esac
+/test/test.sh clang
+EOF
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final

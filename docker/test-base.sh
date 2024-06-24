@@ -14,9 +14,10 @@ dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) ;;
     *)
-        # TODO: don't skip if actual host is arm64
-        echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-        exit 0
+        if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
+            echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+            exit 0
+        fi
         ;;
 esac
 

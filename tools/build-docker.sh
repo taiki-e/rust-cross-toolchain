@@ -25,6 +25,10 @@ x() {
         )
     fi
 }
+bail() {
+    echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
+    exit 1
+}
 
 if [[ "${1:-}" == "-"* ]]; then
     cat <<EOF
@@ -40,7 +44,7 @@ if [[ $# -gt 0 ]]; then
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --dry-run) dry_run=1 ;;
-            -*) echo >&2 "error: unknown argument '$1'" && exit 1 ;;
+            -*) bail "unknown argument '$1'" ;;
             linux-gnu) targets+=(${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}) ;;
             linux-musl) targets+=(${linux_musl_targets[@]+"${linux_musl_targets[@]}"}) ;;
             linux-uclibc) targets+=(${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}) ;;
@@ -69,8 +73,7 @@ if [[ $# -gt 0 ]]; then
     done
 fi
 if [[ ${#targets[@]} -eq 0 ]]; then
-    echo >&2 "error: no target to build"
-    exit 1
+    bail "no target to build"
 fi
 
 export DOCKER_BUILDKIT=1
@@ -90,7 +93,12 @@ case "${arch}" in
         docker_arch=arm64v8
         platform=linux/arm64/v8
         ;;
-    *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
+    *) bail "unsupported host architecture '${arch}'" ;;
+esac
+case "$(uname -m)" in
+    x86_64 | x86-64 | x64 | amd64) real_host_arch=x86_64 ;;
+    aarch64 | arm64) real_host_arch=aarch64 ;;
+    *) bail "unsupported host architecture '${arch}'" ;;
 esac
 time=$(date -u '+%Y-%m-%d-%H-%M-%S')
 
@@ -127,6 +135,7 @@ build() {
         --platform "${platform}"
         --build-arg "RUST_TARGET=${target}"
         --build-arg "HOST_ARCH=${docker_arch}"
+        --build-arg "REAL_HOST_ARCH=${real_host_arch}"
     )
     local tag="${repository}:${target}"
     log_dir="tmp/log/${base}/${target}"
@@ -362,9 +371,8 @@ for target in "${targets[@]}"; do
         *-emscripten*) build "emscripten" "${target}" ;;
         *-windows-gnu*)
             case "${target}" in
-                # TODO: aarch64
                 # i686-pc-windows-gnu needs to build gcc from source.
-                i686-pc-windows-gnu | aarch64* | arm64*)
+                i686-pc-windows-gnu)
                     case "${arch}" in
                         x86_64) ;;
                         *) continue ;;
@@ -388,7 +396,7 @@ for target in "${targets[@]}"; do
             esac
             build "none" "${target}"
             ;;
-        *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
+        *) bail "unrecognized target '${target}'" ;;
     esac
 done
 
