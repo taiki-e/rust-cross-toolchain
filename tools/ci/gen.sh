@@ -19,6 +19,7 @@ fi
 git config user.name "Taiki Endo"
 git config user.email "te316e89@gmail.com"
 
+has_update=''
 for path in platform-support-status*.md tools/target-list-generated; do
     git add -N "${path}"
     if ! git diff --exit-code -- "${path}"; then
@@ -26,10 +27,10 @@ for path in platform-support-status*.md tools/target-list-generated; do
         has_update=1
     fi
 done
-if [[ -n "${has_update:-}" ]]; then
+if [[ -n "${has_update}" ]]; then
     git commit -m "Update target list"
 fi
 
-if [[ -n "${has_update:-}" ]] && [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+if [[ -n "${has_update}" ]] && [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "success=false" >>"${GITHUB_OUTPUT}"
 fi

@@ -201,9 +201,9 @@ export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
 . "${HOME}/.cargo/env"
 
 case "${RUST_TARGET}" in
-    wasm*) exe=".wasm" ;;
-    *-windows*) exe=".exe" ;;
-    *) exe="" ;;
+    wasm*) exe=.wasm ;;
+    *-windows*) exe=.exe ;;
+    *) exe='' ;;
 esac
 case "${RUST_TARGET}" in
     *-redox*) rust_bin_separator="_" ;;
@@ -266,7 +266,7 @@ case "${RUST_TARGET}" in
     sparc64-unknown-openbsd) no_build_test=1 ;;
 esac
 # Whether or not to run the compiled binaries.
-no_run="1"
+no_run=1
 case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
@@ -274,11 +274,11 @@ case "${RUST_TARGET}" in
     aarch64-pc-windows-gnullvm)
         # TODO: aarch64 host
         case "${dpkg_arch##*-}" in
-            amd64) no_run="" ;;
+            amd64) no_run='' ;;
         esac
         ;;
     # TODO(redox):
-    *-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run="" ;;
+    *-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run='' ;;
 esac
 # Whether or not to run the test.
 no_run_test=""
@@ -550,7 +550,7 @@ EOF
     fi
     popd >/dev/null
 else
-    runner="1"
+    runner=1
     case "${dpkg_arch##*-}" in
         amd64) ;;
         *)
@@ -570,21 +570,16 @@ else
         "${RUST_TARGET}-gcc"
     )
     for linker in "${linkers[@]}"; do
+        target_rustflags="${RUSTFLAGS:-}"
         # https://github.com/rust-embedded/cortex-m/blob/e6c7249982841a8a39ada0bc80e6d0e492a560c3/cortex-m-rt/ci/script.sh
         # https://github.com/rust-lang/rust/blob/1.70.0/tests/run-make/thumb-none-qemu/example/.cargo/config
         case "${linker}" in
-            rust-lld) target_rustflags="" ;;
-            *-gcc) target_rustflags="-C linker=${linker} -C link-arg=-nostartfiles" ;;
-            *) target_rustflags="-C linker=${linker}" ;;
-        esac
-        case "${linker}" in
+            rust-lld) ;;
             # If the linker contains a dot, rustc will misinterpret the linker flavor.
-            thumbv8m.*-ld) target_rustflags+=" -C linker-flavor=ld" ;;
-            thumbv8m.*-gcc)
-                # TODO: collect2: fatal error: cannot find 'ld'
-                continue
-                target_rustflags+=" -C linker-flavor=gcc"
-                ;;
+            thumbv8m.*-ld) target_rustflags+=" -C linker=arm-none-eabi-ld" ;;
+            thumbv8m.*-gcc) target_rustflags+=" -C linker=arm-none-eabi-gcc -C link-arg=-nostartfiles" ;;
+            *-gcc) target_rustflags+=" -C linker=${linker} -C link-arg=-nostartfiles" ;;
+            *) target_rustflags+=" -C linker=${linker}" ;;
         esac
         case "${RUST_TARGET}" in
             armeb*)
@@ -622,13 +617,13 @@ else
             # toolchain use GCC as the linker.
             case "${linker}" in
                 rust-lld | *-ld) test_cpp='' ;;
-                *) test_cpp='1' ;;
+                *) test_cpp=1 ;;
             esac
             if [[ -z "${test_cpp}" ]]; then
-                RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
+                RUSTFLAGS="${target_rustflags}" \
                     run_cargo "${cargo_args[@]}"
             else
-                RUSTFLAGS="${RUSTFLAGS:-} ${target_rustflags}" \
+                RUSTFLAGS="${target_rustflags}" \
                     run_cargo "${cargo_args[@]}" --features cpp
                 [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
                 [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"

@@ -21,7 +21,7 @@ if [[ -f /CC_TARGET ]]; then
     # options such as --program-prefix. So use the target name for C by default,
     # and create symbolic links with Rust's target name for convenience.
     set +x
-    while IFS= read -r -d '' path; do
+    while IFS= read -rd '' path; do
         pushd "$(dirname "${path}")" >/dev/null
         original=$(basename "${path}")
         link="${original/"${cc_target}"/"${RUST_TARGET}"}"

@@ -13,7 +13,7 @@ trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 x() {
     local cmd="$1"
     shift
-    if [[ -n "${dry_run:-}" ]]; then
+    if [[ -n "${dry_run}" ]]; then
         (
             IFS=' '
             echo "+ ${cmd} $*"
@@ -39,6 +39,7 @@ EOF
 fi
 # shellcheck disable=SC1091
 . tools/target-list-shared.sh
+dry_run=''
 if [[ $# -gt 0 ]]; then
     targets=()
     while [[ $# -gt 0 ]]; do
