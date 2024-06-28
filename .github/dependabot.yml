@@ -1,7 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: cargo
-    directory: /
+    directories:
+      - /
+      # crates with [workspace] table are not recognized by the above 'directory: /'
+      - /docker/test/fixtures/no-std-qemu
     schedule:
       interval: daily
     commit-message:
@@ -10,17 +13,6 @@ updates:
       # See Cargo.toml.
       - dependency-name: cc
       - dependency-name: cmake
-    labels: []
-  # crates with [workspace] table are not recognized by the above 'directory: /'
-  - package-ecosystem: cargo
-    directory: /docker/test/fixtures/no-std-qemu
-    schedule:
-      interval: daily
-    commit-message:
-      prefix: ''
-    ignore:
-      # See Cargo.toml.
-      - dependency-name: cc
     labels: []
   - package-ecosystem: github-actions
     directory: /
