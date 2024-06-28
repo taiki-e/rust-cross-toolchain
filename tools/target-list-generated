@@ -54,7 +54,7 @@ linux_musl_targets=(
     hexagon-unknown-linux-musl # tier3
     i586-unknown-linux-musl
     i686-unknown-linux-musl
-    loongarch64-unknown-linux-musl # tier3
+    loongarch64-unknown-linux-musl
     mips-unknown-linux-musl # tier3
     mips64-openwrt-linux-musl # tier3
     mips64-unknown-linux-muslabi64 # tier3
