@@ -8,7 +8,7 @@ ARG UBUNTU_VERSION=20.04
 
 # https://github.com/WebAssembly/wasi-sdk/releases
 # NB: When updating this, the reminder to update wasi-sdk version in README.md.
-ARG WASI_SDK_VERSION=22.0
+ARG WASI_SDK_VERSION=23.0
 # https://github.com/bytecodealliance/wasmtime/releases
 ARG WASMTIME_VERSION=22.0.0
 
@@ -17,8 +17,16 @@ SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 RUN mkdir -p /wasi-sdk
 ARG WASI_SDK_VERSION
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION%%.*}/wasi-sdk-${WASI_SDK_VERSION}-linux.tar.gz" \
-        | tar xzf - --strip-components 1 -C /wasi-sdk
+RUN <<EOF
+dpkg_arch=$(dpkg --print-architecture)
+case "${dpkg_arch##*-}" in
+    amd64) sdk_arch=x86_64 ;;
+    arm64) sdk_arch=arm64 ;;
+    *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
+esac
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION%%.*}/wasi-sdk-${WASI_SDK_VERSION}-${sdk_arch}-linux.tar.gz" \
+    | tar xzf - --strip-components 1 -C /wasi-sdk
+EOF
 RUN <<EOF
 cd /wasi-sdk
 ln -s share/wasi-sysroot "${RUST_TARGET}"
@@ -55,7 +63,7 @@ case "${dpkg_arch##*-}" in
     *) echo >&2 "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/bytecodealliance/wasmtime/releases/download/v${WASMTIME_VERSION}/wasmtime-v${WASMTIME_VERSION}-${wasmtime_arch}-linux.tar.xz" \
-    | tar xJf - --strip-components 1 -C /usr/local/bin "wasmtime-v${WASMTIME_VERSION}-x86_64-linux/wasmtime"
+    | tar xJf - --strip-components 1 -C /usr/local/bin "wasmtime-v${WASMTIME_VERSION}-${wasmtime_arch}-linux/wasmtime"
 EOF
 ARG RUST_TARGET
 COPY /test-base /test-base

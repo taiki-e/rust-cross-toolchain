@@ -239,7 +239,10 @@ for target in "${targets[@]}"; do
         *-illumos*) docker_manifest "${target}" ;;
         *-redox*) docker_manifest "${target}" ;;
         *-fuchsia*) docker_manifest "${target}" ;;
-        *-wasi*) docker_manifest "${target}" ;;
+        *-wasi*)
+            arches=(amd64 arm64v8)
+            docker_manifest "${target}"
+            ;;
         *-emscripten*) docker_manifest "${target}" ;;
         *-windows-gnu*)
             arches=(amd64 arm64v8)

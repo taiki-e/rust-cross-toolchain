@@ -52,6 +52,8 @@ jobs:
           - target: redox
           # - target: fuchsia
           - target: wasi
+          - target: wasi
+            host: aarch64
           - target: emscripten
           - target: windows-gnu
           - target: windows-gnu
