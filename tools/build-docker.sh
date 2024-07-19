@@ -264,23 +264,15 @@ for target in "${targets[@]}"; do
                 #
                 # Supported releases: https://www.freebsd.org/security/#sup
                 # FreeBSD 11 was EoL on 2021-09-30.
+                # FreeBSD 12 was EoL on 2023-12-31.
                 # https://www.freebsd.org/security/unsupported
                 # https://endoflife.date/freebsd
                 # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-                # TODO: 12 was EoL on 2023-12-31.
                 # TODO: 14.0 will be EoL on 2024-09-30.
-                freebsd_versions=("12.4" "13.3" "14.0")
+                freebsd_versions=("13.3" "14.0")
             fi
-            default_freebsd_version=12
+            default_freebsd_version=13
             for freebsd_version in "${freebsd_versions[@]}"; do
-                case "${target}" in
-                    powerpc* | riscv64*)
-                        default_freebsd_version=13
-                        case "${freebsd_version}" in
-                            12.*) continue ;;
-                        esac
-                        ;;
-                esac
                 build "freebsd" "${target}" "${freebsd_version%%.*}" "${default_freebsd_version}" \
                     --build-arg "FREEBSD_VERSION=${freebsd_version}"
             done
@@ -297,25 +289,19 @@ for target in "${targets[@]}"; do
                 #
                 # Supported releases: https://www.netbsd.org/releases
                 # NetBSD 7 was EoL on 2020-06-30.
+                # NetBSD 8 was EoL on 2024-04-28.
                 # https://www.netbsd.org/releases/formal.html
                 # https://endoflife.date/netbsd
                 # NB: When updating this, the reminder to update docker/base/build-docker.sh, tools/docker-manifest.sh, and README.md.
-                # TODO: 8 was EoL on 2024-04-28.
-                netbsd_versions=("8" "9" "10")
+                netbsd_versions=("9" "10")
             fi
-            default_netbsd_version=8
+            default_netbsd_version=9
             for netbsd_version in "${netbsd_versions[@]}"; do
                 case "${target}" in
-                    aarch64-*)
-                        default_netbsd_version=9
-                        case "${netbsd_version}" in
-                            8) continue ;;
-                        esac
-                        ;;
                     aarch64_be-*)
                         default_netbsd_version=10
                         case "${netbsd_version}" in
-                            [8-9]) continue ;;
+                            9) continue ;;
                         esac
                         ;;
                 esac

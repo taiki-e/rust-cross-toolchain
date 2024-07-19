@@ -184,18 +184,10 @@ for target in "${targets[@]}"; do
                 freebsd_versions=("${FREEBSD_VERSION}")
             else
                 # NB: When updating this, the reminder to update tools/build-docker.sh.
-                freebsd_versions=("12.4" "13.3" "14.0")
+                freebsd_versions=("13.3" "14.0")
             fi
-            default_freebsd_version=12
+            default_freebsd_version=13
             for freebsd_version in "${freebsd_versions[@]}"; do
-                case "${target}" in
-                    powerpc* | riscv64*)
-                        default_freebsd_version=13
-                        case "${freebsd_version}" in
-                            12.*) continue ;;
-                        esac
-                        ;;
-                esac
                 docker_manifest "${target}" "${freebsd_version%%.*}" "${default_freebsd_version}"
             done
             ;;
@@ -204,21 +196,15 @@ for target in "${targets[@]}"; do
                 netbsd_versions=("${NETBSD_VERSION}")
             else
                 # NB: When updating this, the reminder to update tools/build-docker.sh.
-                netbsd_versions=("8" "9" "10")
+                netbsd_versions=("9" "10")
             fi
-            default_netbsd_version=8
+            default_netbsd_version=9
             for netbsd_version in "${netbsd_versions[@]}"; do
                 case "${target}" in
-                    aarch64-*)
-                        default_netbsd_version=9
-                        case "${netbsd_version}" in
-                            8) continue ;;
-                        esac
-                        ;;
                     aarch64_be-*)
                         default_netbsd_version=10
                         case "${netbsd_version}" in
-                            [8-9]) continue ;;
+                            9) continue ;;
                         esac
                         ;;
                 esac
