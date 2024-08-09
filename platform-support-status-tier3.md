@@ -114,16 +114,20 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32im-risc0-zkvm-elf
 - [ ] riscv32ima-unknown-none-elf
 - [ ] riscv32imac-esp-espidf
+- [ ] riscv32imac-unknown-nuttx-elf
 - [ ] riscv32imac-unknown-xous-elf
 - [ ] riscv32imafc-esp-espidf
+- [ ] riscv32imafc-unknown-nuttx-elf
 - [ ] riscv32imc-esp-espidf
+- [ ] riscv32imc-unknown-nuttx-elf
 - [ ] riscv64-linux-android
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
-- [x] riscv64gc-unknown-linux-musl
 - [ ] riscv64gc-unknown-netbsd
+- [ ] riscv64gc-unknown-nuttx-elf
 - [x] riscv64gc-unknown-openbsd
+- [ ] riscv64imac-unknown-nuttx-elf
 - [x] s390x-unknown-linux-musl
 - [x] sparc-unknown-linux-gnu
 - [ ] sparc-unknown-none-elf
@@ -131,10 +135,16 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] sparc64-unknown-openbsd
 - [ ] thumbv4t-none-eabi
 - [x] thumbv5te-none-eabi
+- [ ] thumbv6m-nuttx-eabi
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
+- [ ] thumbv7em-nuttx-eabi
+- [ ] thumbv7em-nuttx-eabihf
+- [ ] thumbv7m-nuttx-eabi
 - [x] thumbv7neon-unknown-linux-musleabihf
-- [ ] wasm32-wasip2
+- [ ] thumbv8m.base-nuttx-eabi
+- [ ] thumbv8m.main-nuttx-eabi
+- [ ] thumbv8m.main-nuttx-eabihf
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos
