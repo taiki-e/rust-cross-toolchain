@@ -7,7 +7,6 @@ It is not intended for manual editing.
 
 See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2 platforms.
 
-- [ ] aarch64-apple-ios-macabi
 - [ ] aarch64-apple-tvos
 - [ ] aarch64-apple-tvos-sim
 - [ ] aarch64-apple-visionos
@@ -26,6 +25,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] aarch64-unknown-openbsd
 - [ ] aarch64-unknown-redox
 - [ ] aarch64-unknown-teeos
+- [ ] aarch64-unknown-trusty
 - [ ] aarch64-uwp-windows-msvc
 - [ ] aarch64-wrs-vxworks
 - [x] aarch64_be-unknown-linux-gnu
@@ -47,6 +47,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] armv7-unknown-linux-uclibceabi
 - [x] armv7-unknown-linux-uclibceabihf
 - [x] armv7-unknown-netbsd-eabihf
+- [ ] armv7-unknown-trusty
 - [ ] armv7-wrs-vxworks-eabihf
 - [ ] armv7a-kmc-solid_asp3-eabi
 - [ ] armv7a-kmc-solid_asp3-eabihf
@@ -98,6 +99,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] powerpc-unknown-freebsd
 - [x] powerpc-unknown-linux-gnuspe
 - [x] powerpc-unknown-linux-musl
+- [ ] powerpc-unknown-linux-muslspe
 - [x] powerpc-unknown-netbsd
 - [x] powerpc-unknown-openbsd
 - [ ] powerpc-wrs-vxworks
@@ -114,16 +116,20 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32im-risc0-zkvm-elf
 - [ ] riscv32ima-unknown-none-elf
 - [ ] riscv32imac-esp-espidf
+- [ ] riscv32imac-unknown-nuttx-elf
 - [ ] riscv32imac-unknown-xous-elf
 - [ ] riscv32imafc-esp-espidf
+- [ ] riscv32imafc-unknown-nuttx-elf
 - [ ] riscv32imc-esp-espidf
+- [ ] riscv32imc-unknown-nuttx-elf
 - [ ] riscv64-linux-android
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
-- [x] riscv64gc-unknown-linux-musl
 - [ ] riscv64gc-unknown-netbsd
+- [ ] riscv64gc-unknown-nuttx-elf
 - [x] riscv64gc-unknown-openbsd
+- [ ] riscv64imac-unknown-nuttx-elf
 - [x] s390x-unknown-linux-musl
 - [x] sparc-unknown-linux-gnu
 - [ ] sparc-unknown-none-elf
@@ -131,12 +137,17 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] sparc64-unknown-openbsd
 - [ ] thumbv4t-none-eabi
 - [x] thumbv5te-none-eabi
+- [ ] thumbv6m-nuttx-eabi
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
+- [ ] thumbv7em-nuttx-eabi
+- [ ] thumbv7em-nuttx-eabihf
+- [ ] thumbv7m-nuttx-eabi
 - [x] thumbv7neon-unknown-linux-musleabihf
-- [ ] wasm32-wasip2
+- [ ] thumbv8m.base-nuttx-eabi
+- [ ] thumbv8m.main-nuttx-eabi
+- [ ] thumbv8m.main-nuttx-eabihf
 - [ ] wasm64-unknown-unknown
-- [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
 - [ ] x86_64-fuchsia
