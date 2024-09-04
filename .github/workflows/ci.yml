@@ -54,7 +54,7 @@ jobs:
           - target: wasi
           - target: wasi
             host: aarch64
-          - target: emscripten
+          # - target: emscripten # TODO: wasm-ld: error: /tmp/test-emcc/rust/target/wasm32-unknown-emscripten/debug/deps/rust_test.216hq58untngdnb12cddqxyyf.rcgu.o: Invalid symbol type
           - target: windows-gnu
           - target: windows-gnu
             host: aarch64
