@@ -55,12 +55,14 @@ known_target_group=(
     hurd
     l4re
     nto
+    nuttx
     psp
     psx
     redox
     sgx
     solid_asp3
     teeos
+    trusty
     uefi
     vita
     vxworks

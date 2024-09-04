@@ -9,6 +9,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 
 - [ ] aarch64-apple-darwin
 - [ ] aarch64-apple-ios
+- [ ] aarch64-apple-ios-macabi
 - [ ] aarch64-apple-ios-sim
 - [x] aarch64-linux-android
 - [x] aarch64-pc-windows-gnullvm
@@ -64,6 +65,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] riscv32imafc-unknown-none-elf
 - [x] riscv32imc-unknown-none-elf
 - [x] riscv64gc-unknown-linux-gnu
+- [x] riscv64gc-unknown-linux-musl
 - [x] riscv64gc-unknown-none-elf
 - [x] riscv64imac-unknown-none-elf
 - [x] s390x-unknown-linux-gnu
@@ -83,8 +85,10 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] wasm32-wasi
 - [x] wasm32-wasip1
 - [x] wasm32-wasip1-threads
+- [ ] wasm32-wasip2
 - [ ] x86_64-apple-darwin
 - [ ] x86_64-apple-ios
+- [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-fortanix-unknown-sgx
 - [x] x86_64-linux-android
 - [x] x86_64-pc-solaris

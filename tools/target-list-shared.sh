@@ -63,9 +63,10 @@ linux_musl_targets=(
     mips64el-unknown-linux-muslabi64 # tier3
     mipsel-unknown-linux-musl        # tier3
     powerpc-unknown-linux-musl       # tier3
+    # powerpc-unknown-linux-muslspe # tier3, TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/powerpc-unknown-linux-muslspe.md
     # powerpc64-unknown-linux-musl # tier3, TODO: ABI version 1 is not compatible with ABI version 2 output
     powerpc64le-unknown-linux-musl # tier3
-    # riscv32gc-unknown-linux-musl # tier3, musl-cross-make doesn't support this target
+    # riscv32gc-unknown-linux-musl # tier3, TODO
     riscv64gc-unknown-linux-musl         # tier3
     s390x-unknown-linux-musl             # tier3
     thumbv7neon-unknown-linux-musleabihf # tier3
@@ -82,9 +83,9 @@ linux_uclibc_targets=(
 )
 # Linux (OpenHarmony)
 linux_ohos_targets=(
-    # aarch64-unknown-linux-ohos # tier3
-    # armv7-unknown-linux-ohos # tier3
-    # x86_64-unknown-linux-ohos # tier3
+    # aarch64-unknown-linux-ohos
+    # armv7-unknown-linux-ohos
+    # x86_64-unknown-linux-ohos
 )
 # Linux (no libc)
 linux_none_targets=(
@@ -111,13 +112,13 @@ macos_targets=(
 # iOS
 ios_targets=(
     # aarch64-apple-ios
-    # aarch64-apple-ios-macabi # tier3
+    # aarch64-apple-ios-macabi
     # aarch64-apple-ios-sim
     # arm64e-apple-ios # tier3
     # armv7s-apple-ios # tier3
     # i386-apple-ios # tier3
     # x86_64-apple-ios
-    # x86_64-apple-ios-macabi # tier3
+    # x86_64-apple-ios-macabi
 )
 # tvOS
 tvos_targets=(
@@ -218,7 +219,7 @@ wasi_targets=(
     wasm32-wasi
     wasm32-wasip1
     wasm32-wasip1-threads
-    # wasm32-wasip2 # tier3
+    # wasm32-wasip2 # TODO: fixed in sdk 23?
 )
 # Emscripten
 emscripten_targets=(
@@ -239,6 +240,7 @@ cuda_targets=(
 )
 # ESP-IDF
 espidf_targets=(
+    # TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/esp-idf.md#cross-compilation-toolchains-and-c-code
     # riscv32imac-esp-espidf # tier3
     # riscv32imafc-esp-espidf # tier3
     # riscv32imc-esp-espidf # tier3
@@ -280,9 +282,25 @@ l4re_targets=(
 )
 # QNX Neutrino
 nto_targets=(
+    # aarch64-unknown-nto-qnx700 # tier3
     # aarch64-unknown-nto-qnx710 # tier3
     # i586-pc-nto-qnx700 # tier3
     # x86_64-pc-nto-qnx710 # tier3
+)
+nuttx_targets=(
+    # TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/nuttx.md#building-the-target
+    # riscv32imac-unknown-nuttx-elf # tier3
+    # riscv32imafc-unknown-nuttx-elf # tier3
+    # riscv32imc-unknown-nuttx-elf # tier3
+    # riscv64gc-unknown-nuttx-elf # tier3
+    # riscv64imac-unknown-nuttx-elf # tier3
+    # thumbv6m-nuttx-eabi # tier3
+    # thumbv7em-nuttx-eabi # tier3
+    # thumbv7em-nuttx-eabihf # tier3
+    # thumbv7m-nuttx-eabi # tier3
+    # thumbv8m.base-nuttx-eabi # tier3
+    # thumbv8m.main-nuttx-eabi # tier3
+    # thumbv8m.main-nuttx-eabihf # tier3
 )
 # Sony PlayStation Portable (PSP)
 psp_targets=(
@@ -310,6 +328,10 @@ solid_asp3_targets=(
 )
 teeos_targets=(
     # aarch64-unknown-teeos # tier3
+)
+trusty_targets=(
+    # aarch64-unknown-trusty # tier3
+    # armv7-unknown-trusty # tier3
 )
 # UEFI
 uefi_targets=(
@@ -358,7 +380,8 @@ none_targets=(
     # mipsel-unknown-none # tier3
     # msp430-none-elf # tier3
     riscv32i-unknown-none-elf
-    riscv32im-unknown-none-elf # tier3
+    riscv32im-unknown-none-elf
+    # riscv32ima-unknown-none-elf # tier3, TODO
     riscv32imac-unknown-none-elf
     # riscv32imafc-unknown-none-elf # TODO: mis-matched ISA version 2.0 for 'i' extension, the output version is 2.1
     riscv32imc-unknown-none-elf
@@ -384,6 +407,7 @@ targets=(
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
     ${linux_uclibc_targets[@]+"${linux_uclibc_targets[@]}"}
     ${linux_ohos_targets[@]+"${linux_ohos_targets[@]}"}
+    ${linux_none_targets[@]+"${linux_none_targets[@]}"}
     ${android_targets[@]+"${android_targets[@]}"}
     ${macos_targets[@]+"${macos_targets[@]}"}
     ${ios_targets[@]+"${ios_targets[@]}"}
@@ -411,15 +435,18 @@ targets=(
     ${hurd_targets[@]+"${hurd_targets[@]}"}
     ${l4re_targets[@]+"${l4re_targets[@]}"}
     ${nto_targets[@]+"${nto_targets[@]}"}
+    ${nuttx_targets[@]+"${nuttx_targets[@]}"}
     ${psp_targets[@]+"${psp_targets[@]}"}
     ${psx_targets[@]+"${psx_targets[@]}"}
     ${redox_targets[@]+"${redox_targets[@]}"}
     ${sgx_targets[@]+"${sgx_targets[@]}"}
     ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
     ${teeos_targets[@]+"${teeos_targets[@]}"}
+    ${trusty_targets[@]+"${trusty_targets[@]}"}
     ${uefi_targets[@]+"${uefi_targets[@]}"}
     ${vita_targets[@]+"${vita_targets[@]}"}
     ${vxworks_targets[@]+"${vxworks_targets[@]}"}
     ${xous_targets[@]+"${xous_targets[@]}"}
+    ${zkvm_targets[@]+"${zkvm_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
 )
