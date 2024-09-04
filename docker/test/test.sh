@@ -270,7 +270,8 @@ no_run=1
 case "${RUST_TARGET}" in
     # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
-    riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32) ;;
+    # TODO(armeb-unknown-linux-gnueabi): QEMU bug: https://github.com/taiki-e/setup-cross-toolchain-action/commit/ac9e913254a978d102152e484dc4d4b7a144e1ab
+    riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi) ;;
     aarch64-pc-windows-gnullvm)
         # TODO: aarch64 host
         case "${dpkg_arch##*-}" in
