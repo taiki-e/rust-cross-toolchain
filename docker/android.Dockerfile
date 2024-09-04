@@ -42,10 +42,7 @@ case "${RUST_TARGET}" in
     *) cc_target="${RUST_TARGET}" ;;
 esac
 # Lowest API level
-api_level=19
-case "${RUST_TARGET}" in
-    x86_64* | aarch64* | arm64*) api_level=21 ;;
-esac
+api_level=21
 echo "${cc_target}${api_level}" >/CC_TARGET
 EOF
 

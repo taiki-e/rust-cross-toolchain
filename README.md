@@ -144,10 +144,10 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | target | API level |
 | ------ | ------- |
 | `aarch64-linux-android` | 21 |
-| `arm-linux-androideabi` | 19 |
-| `armv7-linux-androideabi` | 19 |
-| `i686-linux-android` | 19 |
-| `thumbv7neon-linux-androideabi` | 19 |
+| `arm-linux-androideabi` | 21 |
+| `armv7-linux-androideabi` | 21 |
+| `i686-linux-android` | 21 |
+| `thumbv7neon-linux-androideabi` | 21 |
 | `x86_64-linux-android` | 21 |
 
 ### FreeBSD
