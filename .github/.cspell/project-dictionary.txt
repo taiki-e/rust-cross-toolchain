@@ -1,7 +1,6 @@
 abiv
 archiver
 armeabi
-backports
 BAREMETAL
 bsdtar
 BUILDKIT
