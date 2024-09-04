@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/illumos-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/illumos-toolchain.sh
 # - https://github.com/illumos/sysroot
 
 # https://github.com/illumos/sysroot/releases
@@ -11,10 +11,10 @@ ARG SYSROOT_VERSION=20181213-de6af22ae73b-v1
 # didn't against when gcc9 obsoleted solaris10. So using solaris11 here is
 # probably ok, but for now, use the same as rust-lang/rust.
 # https://gcc.gnu.org/legacy-ml/gcc/2018-10/msg00139.html
-# https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/illumos-toolchain.sh#L21
+# https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/illumos-toolchain.sh#L21
 ARG SOLARIS_VERSION=2.10
 # https://ftp.gnu.org/gnu/binutils
-ARG BINUTILS_VERSION=2.33.1
+ARG BINUTILS_VERSION=2.40
 # https://ftp.gnu.org/gnu/gcc
 ARG GCC_VERSION=8.5.0
 

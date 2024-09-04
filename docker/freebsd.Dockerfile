@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/freebsd-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/freebsd-toolchain.sh
 
 ARG UBUNTU_VERSION=20.04
 
 # See tools/build-docker.sh
 ARG FREEBSD_VERSION
 # https://ftp.gnu.org/gnu/binutils
-ARG BINUTILS_VERSION=2.37
+ARG BINUTILS_VERSION=2.40
 
 # TODO(fortran)
 
@@ -70,7 +70,7 @@ EOF
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 # libc refers freebsd-version command.
 # This is currently only enabled for their test, but may change in the future.
-# https://github.com/rust-lang/libc/blob/0.2.119/build.rs#L134
+# https://github.com/rust-lang/libc/blob/0.2.158/build.rs#L252
 # https://github.com/rust-lang/libc/issues/2061
 # https://github.com/rust-lang/libc/issues/570
 # https://github.com/rust-lang/libc/pull/2581

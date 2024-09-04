@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-2/build-solaris-toolchain.sh
 
 ARG UBUNTU_VERSION=20.04
 
@@ -67,7 +67,7 @@ RUN <<EOF
 set +x
 for lib in $(find . -name '*.so.*'); do
     target="${lib%.so.*}.so"
-    [[ -e "${target}" ]] || ln -s "${lib##*/}" "${target}"
+    ln -s "${lib##*/}" "${target}" || echo "warning: silenced error symlinking ${lib}"
 done
 EOF
 # Remove Solaris 11 functions that are optionally used by libbacktrace.

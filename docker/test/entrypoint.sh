@@ -190,8 +190,8 @@ case "${RUST_TARGET}" in
                 # mips(el)-buildroot-linux-uclibc-gcc/g++'s default is -march=mips32
                 # Allow override by user-set `CC_*`.
                 # TODO(linux-uclibc): Rust targets are soft-float (-msoft-float), but toolchain is hard-float.
-                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mips_unknown_linux_uclibc.rs#L13
-                # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/mipsel_unknown_linux_uclibc.rs#L12
+                # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_uclibc.rs#L19
+                # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_uclibc.rs#L18
                 cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-march=mips32r2 \${CFLAGS_${rust_target_lower}:-}"
 export CXXFLAGS_${rust_target_lower}="-march=mips32r2 \${CXXFLAGS_${rust_target_lower}:-}"
@@ -206,28 +206,28 @@ export CXXFLAGS_${rust_target_lower}="-march=armv5te \${CXXFLAGS_${rust_target_l
 EOF
         ;;
     armv7a-none-eabi)
-        # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L160-L163
+        # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L132
         cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-march=armv7-a \${CFLAGS_${rust_target_lower}:-}"
 export CXXFLAGS_${rust_target_lower}="-march=armv7-a \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
     armv7a-none-eabihf)
-        # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L160-L163
+        # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L133
         cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-march=armv7-a+vfpv3 -mfloat-abi=hard \${CFLAGS_${rust_target_lower}:-}"
 export CXXFLAGS_${rust_target_lower}="-march=armv7-a+vfpv3 -mfloat-abi=hard \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
     aarch64-unknown-none-softfloat)
-        # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L164-L165
+        # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L135
         cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-mstrict-align -march=armv8-a+nofp+nosimd \${CFLAGS_${rust_target_lower}:-}"
 export CXXFLAGS_${rust_target_lower}="-mstrict-align -march=armv8-a+nofp+nosimd \${CXXFLAGS_${rust_target_lower}:-}"
 EOF
         ;;
     aarch64-unknown-none)
-        # https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L166-L167
+        # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-1/Dockerfile#L137
         cat >>"${env_path}" <<EOF
 export CFLAGS_${rust_target_lower}="-mstrict-align -march=armv8-a+fp+simd \${CFLAGS_${rust_target_lower}:-}"
 export CXXFLAGS_${rust_target_lower}="-mstrict-align -march=armv8-a+fp+simd \${CXXFLAGS_${rust_target_lower}:-}"
@@ -241,7 +241,7 @@ EOF
         ;;
     armeb-unknown-linux-gnueabi)
         # builtin armeb-unknown-linux-gnueabi is ARMv8
-        # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armeb_unknown_linux_gnueabi.rs#L12
+        # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
         case "${cc}" in
             gcc)
                 cat >>"${env_path}" <<EOF
@@ -325,7 +325,7 @@ case "${RUST_TARGET}" in
                     # ARMv7-A+NEONv2
                     armv7-* | thumbv7neon-* | arm-*-android*) qemu_cpu=cortex-a15 ;;
                     # builtin armeb-unknown-linux-gnueabi is ARMv8
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armeb_unknown_linux_gnueabi.rs#L12
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
                     armeb-*) ;;
                     # ARMv6: https://en.wikipedia.org/wiki/ARM11
                     arm-* | armv6-*) qemu_cpu=arm11mpcore ;;
@@ -433,37 +433,37 @@ EOF
                 esac
                 case "${RUST_TARGET}" in
                     # ARMv7-A
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7a_none_eabi.rs
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7a_none_eabihf.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7a_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7a_none_eabihf.rs
                     armv7a-none-eabi | armv7a-none-eabihf) qemu_cpu=cortex-a9 ;;
                     # Cortex-R4/Cortex-R5 (ARMv7-R)
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7r_none_eabi.rs
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armebv7r_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7r_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armebv7r_none_eabi.rs
                     armv7r-none-eabi | armebv7r-none-eabi) qemu_cpu=cortex-r5 ;;
                     # Cortex-R4F/Cortex-R5F (ARMv7-R)
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv7r_none_eabihf.rs
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armebv7r_none_eabihf.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7r_none_eabihf.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armebv7r_none_eabihf.rs
                     armv7r-none-eabihf | armebv7r-none-eabihf) qemu_cpu=cortex-r5f ;;
-                    # TODO: https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv4t_none_eabi.rs
-                    # TODO: https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv4t_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv4t_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv4t_none_eabi.rs
                     armv4t-none-eabi | thumbv4t-none-eabi) ;; # TODO
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/armv5te_none_eabi.rs
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv5te_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv5te_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv5te_none_eabi.rs
                     armv5te-none-eabi | thumbv5te-none-eabi) qemu_cpu=arm926 ;;
-                    # Cortex-M0/Cortex-M0+/Cortex-M1 (ARMv6-M): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv6m_none_eabi.rs
+                    # Cortex-M0/Cortex-M0+/Cortex-M1 (ARMv6-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv6m_none_eabi.rs
                     thumbv6m-none-eabi) qemu_cpu=cortex-m0 ;;
                     # Cortex-M4/Cortex-M7 (ARMv7E-M):
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7em_none_eabi.rs
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7em_none_eabihf.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7em_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7em_none_eabihf.rs
                     thumbv7em-none-eabi | thumbv7em-none-eabihf) qemu_cpu=cortex-m7 ;;
-                    # Cortex-M3 (ARMv7-M): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv7m_none_eabi.rs
+                    # Cortex-M3 (ARMv7-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7m_none_eabi.rs
                     thumbv7m-none-eabi) qemu_cpu=cortex-m3 ;;
-                    # Cortex-M23 (ARMv8-M Baseline): https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_base_none_eabi.rs
+                    # Cortex-M23 (ARMv8-M Baseline): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_base_none_eabi.rs
                     # TODO: As of QEMU 8.2, QEMU doesn't support -cpu cortex-m23
                     thumbv8m.base-none-eabi) qemu_cpu=cortex-m33 ;;
                     # Cortex-M33 (ARMV8-M Mainline):
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_main_none_eabi.rs
-                    # https://github.com/rust-lang/rust/blob/1.70.0/compiler/rustc_target/src/spec/thumbv8m_main_none_eabihf.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_main_none_eabi.rs
+                    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_main_none_eabihf.rs
                     thumbv8m.main-none-eabi | thumbv8m.main-none-eabihf) qemu_cpu=cortex-m33 ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac

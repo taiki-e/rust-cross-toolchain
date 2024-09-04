@@ -38,9 +38,9 @@ else
     touch /BUILD_STD
 fi
 
-# https://github.com/rust-lang/rust/blob/HEAD/Cargo.lock
-libc_version=0.2.155
-compiler_builtins_version=0.1.109
+# https://github.com/rust-lang/rust/blob/HEAD/library/Cargo.lock
+libc_version=0.2.158
+compiler_builtins_version=0.1.123
 sysroot=$(rustc --print sysroot)
 for patch in /test-base/patches/*.diff; do
     set +x

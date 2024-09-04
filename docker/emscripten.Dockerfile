@@ -3,7 +3,7 @@
 
 ARG UBUNTU_VERSION=20.04
 
-# https://github.com/rust-lang/rust/blob/1.70.0/src/ci/docker/scripts/emscripten.sh
+# https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/emscripten.sh
 # NB: When updating this, the reminder to update emscripten version in README.md.
 ARG EMSCRIPTEN_VERSION=2.0.5
 ARG NODE_VERSION=12.18.1
