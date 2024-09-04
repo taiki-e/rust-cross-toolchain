@@ -39,7 +39,7 @@ linux_gnu_targets=(
     riscv32gc-unknown-linux-gnu # tier3
     riscv64gc-unknown-linux-gnu
     s390x-unknown-linux-gnu
-    sparc-unknown-linux-gnu # tier3
+    # sparc-unknown-linux-gnu # tier3, TODO: relocations in generic ELF (EM: 18)
     sparc64-unknown-linux-gnu
     thumbv7neon-unknown-linux-gnueabihf
     x86_64-unknown-linux-gnu
