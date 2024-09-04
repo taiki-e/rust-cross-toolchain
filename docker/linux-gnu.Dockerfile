@@ -104,17 +104,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh
-# libpython2.7 is needed for GDB
 ARG DISTRO_VERSION
-RUN <<EOF
-case "${DISTRO_VERSION}" in
-    24.04) ;;
-    *)
-        apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-            libpython2.7
-        ;;
-esac
-EOF
 ARG RUST_TARGET
 COPY /test-base /test-base
 RUN /test-base/target.sh

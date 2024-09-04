@@ -75,10 +75,10 @@ case "${RUST_TARGET}" in
     arm-unknown-linux-gnueabihf)
         # Ubuntu's gcc-arm-linux-gnueabihf enables armv7 by default
         # https://github.com/abhiTronix/raspberry-pi-cross-compilers/wiki/Cross-Compiler:-Installation-Instructions#b-download-binary
-        # https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/Stretch/
+        # https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/Buster/
         cc_target=arm-linux-gnueabihf
-        gcc_version=9.4.0
-        codename=Stretch
+        gcc_version=10.2.0
+        codename=Buster
         echo "${cc_target}" >/CC_TARGET
         echo "${cc_target}" >/APT_TARGET
         echo "${gcc_version}" >/GCC_VERSION

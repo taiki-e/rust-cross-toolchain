@@ -54,7 +54,6 @@ libint
 liblgrp
 libm
 libpthread
-libpython
 libquadmath
 libresolv
 librt
