@@ -8,13 +8,12 @@ disallowed-macros = [
     { path = "std::dbg", reason = "it is okay to use during development, but please do not include it in main branch" },
 ]
 disallowed-methods = [
-    { path = "std::env::remove_var", reason = "this is not thread-safe and inherently unsafe; see <https://github.com/rust-lang/rust/issues/27970> for more" },
-    { path = "std::env::set_var", reason = "this is not thread-safe and inherently unsafe; see <https://github.com/rust-lang/rust/issues/27970> for more" },
     # Since we are using fs-err crate (as `fs`), `fs::*` functions will output a better error.
     { path = "std::fs::canonicalize", reason = "use `fs::canonicalize` instead" },
     { path = "std::fs::copy", reason = "use `fs::copy` instead" },
     { path = "std::fs::create_dir_all", reason = "use `fs::create_dir_all` instead" },
     { path = "std::fs::create_dir", reason = "use `fs::create_dir` instead" },
+    { path = "std::fs::exists", reason = "use `fs::exists` instead" },
     { path = "std::fs::hard_link", reason = "use `fs::hard_link` instead" },
     { path = "std::fs::metadata", reason = "use `fs::metadata` instead" },
     { path = "std::fs::read_dir", reason = "use `fs::read_dir` instead" },
