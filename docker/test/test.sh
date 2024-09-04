@@ -597,7 +597,8 @@ else
                 qemu-system)
                     cargo_args+=(--features qemu-system)
                     case "${RUST_TARGET}" in
-                        # TODO: As of QEMU 7.2, qemu-system-arm doesn't support Cortex-R machine.
+                        # TODO: As of QEMU 8.2, qemu-system-arm doesn't support Cortex-R machine.
+                        # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (ARMv8-R AArch32)
                         armv7r* | armebv7r*) continue ;;
                         thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | arm64* | riscv*)
                             _linker=link.x

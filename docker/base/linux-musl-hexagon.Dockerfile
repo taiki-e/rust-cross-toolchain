@@ -5,7 +5,7 @@
 #
 # Refs:
 # - https://codelinaro.jfrog.io/ui/native/codelinaro-toolchain-for-hexagon
-# - https://github.com/qemu/qemu/blob/v8.0.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
+# - https://github.com/qemu/qemu/blob/v9.0.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]

@@ -112,7 +112,7 @@ export READELF=${RUST_TARGET}-readelf
 EOF
                 ;;
             *)
-                # https://www.kernel.org/doc/html/latest/kbuild/llvm.html#llvm-utilities
+                # https://github.com/torvalds/linux/blob/v6.10/Documentation/kbuild/llvm.rst#the-llvm-argument
                 cat >>"${env_path}" <<EOF
 export AR_${rust_target_lower}=llvm-ar
 export RANLIB_${rust_target_lower}=llvm-ranlib
@@ -339,7 +339,7 @@ case "${RUST_TARGET}" in
             mips-* | mipsel-*) qemu_arch="${RUST_TARGET%%-*}" ;;
             mips64-* | mips64el-*)
                 qemu_arch="${RUST_TARGET%%-*}"
-                # As of qemu 6.1, only Loongson-3A4000 supports MSA instructions with mips64r5.
+                # As of QEMU 6.1, only Loongson-3A4000 supports MSA instructions with mips64r5.
                 qemu_cpu=Loongson-3A4000
                 ;;
             mipsisa32r6-* | mipsisa32r6el-*)
@@ -459,7 +459,7 @@ EOF
                     # Cortex-M3 (ARMv7-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7m_none_eabi.rs
                     thumbv7m-none-eabi) qemu_cpu=cortex-m3 ;;
                     # Cortex-M23 (ARMv8-M Baseline): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_base_none_eabi.rs
-                    # TODO: As of QEMU 8.2, QEMU doesn't support -cpu cortex-m23
+                    # TODO: As of QEMU 9.0, QEMU doesn't support -cpu cortex-m23
                     thumbv8m.base-none-eabi) qemu_cpu=cortex-m33 ;;
                     # Cortex-M33 (ARMV8-M Mainline):
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_main_none_eabi.rs
@@ -473,7 +473,8 @@ EOF
                     thumb*) qemu_machine=lm3s6965evb ;;
                     # Cortex-a
                     armv7a-*) qemu_machine=xilinx-zynq-a9 ;;
-                    # TODO: As of QEMU 7.2, qemu-system-arm doesn't support Cortex-R machine.
+                    # TODO: As of QEMU 8.2, qemu-system-arm doesn't support Cortex-R machine.
+                    # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (ARMv8-R AArch32)
                     arm*v7r-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
