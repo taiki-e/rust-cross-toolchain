@@ -62,7 +62,7 @@ esac
 gcc_version=$("${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" --version | sed -n '1 s/^.*) //p')
 export COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\""
 case "${RUST_TARGET}" in
-    riscv64*)
+    riscv*)
         COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version}" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             /docker/clang-cross.sh

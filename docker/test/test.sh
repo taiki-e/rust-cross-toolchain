@@ -268,10 +268,9 @@ esac
 # Whether or not to run the compiled binaries.
 no_run=1
 case "${RUST_TARGET}" in
-    # TODO(riscv32gc-unknown-linux-gnu): libstd's io-related feature on riscv32 linux is broken: https://github.com/rust-lang/rust/issues/88995
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     # TODO(armeb-unknown-linux-gnueabi): QEMU bug: https://github.com/taiki-e/setup-cross-toolchain-action/commit/ac9e913254a978d102152e484dc4d4b7a144e1ab
-    riscv32gc-unknown-linux-gnu | x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi) ;;
+    x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi) ;;
     aarch64-pc-windows-gnullvm)
         # TODO: aarch64 host
         case "${dpkg_arch##*-}" in
@@ -285,8 +284,9 @@ esac
 no_run_test=""
 case "${RUST_TARGET}" in
     # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
+    # TODO(riscv32gc-unknown-linux-musl): unsafe precondition(s) violated: ptr::write_bytes requires that the destination pointer is aligned and non-null
     # TODO(wasm32-wasip1-threads): failed to invoke command default
-    powerpc-unknown-linux-gnuspe | wasm32-wasip1-threads) no_run_test=1 ;;
+    powerpc-unknown-linux-gnuspe | riscv32gc-unknown-linux-musl | wasm32-wasip1-threads) no_run_test=1 ;;
 esac
 
 build_mode=debug
@@ -353,8 +353,9 @@ if [[ -z "${no_std}" ]]; then
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
                     # TODO(powerpc-unknown-linux-musl)
+                    # TODO(riscv32gc-unknown-linux-musl)
                     # TODO(powerpc64le,s390x,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-                    powerpc-* | powerpc64le-* | s390x-* | thumbv7neon-* | mips*) ;;
+                    powerpc-* | powerpc64le-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
                     *)
                         rm -rf "${target_libdir}"
                         mkdir -p "${self_contained}"
@@ -462,10 +463,10 @@ EOF
             case "${RUST_TARGET}" in
                 # TODO(hexagon): run-fail (segfault)
                 # TODO(powerpc-unknown-linux-musl)
-                # TODO(riscv64gc-unknown-linux-musl)
+                # TODO(riscv*-unknown-linux-musl)
                 # TODO(s390x-unknown-linux-musl)
                 # TODO(powerpc64le,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-                hexagon-* | powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-* | mips*) ;;
+                hexagon-* | powerpc-* | powerpc64le-* | riscv* | s390x-* | thumbv7neon-* | mips*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
