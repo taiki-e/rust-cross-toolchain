@@ -148,7 +148,7 @@ apt_target="${apt_target:-"${cc_target/i586/i686}"}"
 echo "${cc_target}" >/CC_TARGET
 echo "${apt_target}" >/APT_TARGET
 
-gcc_version="${GCC_VERSION:-"$(gcc --version | sed -n '1 s/^.*) //p')"}"
+gcc_version=$(gcc --version | sed -n '1 s/^.*) //p')
 echo "${gcc_version}" >/GCC_VERSION
 mkdir -p /tmp/toolchain
 cd /tmp/toolchain

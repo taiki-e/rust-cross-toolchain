@@ -353,9 +353,8 @@ if [[ -z "${no_std}" ]]; then
             if [[ -f /BUILD_STD ]]; then
                 case "${RUST_TARGET}" in
                     # TODO(powerpc-unknown-linux-musl)
-                    # TODO(riscv64gc-unknown-linux-musl)
                     # TODO(powerpc64le,s390x,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-                    powerpc-* | powerpc64le-* | riscv64* | s390x-* | thumbv7neon-* | mips*) ;;
+                    powerpc-* | powerpc64le-* | s390x-* | thumbv7neon-* | mips*) ;;
                     *)
                         rm -rf "${target_libdir}"
                         mkdir -p "${self_contained}"
@@ -379,7 +378,11 @@ if [[ -z "${no_std}" ]]; then
 name = "build-std"
 edition = "2021"
 EOF
-                        RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
+                        case "${RUST_TARGET}" in
+                            hexagon-*) ;;
+                            *) gcc_version=$("${RUST_TARGET}-gcc" --version | sed -n '1 s/^.*) //p') ;;
+                        esac
+                        RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_version:-}" \
                             x cargo build "${build_std[@]}" --target "${RUST_TARGET}" --all-targets --release
                         rm target/"${RUST_TARGET}"/release/deps/*build_std-*
                         cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${target_libdir}"
@@ -402,7 +405,7 @@ EOF
                                 ;;
                             *)
                                 cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                                cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${GCC_VERSION}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
+                                cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_version}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
                                 ;;
                         esac
 

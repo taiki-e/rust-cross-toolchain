@@ -8,15 +8,15 @@
 
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 
-# Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add binutils 2.36.1 hash for riscv.
+# Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add some hashes for riscv.
 # https://github.com/taiki-e/musl-cross-make/tree/dev
-ARG MUSL_CROSS_MAKE_REV=445fb6748c1d4b416b54d0a19d9d14204c8f298d
+ARG MUSL_CROSS_MAKE_REV=060a2763225cbc325cffce7e7e08e62a7df1ad3b
 # Available versions: https://github.com/richfelker/musl-cross-make/tree/HEAD/hashes
 # Default: https://github.com/richfelker/musl-cross-make/blob/HEAD/Makefile
 ARG BINUTILS_VERSION=2.33.1
 ARG GCC_VERSION=9.4.0
 ARG MUSL_VERSION
-ARG LINUX_VERSION=headers-4.19.88-1
+ARG LINUX_VERSION=headers-4.19.88-2
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
@@ -55,18 +55,23 @@ ARG LINUX_VERSION
 # https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/config.mak.dist
 # https://conf.musl.cc/plain_20210301_10-2-1.txt
 # See also cc-rs for target flags: https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1649
-# Use binutils 2.36.1 for riscv because linker error "unsupported ISA subset 'z'" since nightly-2023-08-09 (LLVM 17)
+# Use binutils 2.40 for riscv because linker error "unknown z ISA extension `zmmul'" with LLVM 19
+# Use gcc 13.2 for riscv because linker error "relocation R_RISCV_JAL against `__udivsi3' which may bind externally can not be used when making a shared object; recompile with -fPIC"
 # Use musl 1.2.5 for riscv32/loongarch64 because support for them has been added in 1.2.5: https://github.com/bminor/musl/commit/01d9fe4d9f7cce7a6dbaece0e2e405a2e3279244 / https://github.com/bminor/musl/commit/522bd54edaa2fa404fd428f8ad0bcb0f0bec5639
 RUN <<EOF
 cc_target=$(</CC_TARGET)
 case "${RUST_TARGET}" in
-    riscv*) BINUTILS_VERSION=2.36.1 ;;
+    riscv*)
+        BINUTILS_VERSION=2.40
+        GCC_VERSION=13.2.0
+        ;;
 esac
 if [[ "${MUSL_VERSION}" == "1.2.3" ]]; then
     case "${RUST_TARGET}" in
-        riscv32* | loongarch64*) MUSL_VERSION=1.2.5 ;;
+        riscv32* | loongarch64-*) MUSL_VERSION=1.2.5 ;;
     esac
 fi
+export CFLAGS="-fPIC -g1 ${CFLAGS:-}"
 cd musl-cross-make
 cat >./config.mak <<EOF2
 OUTPUT = ${TOOLCHAIN_DIR}

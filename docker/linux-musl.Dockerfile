@@ -13,7 +13,6 @@ ARG HOST_ARCH=amd64
 
 # See tools/build-docker.sh
 ARG MUSL_VERSION
-ARG GCC_VERSION=9.4.0
 
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${MUSL_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS toolchain
 
@@ -53,22 +52,27 @@ esac
 echo "${cc_target}" >/CC_TARGET
 EOF
 
-ARG GCC_VERSION
 RUN --mount=type=bind,target=/docker <<EOF
+case "${RUST_TARGET}" in
+    hexagon-*)
+        rm -f "${TOOLCHAIN_DIR}"/bin/qemu-* # TODO: rm
+        exit 0
+        ;;
+esac
+gcc_version=$("${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" --version | sed -n '1 s/^.*) //p')
 export COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\""
 case "${RUST_TARGET}" in
-    hexagon-*) rm -f "${TOOLCHAIN_DIR}"/bin/qemu-* ;; # TODO: rm
     riscv64*)
-        COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
-            CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
+        COMMON_FLAGS="${COMMON_FLAGS} --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version}" \
+            CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             /docker/clang-cross.sh
         ;;
     aarch64-* | mips64-* | mips64el-* | powerpc64-* | powerpc64le-* | s390x-* | x86_64*)
         /docker/clang-cross.sh
         ;;
     *)
-        COMMON_FLAGS="${COMMON_FLAGS} -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
-            CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
+        COMMON_FLAGS="${COMMON_FLAGS} -B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version}" \
+            CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             /docker/clang-cross.sh
         ;;
 esac
@@ -92,7 +96,6 @@ SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
-ARG GCC_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
     hexagon-*) ;;
@@ -107,7 +110,6 @@ SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
-ARG GCC_VERSION
 ENV PATH="/${RUST_TARGET}/bin:$PATH"
 RUN /test/check.sh
 RUN <<EOF

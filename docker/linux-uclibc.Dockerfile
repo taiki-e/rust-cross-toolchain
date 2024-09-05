@@ -12,7 +12,6 @@ ARG UBUNTU_VERSION=20.04
 # https://toolchains.bootlin.com/toolchains.html
 # NB: When updating this, the reminder to update uClibc-ng/GCC version in README.md.
 ARG TOOLCHAIN_VERSION=2020.08-1
-ARG GCC_VERSION=10.2.0
 
 FROM ghcr.io/taiki-e/downloader AS toolchain
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
@@ -70,12 +69,13 @@ EOF
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
-ARG GCC_VERSION
-RUN --mount=type=bind,target=/docker \
-    CC_TARGET="$(</CC_TARGET)" \
-    COMMON_FLAGS="-B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${GCC_VERSION}" \
-    CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${GCC_VERSION}/${RUST_TARGET}" \
+RUN --mount=type=bind,target=/docker <<EOF
+gcc_version=$("${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" --version | sed -n '1 s/^.*) //p')
+CC_TARGET="$(</CC_TARGET)" \
+    COMMON_FLAGS="-B\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version} -L\"\${toolchain_dir}\"/lib/gcc/${RUST_TARGET}/${gcc_version}" \
+    CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
     /docker/clang-cross.sh
+EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]

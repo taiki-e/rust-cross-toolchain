@@ -128,6 +128,7 @@ SYSV
 TOOLDIR
 uclibcgnueabi
 uclibcgnueabihf
+udivsi
 unikraft
 untngdnb
 versatilepb
@@ -141,5 +142,6 @@ winehq
 WINEPATH
 WINEPREFIX
 wineserver
+zmmul
 Znwm
 zynq

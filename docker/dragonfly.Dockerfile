@@ -26,11 +26,12 @@ ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p "${SYSROOT_DIR}"
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
-ARG GCC_VERSION=8.0
-RUN --mount=type=bind,target=/docker \
-    COMMON_FLAGS="-fuse-ld=lld -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${GCC_VERSION/./} -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${GCC_VERSION/./}" \
-    CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/c++/${GCC_VERSION} -I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++" \
+RUN --mount=type=bind,target=/docker <<EOF
+gcc_version=8.0
+COMMON_FLAGS="-fuse-ld=lld -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${gcc_version/./} -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${gcc_version/./}" \
+    CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++" \
     /docker/clang-cross.sh
+EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]

@@ -32,7 +32,7 @@ EOF
 
 # TODO cannot find -lgcc: No such file or directory
 # RUN --mount=type=bind,target=/docker <<EOF
-# gcc_version="${GCC_VERSION:-"$(gcc --version | sed -n '1 s/^.*) //p')"}"
+# gcc_version=$(gcc --version | sed -n '1 s/^.*) //p')
 # COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" -B\"\${toolchain_dir}\"/${RUST_TARGET}/bin -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L${TOOLCHAIN_DIR}/lib/gcc-cross/${RUST_TARGET}/${gcc_version%%.*}" \
 #     CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
 #     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version%%.*}/${RUST_TARGET}" \
