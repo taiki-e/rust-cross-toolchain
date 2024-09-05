@@ -33,7 +33,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 [1] See target list below for details<br>
 [2] Except for sparc-unknown-linux-gnu and loongarch64-unknown-linux-gnu<br>
 [3] Except for loongarch64-unknown-linux-gnu<br>
-[4] Except for powerpc-unknown-linux-gnuspe, and x86_64-unknown-linux-gnux32<br>
+[4] Except for powerpc-unknown-linux-gnuspe and x86_64-unknown-linux-gnux32<br>
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
 
@@ -81,10 +81,10 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | ---- | --- | ----- | --- | ---- | ---- |
 | musl 1.2.3 [6] | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] [4] | [5] |
 
-[1] 13.2.0 for risc64gc-unknown-linux-musl, unavailable for hexagon-unknown-linux-musl<br>
+[1] 8.5.0 for powerpc-unknown-linux-muslspe, 13.2.0 for risc64gc-unknown-linux-musl, unavailable for hexagon-unknown-linux-musl<br>
 [2] 17.0.0-rc3 for hexagon-unknown-linux-musl, otherwise host<br>
 [3] hexagon-unknown-linux-musl requires release mode for building test<br>
-[4] Except for riscv32gc-unknown-linux-musl<br>
+[4] Except for powerpc-unknown-linux-muslspe and riscv32gc-unknown-linux-musl<br>
 [5] See target list below for details<br>
 [6] 1.2.5 for riscv32
 
@@ -108,6 +108,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `mips64el-unknown-linux-muslabi64` (tier3) | x86_64 Linux (any libc) |
 | `mipsel-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `powerpc-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
+| `powerpc-unknown-linux-muslspe` (tier3) | x86_64 Linux (any libc) |
 | `powerpc64le-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `riscv32gc-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `riscv64gc-unknown-linux-musl` | x86_64 Linux (any libc) |

@@ -63,10 +63,10 @@ linux_musl_targets=(
     mips64el-unknown-linux-muslabi64 # tier3
     mipsel-unknown-linux-musl        # tier3
     powerpc-unknown-linux-musl       # tier3
-    # powerpc-unknown-linux-muslspe # tier3, TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/powerpc-unknown-linux-muslspe.md
+    powerpc-unknown-linux-muslspe    # tier3, TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/powerpc-unknown-linux-muslspe.md
     # powerpc64-unknown-linux-musl # tier3, TODO: ABI version 1 is not compatible with ABI version 2 output
-    powerpc64le-unknown-linux-musl # tier3
-    riscv32gc-unknown-linux-musl # tier3
+    powerpc64le-unknown-linux-musl       # tier3
+    riscv32gc-unknown-linux-musl         # tier3
     riscv64gc-unknown-linux-musl         # tier3
     s390x-unknown-linux-musl             # tier3
     thumbv7neon-unknown-linux-musleabihf # tier3

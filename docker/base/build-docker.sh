@@ -97,7 +97,10 @@ build() {
 }
 
 case "${target}" in
-    hexagon-unknown-linux-musl) build "linux-musl-hexagon" "${target}" ;;
+    hexagon-unknown-linux-musl)
+        musl_version=1.2
+        build "linux-musl-hexagon" "${target}" "${musl_version}"
+        ;;
     *-linux-musl*)
         if [[ -n "${MUSL_VERSION:-}" ]]; then
             musl_versions=("${MUSL_VERSION}")

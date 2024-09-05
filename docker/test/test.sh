@@ -283,10 +283,10 @@ esac
 # Whether or not to run the test.
 no_run_test=""
 case "${RUST_TARGET}" in
-    # TODO(powerpc-unknown-linux-gnuspe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
+    # TODO(powerpc-unknown-linux-*spe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
     # TODO(riscv32gc-unknown-linux-musl): unsafe precondition(s) violated: ptr::write_bytes requires that the destination pointer is aligned and non-null
     # TODO(wasm32-wasip1-threads): failed to invoke command default
-    powerpc-unknown-linux-gnuspe | riscv32gc-unknown-linux-musl | wasm32-wasip1-threads) no_run_test=1 ;;
+    powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl | wasm32-wasip1-threads) no_run_test=1 ;;
 esac
 
 build_mode=debug
@@ -989,6 +989,7 @@ case "${RUST_TARGET}" in
                     mips64-*) ldso_arch=mips64 ;;
                     mips64el-*) ldso_arch=mips64el ;;
                     mipsel-*) ldso_arch=mipsel-sf ;;
+                    powerpc-*spe) ldso_arch=powerpc-sf ;;
                     powerpc-*) ldso_arch=powerpc ;;
                     powerpc64-*) ldso_arch=powerpc64 ;;
                     powerpc64le-*) ldso_arch=powerpc64le ;;

@@ -151,17 +151,14 @@ for target in "${targets[@]}"; do
             default_musl_version="1.1"
             for musl_version in "${musl_versions[@]}"; do
                 case "${target}" in
-                    hexagon-*)
+                    hexagon-* | powerpc-*spe | riscv32*)
                         default_musl_version="1.2"
                         if [[ "${musl_version}" != "${default_musl_version}" ]]; then
                             continue
                         fi
-                        docker_manifest "${target}" "${musl_version}" "${default_musl_version}"
-                        ;;
-                    *)
-                        docker_manifest "${target}" "${musl_version}" "${default_musl_version}"
                         ;;
                 esac
+                docker_manifest "${target}" "${musl_version}" "${default_musl_version}"
             done
             ;;
         *-linux-uclibc*) docker_manifest "${target}" ;;

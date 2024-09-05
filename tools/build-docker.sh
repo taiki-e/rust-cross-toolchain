@@ -216,18 +216,15 @@ for target in "${targets[@]}"; do
             default_musl_version="1.1"
             for musl_version in "${musl_versions[@]}"; do
                 case "${target}" in
-                    hexagon-*)
+                    hexagon-* | powerpc-*spe | riscv32*)
                         default_musl_version="1.2"
                         if [[ "${musl_version}" != "${default_musl_version}" ]]; then
                             continue
                         fi
-                        build "linux-musl" "${target}" "${musl_version}" "${default_musl_version}"
-                        ;;
-                    *)
-                        build "linux-musl" "${target}" "${musl_version}" "${default_musl_version}" \
-                            --build-arg "MUSL_VERSION=${musl_version}"
                         ;;
                 esac
+                build "linux-musl" "${target}" "${musl_version}" "${default_musl_version}" \
+                    --build-arg "MUSL_VERSION=${musl_version}"
             done
             ;;
         *-linux-uclibc*) build "linux-uclibc" "${target}" ;;

@@ -100,7 +100,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] powerpc-unknown-freebsd
 - [x] powerpc-unknown-linux-gnuspe
 - [x] powerpc-unknown-linux-musl
-- [ ] powerpc-unknown-linux-muslspe
+- [x] powerpc-unknown-linux-muslspe
 - [x] powerpc-unknown-netbsd
 - [x] powerpc-unknown-openbsd
 - [ ] powerpc-wrs-vxworks

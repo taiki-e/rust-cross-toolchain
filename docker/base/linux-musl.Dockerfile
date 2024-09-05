@@ -11,8 +11,8 @@
 # Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add some hashes for riscv.
 # https://github.com/taiki-e/musl-cross-make/tree/dev
 ARG MUSL_CROSS_MAKE_REV=060a2763225cbc325cffce7e7e08e62a7df1ad3b
-# Available versions: https://github.com/richfelker/musl-cross-make/tree/HEAD/hashes
-# Default: https://github.com/richfelker/musl-cross-make/blob/HEAD/Makefile
+# Available versions: https://github.com/taiki-e/musl-cross-make/tree/dev/hashes
+# Default: https://github.com/taiki-e/musl-cross-make/tree/dev/Makefile
 ARG BINUTILS_VERSION=2.33.1
 ARG GCC_VERSION=9.4.0
 ARG MUSL_VERSION
@@ -55,12 +55,17 @@ ARG LINUX_VERSION
 # https://github.com/richfelker/musl-cross-make/blob/0f22991b8d47837ef8dd60a0c43cf40fcf76217a/config.mak.dist
 # https://conf.musl.cc/plain_20210301_10-2-1.txt
 # See also cc-rs for target flags: https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1649
+# Use GCC 8 for powerpcspe GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html
 # Use binutils 2.40 for riscv because linker error "unknown z ISA extension `zmmul'" with LLVM 19
-# Use gcc 13.2 for riscv because linker error "relocation R_RISCV_JAL against `__udivsi3' which may bind externally can not be used when making a shared object; recompile with -fPIC"
+# Use GCC 13 for riscv because linker error "relocation R_RISCV_JAL against `__udivsi3' which may bind externally can not be used when making a shared object; recompile with -fPIC"
 # Use musl 1.2.5 for riscv32/loongarch64 because support for them has been added in 1.2.5: https://github.com/bminor/musl/commit/01d9fe4d9f7cce7a6dbaece0e2e405a2e3279244 / https://github.com/bminor/musl/commit/522bd54edaa2fa404fd428f8ad0bcb0f0bec5639
 RUN <<EOF
 cc_target=$(</CC_TARGET)
 case "${RUST_TARGET}" in
+    powerpc-*spe)
+        GCC_VERSION=8.5.0
+        gcc_config=' --enable-obsolete'
+        ;;
     riscv*)
         BINUTILS_VERSION=2.40
         GCC_VERSION=13.2.0
@@ -89,7 +94,7 @@ COMMON_CONFIG += --with-debug-prefix-map=\$(CURDIR)=
 GCC_CONFIG += --enable-default-pie --enable-static-pie
 GCC_CONFIG += --enable-languages=c,c++,fortran
 GCC_CONFIG += --disable-libquadmath --disable-libquadmath-support --disable-decimal-float
-GCC_CONFIG += --disable-multilib
+GCC_CONFIG += --disable-multilib${gcc_config:-}
 EOF2
 case "${RUST_TARGET}" in
     arm-*hf) common_config="--with-arch=armv6 --with-fpu=vfp --with-float=hard --with-mode=arm" ;;
@@ -130,6 +135,7 @@ case "${RUST_TARGET}" in
     mips64-*) ldso_arch=mips64 ;;
     mips64el-*) ldso_arch=mips64el ;;
     mipsel-*) ldso_arch=mipsel-sf ;;
+    powerpc-*spe) ldso_arch=powerpc-sf ;;
     powerpc-*) ldso_arch=powerpc ;;
     powerpc64-*) ldso_arch=powerpc64 ;;
     powerpc64le-*) ldso_arch=powerpc64le ;;
