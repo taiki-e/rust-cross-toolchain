@@ -360,6 +360,9 @@ none_targets=(
     xtensa-esp32s2-none-elf # tier3
     xtensa-esp32s3-none-elf # tier3
 )
+rtems_targets=(
+    armv7-rtems-eabihf # tier3
+)
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
@@ -407,4 +410,5 @@ targets=(
     ${xous_targets[@]+"${xous_targets[@]}"}
     ${zkvm_targets[@]+"${zkvm_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
+    ${rtems_targets[@]+"${rtems_targets[@]}"}
 )
