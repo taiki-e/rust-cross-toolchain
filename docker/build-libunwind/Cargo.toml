@@ -3,7 +3,6 @@ name = "build-libunwind"
 edition = "2021"
 
 [dependencies]
-anyhow = "1"
 cc = "1"
 fs-err = "2"
 
