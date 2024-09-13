@@ -158,6 +158,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] x86_64-unknown-dragonfly
 - [ ] x86_64-unknown-haiku
 - [ ] x86_64-unknown-hermit
+- [ ] x86_64-unknown-hurd-gnu
 - [ ] x86_64-unknown-l4re-uclibc
 - [ ] x86_64-unknown-linux-none
 - [x] x86_64-unknown-openbsd
