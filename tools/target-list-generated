@@ -244,6 +244,7 @@ horizon_targets=(
 )
 hurd_targets=(
     i686-unknown-hurd-gnu # tier3
+    x86_64-unknown-hurd-gnu # tier3
 )
 l4re_targets=(
     x86_64-unknown-l4re-uclibc # tier3
