@@ -174,7 +174,7 @@ case "${RUST_TARGET}" in
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
     loongarch64-unknown-linux-gnu)
-        export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/${RUST_TARGET}/lib64:${LD_LIBRARY_PATH:-}"
+        export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
 esac
 
@@ -836,7 +836,7 @@ case "${RUST_TARGET}" in
                 ;;
             loongarch64-*)
                 file_info_pat+=('LoongArch')
-                file_header_pat+=('Machine:\s+LoongArch' 'Flags:\s+0x3, LP64, DOUBLE-FLOAT')
+                file_header_pat+=('Machine:\s+LoongArch' 'Flags:\s+0x43, LP64, DOUBLE-FLOAT')
                 ;;
             mips-* | mipsel-*)
                 file_info_pat+=('MIPS' 'MIPS32 rel2')
