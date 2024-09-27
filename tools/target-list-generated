@@ -81,6 +81,7 @@ linux_uclibc_targets=(
 linux_ohos_targets=(
     aarch64-unknown-linux-ohos
     armv7-unknown-linux-ohos
+    loongarch64-unknown-linux-ohos # tier3
     x86_64-unknown-linux-ohos
 )
 linux_none_targets=(
@@ -115,6 +116,7 @@ ios_targets=(
 tvos_targets=(
     aarch64-apple-tvos # tier3
     aarch64-apple-tvos-sim # tier3
+    arm64e-apple-tvos # tier3
     x86_64-apple-tvos # tier3
 )
 watchos_targets=(
@@ -223,10 +225,8 @@ espidf_targets=(
     xtensa-esp32s3-espidf # tier3
 )
 fuchsia_targets=(
-    aarch64-fuchsia # tier3
     aarch64-unknown-fuchsia
     riscv64gc-unknown-fuchsia # tier3
-    x86_64-fuchsia # tier3
     x86_64-unknown-fuchsia
 )
 haiku_targets=(
@@ -310,6 +310,8 @@ vxworks_targets=(
     powerpc-wrs-vxworks # tier3
     powerpc-wrs-vxworks-spe # tier3
     powerpc64-wrs-vxworks # tier3
+    riscv32-wrs-vxworks # tier3
+    riscv64-wrs-vxworks # tier3
     x86_64-wrs-vxworks # tier3
 )
 xous_targets=(

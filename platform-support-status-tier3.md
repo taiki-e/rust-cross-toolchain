@@ -13,7 +13,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-apple-visionos-sim
 - [ ] aarch64-apple-watchos
 - [ ] aarch64-apple-watchos-sim
-- [ ] aarch64-fuchsia
 - [ ] aarch64-kmc-solid_asp3
 - [ ] aarch64-nintendo-switch-freestanding
 - [x] aarch64-unknown-freebsd
@@ -35,6 +34,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin
 - [ ] arm64e-apple-ios
+- [ ] arm64e-apple-tvos
 - [x] armeb-unknown-linux-gnueabi
 - [ ] armv4t-none-eabi
 - [ ] armv4t-unknown-linux-gnueabi
@@ -77,6 +77,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-uwp-windows-msvc
 - [ ] i686-win7-windows-msvc
 - [ ] i686-wrs-vxworks
+- [ ] loongarch64-unknown-linux-ohos
 - [ ] m68k-unknown-linux-gnu
 - [x] mips-unknown-linux-gnu
 - [x] mips-unknown-linux-musl
@@ -113,6 +114,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] powerpc64-wrs-vxworks
 - [x] powerpc64le-unknown-freebsd
 - [x] powerpc64le-unknown-linux-musl
+- [ ] riscv32-wrs-vxworks
 - [x] riscv32gc-unknown-linux-gnu
 - [x] riscv32gc-unknown-linux-musl
 - [ ] riscv32im-risc0-zkvm-elf
@@ -125,6 +127,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imc-esp-espidf
 - [ ] riscv32imc-unknown-nuttx-elf
 - [ ] riscv64-linux-android
+- [ ] riscv64-wrs-vxworks
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
@@ -152,7 +155,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
-- [ ] x86_64-fuchsia
 - [ ] x86_64-pc-nto-qnx710
 - [ ] x86_64-unikraft-linux-musl
 - [x] x86_64-unknown-dragonfly
