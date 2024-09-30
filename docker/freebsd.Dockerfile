@@ -28,7 +28,6 @@ RUN mkdir -p /sysroot
 # Download FreeBSD libraries and header files.
 # https://download.freebsd.org/ftp/releases
 # - As of 14.1, base.txz for armv{6,7} is not distributed.
-# - Use bsdtar to avoid "unknown extended header keyword" warning.
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) freebsd_arch=arm64/aarch64 ;;
@@ -40,7 +39,7 @@ case "${RUST_TARGET}" in
     *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://download.freebsd.org/ftp/releases/${freebsd_arch}/${FREEBSD_VERSION}-RELEASE/base.txz" \
-    | bsdtar xJf - -C /sysroot ./lib ./usr/include ./usr/lib ./bin/freebsd-version
+    | tar xJf - -C /sysroot ./lib ./usr/include ./usr/lib ./bin/freebsd-version
 EOF
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder
