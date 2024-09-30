@@ -61,7 +61,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] bpfeb-unknown-none
 - [ ] bpfel-unknown-none
 - [x] csky-unknown-linux-gnuabiv2
-- [ ] csky-unknown-linux-gnuabiv2hf
+- [x] csky-unknown-linux-gnuabiv2hf
 - [x] hexagon-unknown-linux-musl
 - [ ] hexagon-unknown-none-elf
 - [ ] i386-apple-ios

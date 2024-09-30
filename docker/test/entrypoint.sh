@@ -52,7 +52,8 @@ else
 fi
 case "${RUST_TARGET}" in
     aarch64_be-unknown-linux-gnu | armeb-unknown-linux-gnueabi* | arm-unknown-linux-gnueabihf) sysroot_suffix="${RUST_TARGET}/libc" ;;
-    csky-unknown-linux-gnuabiv2*) sysroot_suffix="${RUST_TARGET}/libc" ;;
+    csky-unknown-linux-gnuabiv2) sysroot_suffix="${RUST_TARGET}/libc" ;;
+    csky-unknown-linux-gnuabiv2hf) sysroot_suffix="${RUST_TARGET}/libc/ck860v" ;;
     riscv32gc-unknown-linux-gnu) sysroot_suffix="sysroot" ;;
     loongarch64-unknown-linux-gnu) sysroot_suffix="target/usr" ;;
     *) sysroot_suffix="${RUST_TARGET}" ;;
@@ -170,9 +171,14 @@ case "${RUST_TARGET}" in
 export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/libc/lib:\${toolchain_dir}/${RUST_TARGET}/lib:\${LD_LIBRARY_PATH:-}"
 EOF
         ;;
-    csky-unknown-linux-gnuabiv2*)
+    csky-unknown-linux-gnuabiv2)
         cat >>"${entrypoint_path}" <<EOF
 export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/lib:\${LD_LIBRARY_PATH:-}"
+EOF
+        ;;
+    csky-unknown-linux-gnuabiv2hf)
+        cat >>"${entrypoint_path}" <<EOF
+export LD_LIBRARY_PATH="\${toolchain_dir}/${RUST_TARGET}/lib/ck860v:\${LD_LIBRARY_PATH:-}"
 EOF
         ;;
     loongarch64-unknown-linux-gnu)
@@ -294,6 +300,12 @@ EOF
                 ;;
         esac
         ;;
+    csky-unknown-linux-gnuabiv2hf)
+        cat >>"${env_path}" <<EOF
+export CFLAGS_${rust_target_lower}="-march=ck860v -mhard-float \${CFLAGS_${rust_target_lower}:-}"
+export CXXFLAGS_${rust_target_lower}="-march=ck860v -mhard-float \${CXXFLAGS_${rust_target_lower}:-}"
+EOF
+        ;;
 esac
 
 case "${RUST_TARGET}" in
@@ -338,7 +350,12 @@ case "${RUST_TARGET}" in
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
-            csky-*v2*) qemu_arch=cskyv2 ;;
+            csky-*v2*)
+                qemu_arch=cskyv2
+                case "${RUST_TARGET}" in
+                    *hf) qemu_cpu=ck860v ;;
+                esac
+                ;;
             i?86-*) qemu_arch=i386 ;;
             hexagon-*) qemu_arch=hexagon ;;
             loongarch64-*) qemu_arch=loongarch64 ;;

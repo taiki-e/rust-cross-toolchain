@@ -173,8 +173,11 @@ case "${RUST_TARGET}" in
     arm-unknown-linux-gnueabihf)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
-    csky-unknown-linux-gnuabiv2*)
+    csky-unknown-linux-gnuabiv2)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
+        ;;
+    csky-unknown-linux-gnuabiv2hf)
+        export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/lib/ck860v:${LD_LIBRARY_PATH:-}"
         ;;
     loongarch64-unknown-linux-gnu)
         export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"

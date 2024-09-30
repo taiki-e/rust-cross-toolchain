@@ -79,6 +79,7 @@ mbig
 medany
 mfloat
 mfpu
+mhard
 Microcontroller
 mipsn
 MKDOC
