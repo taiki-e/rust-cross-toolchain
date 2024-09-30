@@ -26,7 +26,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### Linux (GNU)
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | glibc [1] | [1] | host [2] | ✓ (libstdc++) [3] | ✓ (qemu) [4] | [1] |
 
@@ -79,7 +79,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### Linux (musl)
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | musl 1.2.3 [6] | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] [4] | [5] |
 
@@ -120,7 +120,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### Linux (uClibc)
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | uClibc-ng 1.0.34 | 10.2.0 | host | ✓ (libstdc++) | ✓ (qemu) | x86_64 Linux (glibc 2.17+) |
 
@@ -138,7 +138,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### Android
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | [1] | N/A | 14.0.6 | ? (libc++) | ✓ (qemu) | x86_64 Linux (glibc 2.17+) |
 
@@ -159,7 +159,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### FreeBSD
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | freebsd [1] | N/A | host | ✓ (libc++) |  | [1] |
 
@@ -181,7 +181,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### NetBSD
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | netbsd [1] | 7.5.0 | host | ✓ (libstdc++) |  | x86_64 Linux (glibc 2.27+) |
 
@@ -206,7 +206,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### OpenBSD
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | openbsd [1] | N/A | host | ✓ (libc++) [2] |  | [1] |
 
@@ -229,7 +229,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### DragonFly BSD
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | dragonfly 6.4.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | Linux (any arch, any libc) |
 
@@ -241,7 +241,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### Solaris
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | solaris 2.10 | 8.5.0 |  | ✓ (libstdc++) |  | x86_64 Linux (any libc) |
 
@@ -254,7 +254,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### illumos
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | solaris 2.10 | 8.5.0 | host | ✓ (libstdc++) |  | x86_64 Linux (any libc) |
 
@@ -266,7 +266,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 ### Redox
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | redox 0.8.0 | 13.2.0 | host | ✓ (libstdc++) |  | x86_64 Linux (glibc 2.35+) |
 
@@ -283,7 +283,7 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 
 ### WASI
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | WASI SDK 24 (wasi-libc b9ef79d) | N/A | 18.1.2 | ? (libc++) | ✓ (wasmtime) | x86_64/aarch64 Linux (glibc 2.28+) |
 
@@ -301,7 +301,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 ### Emscripten
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | emscripten 2.0.5 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 Linux (glibc 2.27+) |
 
@@ -313,7 +313,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 ### Windows (MinGW)
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | Mingw-w64 8.0.0 | 10.3.0 | host | ✓ (libstdc++) | ✓ (wine) | [1] |
 
@@ -335,7 +335,7 @@ GCC version: https://packages.ubuntu.com/en/jammy/gcc-mingw-w64-base
 
 ### Windows (LLVM MinGW)
 
-| libc | GCC | clang | C++ | test | host |
+| libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | Mingw-w64 7c9cfe6 | N/A | 18.1.8 | ✓ (libc++) | ✓ (wine) | x86_64/aarch64 Linux (glibc 2.17+) |
 
@@ -354,7 +354,7 @@ Clang version: https://github.com/mstorsjo/llvm-mingw/releases/tag/20240619
 
 ### No-std
 
-| libc | GCC | clang | C++ | run | host |
+| libc | GCC | Clang | C++ | run | host |
 | ---- | --- | ----- | --- | ---- | ---- |
 | newlib 4.1.0 | [1] |  | ✓ (libstdc++) | [1] | [1] |
 
