@@ -18,7 +18,7 @@ linux_gnu_targets=(
     armv5te-unknown-linux-gnueabi
     armv7-unknown-linux-gnueabi
     armv7-unknown-linux-gnueabihf
-    # csky-unknown-linux-gnuabiv2 # tier3
+    csky-unknown-linux-gnuabiv2 # tier3
     # csky-unknown-linux-gnuabiv2hf # tier3
     i586-unknown-linux-gnu
     i686-unknown-linux-gnu

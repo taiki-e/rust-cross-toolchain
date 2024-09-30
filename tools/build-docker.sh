@@ -171,8 +171,8 @@ for target in "${targets[@]}"; do
             ubuntu_version=18.04
             # NB: When updating this, the reminder to update tools/update-manifest.sh.
             case "${target}" in
-                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
-                    # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | armeb-* | arm-*hf | csky-* | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
+                    # aarch64_be-*|armeb-*|arm-*hf|csky-*|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
                     # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
                     case "${arch}" in
                         x86_64) ;;
@@ -181,8 +181,8 @@ for target in "${targets[@]}"; do
                     ;;
             esac
             case "${target}" in
-                # old file command doesn't support loongarch64
-                loongarch64-*) ubuntu_version=22.04 ;;
+                # old file command doesn't support csky/loongarch64
+                csky-* | loongarch64-*) ubuntu_version=22.04 ;;
             esac
             case "${arch}" in
                 # Note: gcc-powerpc-linux-gnuspe is not available in ubuntu 20.04 because GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html.

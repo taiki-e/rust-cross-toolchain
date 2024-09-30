@@ -173,6 +173,9 @@ case "${RUST_TARGET}" in
     arm-unknown-linux-gnueabihf)
         export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/libc/lib:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
+    csky-unknown-linux-gnuabiv2*)
+        export LD_LIBRARY_PATH="${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
+        ;;
     loongarch64-unknown-linux-gnu)
         export LD_LIBRARY_PATH="${toolchain_dir}/target/usr/lib64:${toolchain_dir}/${RUST_TARGET}/lib:${LD_LIBRARY_PATH:-}"
         ;;
@@ -270,7 +273,9 @@ no_run=1
 case "${RUST_TARGET}" in
     # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
     # TODO(armeb-unknown-linux-gnueabi): QEMU bug: https://github.com/taiki-e/setup-cross-toolchain-action/commit/ac9e913254a978d102152e484dc4d4b7a144e1ab
-    x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi) ;;
+    # TODO(csky): qemu: 0x3efa92de: unhandled CPU                 exception 0x2 - aborting
+    #             qemu:handle_cpu_signal received signal outside vCPU context @ pc=0x7fffff81f9a4
+    x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | csky-*) ;;
     aarch64-pc-windows-gnullvm)
         # TODO: aarch64 host
         case "${dpkg_arch##*-}" in
@@ -684,7 +689,7 @@ case "${RUST_TARGET}" in
                 file_info_pat+=('ELF 32-bit MSB')
                 file_header_pat+=('Class:\s+ELF32' 'big endian')
                 ;;
-            arm* | hexagon-* | i?86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
+            arm* | csky-* | hexagon-* | i?86-* | mipsel-* | mipsisa32r6el-* | riscv32* | thumb* | x86_64*x32)
                 file_info_pat+=('ELF 32-bit LSB')
                 file_header_pat+=('Class:\s+ELF32' 'little endian')
                 ;;
@@ -826,6 +831,10 @@ case "${RUST_TARGET}" in
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
                 ;;
+            csky-*)
+                file_info_pat+=('C-SKY processor family')
+                file_header_pat+=('Machine:\s+C-SKY')
+                ;;
             hexagon-*)
                 file_info_pat+=('QUALCOMM DSP6')
                 file_header_pat+=('Machine:\s+QUALCOMM DSP6 Processor')
@@ -953,6 +962,7 @@ case "${RUST_TARGET}" in
                     aarch64_be-*) ldso='/lib/ld-linux-aarch64_be\.so\.1' ;;
                     arm*hf | thumbv7neon-*) ldso='/lib/ld-linux-armhf\.so\.3' ;;
                     arm*) ldso='/lib/ld-linux\.so\.3' ;;
+                    csky-*) ldso='/lib/ld\.so\.1' ;;
                     i?86-*) ldso='/lib/ld-linux\.so\.2' ;;
                     loongarch64-*) ldso='/lib64/ld-linux-loongarch-lp64d\.so\.1' ;;
                     mips-* | mipsel-*) ldso='/lib/ld\.so\.1' ;;

@@ -32,8 +32,8 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 [1] See target list below for details<br>
 [2] Except for sparc-unknown-linux-gnu and loongarch64-unknown-linux-gnu<br>
-[3] Except for loongarch64-unknown-linux-gnu<br>
-[4] Except for powerpc-unknown-linux-gnuspe and x86_64-unknown-linux-gnux32<br>
+[3] Except for csky-unknown-linux-gnuabiv2 and loongarch64-unknown-linux-gnu<br>
+[4] Except for csky-unknown-linux-gnuabiv2, powerpc-unknown-linux-gnuspe, and x86_64-unknown-linux-gnux32<br>
 
 ([Dockerfile](docker/linux-gnu.Dockerfile))
 
@@ -49,6 +49,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `armv5te-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `armv7-unknown-linux-gnueabi` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `armv7-unknown-linux-gnueabihf` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
+| `csky-unknown-linux-gnuabiv2` | 2.28 | 6.3.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `i586-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `i686-unknown-linux-gnu` | 2.27 | 7.4.0 | x86_64/aarch64 Linux (glibc 2.27+) |
 | `loongarch64-unknown-linux-gnu` | 2.40 | 14.2.0 | x86_64 Linux (any libc) |

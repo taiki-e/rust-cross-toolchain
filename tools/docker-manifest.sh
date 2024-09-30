@@ -133,8 +133,8 @@ for target in "${targets[@]}"; do
         *-linux-gnu*)
             arches=(amd64 arm64v8)
             case "${target}" in
-                aarch64_be-* | armeb-* | arm-*hf | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
-                    # aarch64_be-*|armeb-*|arm-*hf|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
+                aarch64_be-* | armeb-* | arm-*hf | csky-* | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
+                    # aarch64_be-*|armeb-*|arm-*hf|csky-*|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
                     # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
                     arches=(amd64)
                     ;;

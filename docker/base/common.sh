@@ -9,7 +9,10 @@ trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}
 set -x
 
 rm -rf "${TOOLCHAIN_DIR:?}"/share/{doc,i18n,lintian,locale,man}
-rm -f "${TOOLCHAIN_DIR:?}"/bin/qemu-*
+case "${RUST_TARGET}" in
+    csky-*) rm -f "${TOOLCHAIN_DIR:?}"/bin/qemu-{,system-}{arm,aarch64,riscv*} ;;
+    *) rm -f "${TOOLCHAIN_DIR:?}"/bin/qemu-* ;;
+esac
 
 if [[ -f /CC_TARGET ]]; then
     if [[ -f /APT_TARGET ]]; then
@@ -59,7 +62,7 @@ for bin_dir in "${TOOLCHAIN_DIR}/bin" "${TOOLCHAIN_DIR}/${RUST_TARGET}/bin"; do
                 esac
                 echo -n "${path}: "
                 # https://stackoverflow.com/questions/3436008/how-to-determine-version-of-glibc-glibcxx-binary-will-depend-on
-                objdump -T "${path}" | grep GLIBC_ | sed 's/.*GLIBC_\([.0-9]*\).*/\1/g' | sort -Vu | tail -1
+                objdump -T "${path}" | { grep GLIBC_ || :; } | sed 's/.*GLIBC_\([.0-9]*\).*/\1/g' | sort -Vu | { tail -1 || :; }
             fi
         done
         set -x

@@ -13,6 +13,7 @@ crtbegin
 crtend
 crti
 crtn
+cskyv
 CURDIR
 CXXSTDLIB
 dilos

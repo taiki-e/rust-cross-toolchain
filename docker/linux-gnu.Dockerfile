@@ -75,7 +75,7 @@ if [[ "${gcc_version}" == "host" ]]; then
     exit 0
 fi
 case "${RUST_TARGET}" in
-    aarch64_be-* | armeb-* | arm-*hf)
+    aarch64_be-* | armeb-* | arm-*hf | csky-*)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \
@@ -118,11 +118,12 @@ ARG RUST_TARGET
 # Note: currently works only on this location
 COPY --from=builder /"${RUST_TARGET}"/. /usr/
 RUN /test/test.sh gcc
-# TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
+# TODO(csky): error: unable to create target: 'No available targets are compatible with triple "csky-unknown-linux-gnuabiv2"'
 # TODO(loongarch64):
+# TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
 RUN <<EOF
 case "${RUST_TARGET}" in
-    sparc-* | loongarch64-*) ;;
+    csky-* | loongarch64-* | sparc-*) ;;
     *) /test/test.sh clang ;;
 esac
 EOF
