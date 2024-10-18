@@ -96,7 +96,13 @@ for target_spec in $(rustc -Z unstable-options --print all-target-specs-json | j
     else
         case "${os}" in
             linux | windows) echo "${target}" >>"tmp/gen/os/${os}_${env}" ;;
-            none | unknown) echo "${target}" >>"tmp/gen/os/${env}" ;;
+            none | unknown)
+                if [[ "${target}" == "avr"* ]]; then
+                    echo "${target}" >>"tmp/gen/os/none"
+                else
+                    echo "${target}" >>"tmp/gen/os/${env}"
+                fi
+                ;;
             *) echo "${target}" >>"tmp/gen/os/${os}" ;;
         esac
     fi
