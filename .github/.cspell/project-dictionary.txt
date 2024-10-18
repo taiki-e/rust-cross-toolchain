@@ -109,7 +109,6 @@ nostdinc
 octeon
 opensbi
 PCREL
-pkgconfig
 powerpcspe
 raspi
 rcgu
