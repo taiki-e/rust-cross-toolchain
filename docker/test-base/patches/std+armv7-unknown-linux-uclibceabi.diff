@@ -1,14 +1,34 @@
 diff --git a/src/sys/pal/unix/stack_overflow.rs b/src/sys/pal/unix/stack_overflow.rs
-index 78a5990..1b875e5 100644
+index 69b31da..f980a62 100644
 --- a/src/sys/pal/unix/stack_overflow.rs
 +++ b/src/sys/pal/unix/stack_overflow.rs
-@@ -213,6 +213,9 @@ pub unsafe fn drop_handler(data: *mut libc::c_void) {
+@@ -263,7 +263,13 @@ pub unsafe fn drop_handler(data: *mut libc::c_void) {
+     }
+
+     /// Modern kernels on modern hardware can have dynamic signal stack sizes.
+-    #[cfg(any(target_os = "linux", target_os = "android"))]
++    #[cfg(any(
++        all(
++            target_os = "linux",
++            any(target_env = "gnu", target_env = "musl", target_env = "ohos")
++        ),
++        target_os = "android"
++    ))]
      fn sigstack_size() -> usize {
-         // FIXME: reuse const from libc when available?
-         const AT_MINSIGSTKSZ: crate::ffi::c_ulong = 51;
-+        #[cfg(target_env = "uclibc")]
-+        let dynamic_sigstksz: crate::ffi::c_ulong = 0;
-+        #[cfg(not(target_env = "uclibc"))]
-         let dynamic_sigstksz = unsafe { libc::getauxval(AT_MINSIGSTKSZ) };
+         let dynamic_sigstksz = unsafe { libc::getauxval(libc::AT_MINSIGSTKSZ) };
          // If getauxval couldn't find the entry, it returns 0,
-         // so take the higher of the "constant" and auxval.
+@@ -273,7 +279,13 @@ fn sigstack_size() -> usize {
+     }
+
+     /// Not all OS support hardware where this is needed.
+-    #[cfg(not(any(target_os = "linux", target_os = "android")))]
++    #[cfg(not(any(
++        all(
++            target_os = "linux",
++            any(target_env = "gnu", target_env = "musl", target_env = "ohos")
++        ),
++        target_os = "android"
++    )))]
+     fn sigstack_size() -> usize {
+         libc::SIGSTKSZ
+     }
