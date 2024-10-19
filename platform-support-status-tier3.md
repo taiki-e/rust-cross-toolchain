@@ -115,6 +115,9 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] powerpc64le-unknown-freebsd
 - [x] powerpc64le-unknown-linux-musl
 - [ ] riscv32-wrs-vxworks
+- [ ] riscv32e-unknown-none-elf
+- [ ] riscv32em-unknown-none-elf
+- [ ] riscv32emc-unknown-none-elf
 - [x] riscv32gc-unknown-linux-gnu
 - [x] riscv32gc-unknown-linux-musl
 - [ ] riscv32im-risc0-zkvm-elf
@@ -164,6 +167,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-unknown-l4re-uclibc
 - [ ] x86_64-unknown-linux-none
 - [x] x86_64-unknown-openbsd
+- [ ] x86_64-unknown-trusty
 - [ ] x86_64-uwp-windows-gnu
 - [ ] x86_64-uwp-windows-msvc
 - [ ] x86_64-win7-windows-msvc

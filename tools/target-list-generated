@@ -294,6 +294,7 @@ teeos_targets=(
 trusty_targets=(
     aarch64-unknown-trusty # tier3
     armv7-unknown-trusty # tier3
+    x86_64-unknown-trusty # tier3
 )
 uefi_targets=(
     aarch64-unknown-uefi
@@ -340,6 +341,9 @@ none_targets=(
     loongarch64-unknown-none-softfloat
     mipsel-unknown-none # tier3
     msp430-none-elf # tier3
+    riscv32e-unknown-none-elf # tier3
+    riscv32em-unknown-none-elf # tier3
+    riscv32emc-unknown-none-elf # tier3
     riscv32i-unknown-none-elf
     riscv32im-unknown-none-elf
     riscv32ima-unknown-none-elf # tier3
