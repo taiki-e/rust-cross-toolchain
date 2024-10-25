@@ -4,7 +4,7 @@ edition = "2021"
 
 [dependencies]
 cc = "1"
-fs-err = "2"
+fs-err = "3"
 
 [lints.rust]
 rust_2018_idioms = "warn"
