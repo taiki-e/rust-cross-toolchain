@@ -198,7 +198,6 @@ windows_gnu_targets=(
     x86_64-uwp-windows-gnu # tier3
 )
 wasi_targets=(
-    wasm32-wasi
     wasm32-wasip1
     wasm32-wasip1-threads
     wasm32-wasip2

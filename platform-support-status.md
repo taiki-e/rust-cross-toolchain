@@ -82,7 +82,6 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] thumbv8m.main-none-eabihf
 - [ ] wasm32-unknown-emscripten
 - [ ] wasm32-unknown-unknown
-- [x] wasm32-wasi
 - [x] wasm32-wasip1
 - [x] wasm32-wasip1-threads
 - [ ] wasm32-wasip2
