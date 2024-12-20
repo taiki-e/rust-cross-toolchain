@@ -59,6 +59,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] powerpc-unknown-linux-gnu
 - [x] powerpc64-unknown-linux-gnu
 - [x] powerpc64le-unknown-linux-gnu
+- [x] powerpc64le-unknown-linux-musl
 - [x] riscv32i-unknown-none-elf
 - [x] riscv32im-unknown-none-elf
 - [x] riscv32imac-unknown-none-elf
@@ -82,7 +83,6 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] thumbv8m.main-none-eabihf
 - [ ] wasm32-unknown-emscripten
 - [ ] wasm32-unknown-unknown
-- [x] wasm32-wasi
 - [x] wasm32-wasip1
 - [x] wasm32-wasip1-threads
 - [ ] wasm32-wasip2
