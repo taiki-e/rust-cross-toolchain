@@ -10,7 +10,7 @@ ARG UBUNTU_VERSION=20.04
 # NB: When updating this, the reminder to update wasi-sdk version in README.md.
 ARG WASI_SDK_VERSION=24.0
 # https://github.com/bytecodealliance/wasmtime/releases
-ARG WASMTIME_VERSION=25.0.2
+ARG WASMTIME_VERSION=28.0.0
 
 FROM ghcr.io/taiki-e/downloader AS wasi-sdk
 SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
