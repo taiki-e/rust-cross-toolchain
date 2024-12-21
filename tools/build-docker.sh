@@ -352,7 +352,12 @@ for target in "${targets[@]}"; do
         *-redox*) build "redox" "${target}" ;;
         *-fuchsia*) build "fuchsia" "${target}" ;;
         *-wasi*) build "wasi" "${target}" ;;
-        *-emscripten*) build "emscripten" "${target}" ;;
+        *-emscripten*)
+            case "${arch}" in
+                aarch64) build "emscripten" "${target}" --build-arg "HOST_SUFFIX=-arm64" ;;
+                *) build "emscripten" "${target}" ;;
+            esac
+            ;;
         *-windows-gnu*)
             case "${target}" in
                 # i686-pc-windows-gnu needs to build gcc from source.

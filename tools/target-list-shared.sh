@@ -222,7 +222,7 @@ wasi_targets=(
 )
 # Emscripten
 emscripten_targets=(
-    # wasm32-unknown-emscripten # TODO: wasm-ld: error: /tmp/test-emcc/rust/target/wasm32-unknown-emscripten/debug/deps/rust_test.216hq58untngdnb12cddqxyyf.rcgu.o: Invalid symbol type
+    wasm32-unknown-emscripten
 )
 # WebAssembly (unknown OS)
 wasm_targets=(

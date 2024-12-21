@@ -22,7 +22,7 @@ fn main() {
     }
 
     cc::Build::new().file("hello_c.c").compile("hello_c");
-    if target_os == "openbsd" || target_os == "windows" {
+    if target_os == "openbsd" || target_os == "windows" || target_os == "emscripten" {
     } else {
         // Make sure that the link with libc works.
         println!("cargo:rustc-link-lib=c");
