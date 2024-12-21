@@ -171,13 +171,13 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.3, 14.0 | Linux (any arch, any libc) |
-| `i686-unknown-freebsd` | 12.4 (default), 13.3, 14.0 | Linux (any arch, any libc) |
-| `powerpc-unknown-freebsd` (tier3) | 13.3 (default), 14.0 | Linux (any arch, any libc) |
-| `powerpc64-unknown-freebsd` (tier3) | 13.3 (default), 14.0 | Linux (any arch, any libc) |
-| `powerpc64le-unknown-freebsd` (tier3) | 13.3 (default), 14.0 | Linux (any arch, any libc) |
-| `riscv64gc-unknown-freebsd` (tier3) | 13.3 (default), 14.0 | x86_64 Linux (any libc) |
-| `x86_64-unknown-freebsd` | 12.4 (default), 13.3, 14.0 | Linux (any arch, any libc) |
+| `aarch64-unknown-freebsd` (tier3) | 12.4 (default), 13.4, 14.1 | Linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 12.4 (default), 13.4, 14.1 | Linux (any arch, any libc) |
+| `powerpc-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
+| `powerpc64-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
+| `powerpc64le-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | x86_64 Linux (any libc) |
+| `x86_64-unknown-freebsd` | 12.4 (default), 13.4, 14.1 | Linux (any arch, any libc) |
 
 ### NetBSD
 
@@ -195,14 +195,14 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | ------ | ------- |
 | `aarch64-unknown-netbsd` (tier3) | 9.4 (default), 10.0 |
 | `aarch64_be-unknown-netbsd` (tier3) | 10.0 |
-| `armv6-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `armv7-unknown-netbsd-eabihf` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `i586-unknown-netbsd` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `i686-unknown-netbsd` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `mipsel-unknown-netbsd` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `powerpc-unknown-netbsd` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `sparc64-unknown-netbsd` (tier3) | 8.2 (default), 9.4, 10.0 |
-| `x86_64-unknown-netbsd` | 8.2 (default), 9.4, 10.0 |
+| `armv6-unknown-netbsd-eabihf` (tier3) | 9.4 (default), 10.0 |
+| `armv7-unknown-netbsd-eabihf` (tier3) | 9.4 (default), 10.0 |
+| `i586-unknown-netbsd` (tier3) | 9.4 (default), 10.0 |
+| `i686-unknown-netbsd` (tier3) | 9.4 (default), 10.0 |
+| `mipsel-unknown-netbsd` (tier3) | 9.4 (default), 10.0 |
+| `powerpc-unknown-netbsd` (tier3) | 9.4 (default), 10.0 |
+| `sparc64-unknown-netbsd` (tier3) | 9.4 (default), 10.0 |
+| `x86_64-unknown-netbsd` | 9.4 (default), 10.0 |
 
 ### OpenBSD
 
@@ -219,13 +219,13 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
-| `i686-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
-| `powerpc-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
-| `powerpc64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
-| `riscv64gc-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | x86_64 Linux (any libc) |
-| `x86_64-unknown-openbsd` (tier3) | 7.4 (default), 7.5 | Linux (any arch, any libc) |
+| `aarch64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
+| `powerpc64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | x86_64 Linux (any libc) |
+| `x86_64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
 
 ### DragonFly BSD
 
