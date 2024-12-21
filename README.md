@@ -302,7 +302,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 | libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| emscripten 2.0.5 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64 Linux (glibc 2.27+) |
+| emscripten 3.1.68 | N/A |  | ✓ (libc++) | ✓ (node) | x86_64/aarch64 Linux (glibc 2.27+) |
 
 ([Dockerfile](docker/emscripten.Dockerfile))
 

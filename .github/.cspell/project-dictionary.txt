@@ -7,7 +7,6 @@ BUILDKIT
 buildpackage
 buildroot
 buildx
-cddqxyyf
 cmodel
 crtbegin
 crtend
@@ -111,7 +110,6 @@ opensbi
 PCREL
 powerpcspe
 raspi
-rcgu
 rcrt
 rtti
 Scrt
@@ -130,7 +128,6 @@ uclibcgnueabi
 uclibcgnueabihf
 udivsi
 unikraft
-untngdnb
 versatilepb
 vfpv
 Vger

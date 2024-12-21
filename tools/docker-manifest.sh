@@ -240,7 +240,10 @@ for target in "${targets[@]}"; do
             arches=(amd64 arm64v8)
             docker_manifest "${target}"
             ;;
-        *-emscripten*) docker_manifest "${target}" ;;
+        *-emscripten*)
+            arches=(amd64 arm64v8)
+            docker_manifest "${target}"
+            ;;
         *-windows-gnu*)
             arches=(amd64 arm64v8)
             case "${target}" in
