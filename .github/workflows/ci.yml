@@ -52,7 +52,8 @@ jobs:
           - target: netbsd
           - target: openbsd
           - target: dragonfly
-          - target: solaris
+          # TODO: undefined reference to `__sysconf_xpg7'/'__xnet7_socket'
+          # - target: solaris
           - target: illumos
           - target: redox
           # - target: fuchsia

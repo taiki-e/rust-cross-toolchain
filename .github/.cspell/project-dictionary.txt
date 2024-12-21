@@ -121,6 +121,7 @@ solarish
 stdarch
 stdlib
 strnlen
+sysconf
 syssrc
 SYSV
 TOOLDIR

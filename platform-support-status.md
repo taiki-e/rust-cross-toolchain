@@ -71,7 +71,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] riscv64imac-unknown-none-elf
 - [x] s390x-unknown-linux-gnu
 - [x] sparc64-unknown-linux-gnu
-- [x] sparcv9-sun-solaris
+- [ ] sparcv9-sun-solaris
 - [x] thumbv6m-none-eabi
 - [x] thumbv7em-none-eabi
 - [x] thumbv7em-none-eabihf
@@ -92,7 +92,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] x86_64-apple-ios-macabi
 - [ ] x86_64-fortanix-unknown-sgx
 - [x] x86_64-linux-android
-- [x] x86_64-pc-solaris
+- [ ] x86_64-pc-solaris
 - [x] x86_64-pc-windows-gnu
 - [x] x86_64-pc-windows-gnullvm
 - [ ] x86_64-pc-windows-msvc

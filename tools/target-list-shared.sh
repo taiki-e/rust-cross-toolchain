@@ -181,8 +181,9 @@ dragonfly_targets=(
 )
 # Solaris
 solaris_targets=(
-    sparcv9-sun-solaris
-    x86_64-pc-solaris
+    # TODO: undefined reference to `__sysconf_xpg7'/'__xnet7_socket'
+    # sparcv9-sun-solaris
+    # x86_64-pc-solaris
 )
 # illumos
 illumos_targets=(
