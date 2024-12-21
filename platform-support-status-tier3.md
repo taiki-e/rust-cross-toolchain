@@ -113,7 +113,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] powerpc64-unknown-openbsd
 - [ ] powerpc64-wrs-vxworks
 - [x] powerpc64le-unknown-freebsd
-- [x] powerpc64le-unknown-linux-musl
 - [ ] riscv32-wrs-vxworks
 - [ ] riscv32e-unknown-none-elf
 - [ ] riscv32em-unknown-none-elf

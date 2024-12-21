@@ -111,7 +111,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `mipsel-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `powerpc-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `powerpc-unknown-linux-muslspe` (tier3) | x86_64 Linux (any libc) |
-| `powerpc64le-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
+| `powerpc64le-unknown-linux-musl` | x86_64 Linux (any libc) |
 | `riscv32gc-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `riscv64gc-unknown-linux-musl` | x86_64 Linux (any libc) |
 | `s390x-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
@@ -295,7 +295,6 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 **Supported targets:**
 
-- `wasm32-wasi`
 - `wasm32-wasip1`
 - `wasm32-wasip1-threads`
 
