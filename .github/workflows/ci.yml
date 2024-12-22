@@ -112,8 +112,7 @@ jobs:
       repository-projects: read # for gh pr edit --add-assignee
     steps:
       - uses: taiki-e/checkout-action@v1
-      - name: Install Rust
-        run: rustup toolchain add nightly --no-self-update && rustup default nightly
+      - uses: taiki-e/github-actions/install-rust@nightly
       - run: tools/gen.sh
       - id: diff
         run: tools/ci/gen.sh
