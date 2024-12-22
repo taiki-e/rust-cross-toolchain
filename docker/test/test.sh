@@ -1,26 +1,20 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
 
 # Test the toolchain.
 
-set -x
-
 x() {
-    local cmd="$1"
-    shift
     (
         set -x
-        "${cmd}" "$@"
+        "$@"
     )
 }
 bail() {
     set +x
-    echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
+    printf >&2 'error: %s\n' "$*"
     exit 1
 }
 run_cargo() {
@@ -39,106 +33,108 @@ assert_file_info() {
     local pat="$1"
     shift
     for bin in "$@"; do
-        echo -n "info: checking file info pattern '${pat}' in ${bin} ..."
-        if ! (file "${bin}" || true) | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
-            echo "failed"
-            echo "error: expected '${pat}' in ${bin}, actually:"
-            echo "======================================="
+        printf '%s' "info: checking file info pattern '${pat}' in ${bin} ..."
+        if ! { file "${bin}" || true; } | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
+            printf 'failed\n'
+            printf '%s\n' "error: expected '${pat}' in ${bin}, actually:"
+            printf '=======================================\n'
             x file "${bin}" || true
-            echo "======================================="
+            printf '=======================================\n'
             exit 1
         fi
-        echo "ok"
+        printf 'ok\n'
     done
 }
 assert_not_file_info() {
     local pat="$1"
     shift
     for bin in "$@"; do
-        echo -n "info: checking file info pattern (not) '${pat}' in ${bin} ..."
-        if ! (file "${bin}" || true) | grep -q -v "${pat}"; then
-            echo "failed"
-            echo "error: unexpected '${pat}' in ${bin}:"
-            echo "======================================="
+        printf '%s' "info: checking file info pattern (not) '${pat}' in ${bin} ..."
+        if ! { file "${bin}" || true; } | grep -Eqv "${pat}"; then
+            printf 'failed\n'
+            printf '%s\n' "error: unexpected '${pat}' in ${bin}:"
+            printf '=======================================\n'
             x file "${bin}" || true
-            echo "======================================="
+            printf '=======================================\n'
             exit 1
         fi
-        echo "ok"
+        printf 'ok\n'
     done
 }
 assert_file_header() {
     local pat="$1"
     shift
     for bin in "$@"; do
-        echo -n "info: checking file header pattern '${pat}' in ${bin} ..."
-        if ! (readelf --file-header "${bin}" || true) | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
-            echo "failed"
-            echo "error: expected '${pat}' in ${bin}, actually:"
-            echo "======================================="
+        printf '%s' "info: checking file header pattern '${pat}' in ${bin} ..."
+        if ! { readelf --file-header "${bin}" || true; } | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
+            printf 'failed\n'
+            printf '%s\n' "error: expected '${pat}' in ${bin}, actually:"
+            printf '=======================================\n'
             x readelf --file-header "${bin}" || true
-            echo "======================================="
+            printf '=======================================\n'
             exit 1
         fi
-        echo "ok"
+        printf 'ok\n'
     done
 }
 assert_not_file_header() {
     local pat="$1"
     shift
     for bin in "$@"; do
-        echo -n "info: checking file header pattern (not) '${pat}' in ${bin} ..."
-        if ! (readelf --file-header "${bin}" || true) | grep -q -v "${pat}"; then
-            echo "failed"
-            echo "error: unexpected '${pat}' in ${bin}:"
-            echo "======================================="
+        printf '%s' "info: checking file header pattern (not) '${pat}' in ${bin} ..."
+        if ! { readelf --file-header "${bin}" || true; } | grep -Eqv "${pat}"; then
+            printf 'failed\n'
+            printf '%s\n' "error: unexpected '${pat}' in ${bin}:"
+            printf '=======================================\n'
             x readelf --file-header "${bin}" || true
-            echo "======================================="
+            printf '=======================================\n'
             exit 1
         fi
-        echo "ok"
+        printf 'ok\n'
     done
 }
 assert_arch_specific() {
     local pat="$1"
     shift
     for bin in "$@"; do
-        echo -n "info: checking arch specific pattern '${pat}' in ${bin} ..."
-        if ! (readelf --arch-specific "${bin}" || true) | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
-            echo "failed"
-            echo "error: expected '${pat}' in ${bin}, actually:"
-            echo "======================================="
+        printf '%s' "info: checking arch specific pattern '${pat}' in ${bin} ..."
+        if ! { readelf --arch-specific "${bin}" || true; } | grep -Eq "(\\s|\\(|,|^)${pat}(\\s|\\)|,|$)"; then
+            printf 'failed\n'
+            printf '%s\n' "error: expected '${pat}' in ${bin}, actually:"
+            printf '=======================================\n'
             x readelf --arch-specific "${bin}" || true
-            echo "======================================="
+            printf '=======================================\n'
             exit 1
         fi
-        echo "ok"
+        printf 'ok\n'
     done
 }
 assert_not_arch_specific() {
     local pat="$1"
     shift
     for bin in "$@"; do
-        echo -n "info: checking arch specific pattern (not) '${pat}' in ${bin} ..."
-        if ! (readelf --arch-specific "${bin}" || true) | grep -q -v "${pat}"; then
-            echo "failed"
-            echo "error: unexpected '${pat}' in ${bin}:"
-            echo "======================================="
+        printf '%s' "info: checking arch specific pattern (not) '${pat}' in ${bin} ..."
+        if ! { readelf --arch-specific "${bin}" || true; } | grep -Eqv "${pat}"; then
+            printf 'failed\n'
+            printf '%s\n' "error: unexpected '${pat}' in ${bin}:"
+            printf '=======================================\n'
             x readelf --arch-specific "${bin}" || true
-            echo "======================================="
+            printf '=======================================\n'
             exit 1
         fi
-        echo "ok"
+        printf 'ok\n'
     done
 }
+
+set -x
 
 cc="$1"
 
 test_dir="/tmp/test-${cc}"
 out_dir="${test_dir}/out"
-mkdir -p "${out_dir}"
-cd "${test_dir}"
-cp -r /test/fixtures/. ./
+mkdir -p -- "${out_dir}"
+cd -- "${test_dir}"
+cp -r -- /test/fixtures/. ./
 
 case "${cc}" in
     gcc) cxx=g++ ;;
@@ -148,7 +144,7 @@ esac
 if type -P "${RUST_TARGET}-${cc}"; then
     target_cc="${RUST_TARGET}-${cc}"
     target_cxx="${RUST_TARGET}-${cxx}"
-    toolchain_dir=$(dirname "$(dirname "$(type -P "${target_cc}")")")
+    toolchain_dir=$(dirname -- "$(dirname -- "$(type -P "${target_cc}")")")
 else
     target_cc="${cc}"
     target_cxx="${cxx}"
@@ -189,7 +185,7 @@ case "${dpkg_arch##*-}" in
     amd64) ;;
     *)
         if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-            echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+            printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
             exit 0
         fi
         ;;
@@ -203,8 +199,7 @@ export RUST_BACKTRACE=1
 export RUSTUP_MAX_RETRIES=10
 export RUST_TEST_THREADS=1 # TODO: set in entrypoint.sh? https://github.com/taiki-e/setup-cross-toolchain-action/issues/10
 export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
-# shellcheck disable=SC1091
-. "${HOME}/.cargo/env"
+export PATH="${HOME}/.cargo/bin:${PATH}"
 
 case "${RUST_TARGET}" in
     wasm*) exe=.wasm ;;
@@ -215,13 +210,13 @@ case "${RUST_TARGET}" in
     *-redox*) rust_bin_separator="_" ;;
     *) rust_bin_separator="-" ;;
 esac
-no_std=""
+no_std=''
 case "${RUST_TARGET}" in
     *-linux-none*) ;;
     # https://github.com/rust-lang/rust/blob/1.80.0/library/std/build.rs#L57
     *-none* | *-psp* | *-psx* | *-cuda* | avr-*) no_std=1 ;;
 esac
-no_cc_bin=""
+no_cc_bin=''
 case "${RUST_TARGET}" in
     # TODO(clang,linux-uclibc): interpreter should be /lib/ld-uClibc.so.0
     # TODO(clang,linux-uclibc): qemu: uncaught target signal 11 (Segmentation fault) - core dumped
@@ -234,18 +229,18 @@ case "${RUST_TARGET}" in
     # TODO(loongarch64):
     loongarch64-unknown-linux-gnu) no_cc_bin=1 ;;
 esac
-no_rust_c=""
+no_rust_c=''
 case "${RUST_TARGET}" in
     # TODO(hexagon):
     # TODO(loongarch64):
     hexagon-unknown-linux-musl | loongarch64-unknown-linux-gnu) no_rust_c=1 ;;
 esac
-no_cpp=""
+no_cpp=''
 case "${RUST_TARGET}" in
     # TODO(android):
-    # TODO(aarch64-unknown-openbsd): clang segfault
+    # TODO(aarch64-unknown-openbsd): Clang segfault
     # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
-    # TODO(wasm32-wasip1-threads): not output
+    # TODO(wasm32-wasip1-threads): not output # TODO: fixed in sdk 23?
     arm*-android* | thumb*-android* | i686-*-android* | aarch64-unknown-openbsd | sparc64-unknown-openbsd | wasm32-wasip1-threads) no_cpp=1 ;;
     # TODO(redox): /x86_64-unknown-redox/x86_64-unknown-redox/include/bits/wchar.h:12:28: error: cannot combine with previous 'int' declaration specifier
     *-redox*)
@@ -264,7 +259,7 @@ case "${RUST_TARGET}" in
     *-wasi*) no_rust_cpp=1 ;;
 esac
 # Whether or not to build the test.
-no_build_test=""
+no_build_test=''
 case "${RUST_TARGET}" in
     # TODO(sparc64-unknown-openbsd):
     #     /sparc64-unknown-openbsd/bin/sparc64-unknown-openbsd7.0-ld: /sparc64-unknown-openbsd/sparc64-unknown-openbsd/usr/lib/libm.a(s_fmin.o): in function `*_libm_fmin':
@@ -280,7 +275,7 @@ case "${RUST_TARGET}" in
     #             qemu:handle_cpu_signal received signal outside vCPU context @ pc=0x7fffff81f9a4
     x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | csky-*) ;;
     aarch64-pc-windows-gnullvm)
-        # TODO: aarch64 host
+        # TODO: AArch64 host
         case "${dpkg_arch##*-}" in
             amd64) no_run='' ;;
         esac
@@ -289,11 +284,11 @@ case "${RUST_TARGET}" in
     *-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run='' ;;
 esac
 # Whether or not to run the test.
-no_run_test=""
+no_run_test=''
 case "${RUST_TARGET}" in
     # TODO(powerpc-unknown-linux-*spe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
     # TODO(riscv32gc-unknown-linux-musl): unsafe precondition(s) violated: ptr::write_bytes requires that the destination pointer is aligned and non-null
-    # TODO(wasm32-wasip1-threads): failed to invoke command default
+    # TODO(wasm32-wasip1-threads): failed to invoke command default # TODO: fixed in sdk 23?
     powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl | wasm32-wasip1-threads) no_run_test=1 ;;
 esac
 
@@ -302,7 +297,7 @@ build_std=()
 if [[ -f /BUILD_STD ]]; then
     if [[ -n "${no_std}" ]]; then
         build_std=(-Z build-std="core,alloc")
-    elif rustc --print cfg --target "${RUST_TARGET}" | grep -q 'panic="abort"'; then
+    elif rustc --print cfg --target "${RUST_TARGET}" | grep -Eq '^panic="abort"'; then
         build_std=(-Z build-std="std,panic_abort")
     else
         build_std=(-Z build-std)
@@ -310,7 +305,7 @@ if [[ -f /BUILD_STD ]]; then
     case "${RUST_TARGET}" in
         hexagon-unknown-linux-musl)
             export RUSTFLAGS="${RUSTFLAGS:-} -C link-args=-lclang_rt.builtins-hexagon"
-            build_std+=(-Z build-std-features=llvm-libunwind)
+            build_std+=(-Z build-std-features="panic-unwind,llvm-libunwind")
             ;;
         # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
         mips-* | mipsel-*) build_mode=release ;;
@@ -318,36 +313,36 @@ if [[ -f /BUILD_STD ]]; then
 fi
 
 if [[ -z "${no_std}" ]]; then
-    runner=""
+    runner=''
     if [[ -z "${no_run}" ]]; then
         runner="${RUST_TARGET}-runner"
     fi
     if [[ -z "${runner}" ]]; then
-        echo >&2 "info: test for target '${RUST_TARGET}' is not supported yet"
+        printf >&2 '%s\n' "info: test for target '${RUST_TARGET}' is not supported yet"
     else
         case "${dpkg_arch##*-}" in
             amd64)
                 case "${RUST_TARGET}" in
                     *-windows-gnu*)
                         export HOME=/tmp/home
-                        mkdir -p "${HOME}"/.wine
+                        mkdir -p -- "${HOME}"/.wine
                         export WINEPREFIX=/tmp/wine
-                        mkdir -p "${WINEPREFIX}"
+                        mkdir -p -- "${WINEPREFIX}"
                         wineboot=wineboot
                         case "${RUST_TARGET}" in
                             aarch64* | arm64*) wineboot=/opt/wine-arm64/bin/wineserver ;;
                         esac
                         if [[ ! -e /WINEBOOT ]]; then
                             x "${wineboot}" &>/dev/null
-                            touch /WINEBOOT
+                            touch -- /WINEBOOT
                         fi
                         ;;
                 esac
                 ;;
             *)
                 if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-                    echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-                    runner=""
+                    printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+                    runner=''
                 fi
                 ;;
         esac
@@ -362,26 +357,26 @@ if [[ -z "${no_std}" ]]; then
                 case "${RUST_TARGET}" in
                     # TODO(powerpc-unknown-linux-musl)
                     # TODO(riscv32gc-unknown-linux-musl)
-                    # TODO(powerpc64le,s390x,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-                    powerpc-* | powerpc64le-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
+                    # TODO(s390x,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
+                    powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
                     *)
-                        rm -rf "${target_libdir}"
-                        mkdir -p "${self_contained}"
+                        rm -rf -- "${target_libdir}"
+                        mkdir -p -- "${self_contained}"
 
                         case "${RUST_TARGET}" in
-                            hexagon-*) cp "${toolchain_dir}/${RUST_TARGET}/usr/lib"/libunwind.a "${self_contained}" ;;
+                            hexagon-*) cp -- "${toolchain_dir}/${RUST_TARGET}/usr/lib"/libunwind.a "${self_contained}" ;;
                             *)
-                                rm -rf /tmp/libunwind
-                                mkdir -p /tmp/libunwind
+                                rm -rf -- /tmp/libunwind
+                                mkdir -p -- /tmp/libunwind
                                 x "${dev_tools_dir}/build-libunwind" --target="${RUST_TARGET}" --out=/tmp/libunwind
-                                cp /tmp/libunwind/libunwind*.a "${self_contained}"
+                                cp -- /tmp/libunwind/libunwind*.a "${self_contained}"
                                 ;;
                         esac
 
-                        rm -rf /tmp/build-std
-                        mkdir -p /tmp/build-std/src
-                        pushd /tmp/build-std >/dev/null
-                        touch src/lib.rs
+                        rm -rf -- /tmp/build-std
+                        mkdir -p -- /tmp/build-std/src
+                        pushd -- /tmp/build-std >/dev/null
+                        touch -- src/lib.rs
                         cat >Cargo.toml <<EOF
 [package]
 name = "build-std"
@@ -389,12 +384,12 @@ edition = "2021"
 EOF
                         case "${RUST_TARGET}" in
                             hexagon-*) ;;
-                            *) gcc_version=$("${RUST_TARGET}-gcc" --version | sed -n '1 s/^.*) //p') ;;
+                            *) gcc_version=$("${RUST_TARGET}-gcc" --version | sed -En '1 s/^.*\) //p') ;;
                         esac
                         RUSTFLAGS="${RUSTFLAGS:-} -C debuginfo=1 -L ${toolchain_dir}/${RUST_TARGET}/lib -L ${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_version:-}" \
                             x cargo build "${build_std[@]}" --target "${RUST_TARGET}" --all-targets --release
-                        rm target/"${RUST_TARGET}"/release/deps/*build_std-*
-                        cp target/"${RUST_TARGET}"/release/deps/lib*.rlib "${target_libdir}"
+                        rm -- target/"${RUST_TARGET}"/release/deps/*build_std-*
+                        cp -- target/"${RUST_TARGET}"/release/deps/lib*.rlib "${target_libdir}"
                         popd >/dev/null
 
                         # https://github.com/rust-lang/rust/blob/1.80.0/src/bootstrap/src/core/build_steps/compile.rs#L363-L395
@@ -405,21 +400,21 @@ EOF
                         # distributed via rustup.
                         # https://github.com/rust-lang/rust/issues/91178
                         # And if I understand correctly, the code generation on the
-                        # 32bit arm targets looks wrong about FPU arch and thumb ISA.
+                        # 32-bit Arm targets looks wrong about FPU arch and thumb ISA.
                         case "${RUST_TARGET}" in
                             hexagon-*)
-                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtbegin-hexagon.o "${self_contained}"/crtbegin.o
-                                cp -f "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtend-hexagon.o "${self_contained}"/crtend.o
+                                cp -f -- "${toolchain_dir}/${RUST_TARGET}/usr/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
+                                cp -f -- "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtbegin-hexagon.o "${self_contained}"/crtbegin.o
+                                cp -f -- "${toolchain_dir}/${RUST_TARGET}/usr/lib"/clang_rt.crtend-hexagon.o "${self_contained}"/crtend.o
                                 ;;
                             *)
-                                cp -f "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
-                                cp -f "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_version}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
+                                cp -f -- "${toolchain_dir}/${RUST_TARGET}/lib"/{libc.a,Scrt1.o,crt1.o,crti.o,crtn.o,rcrt1.o} "${self_contained}"
+                                cp -f -- "${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_version}"/{crtbegin.o,crtbeginS.o,crtend.o,crtendS.o} "${self_contained}"
                                 ;;
                         esac
 
                         build_std=()
-                        rm /BUILD_STD
+                        rm -- /BUILD_STD
                         ;;
                 esac
             fi
@@ -427,7 +422,7 @@ EOF
     esac
 
     # Build C/C++.
-    pushd cpp >/dev/null
+    pushd -- cpp >/dev/null
     x "${target_cc}" -v
     case "${cc}" in
         gcc | clang) x "${target_cc}" '-###' hello.c ;;
@@ -437,7 +432,7 @@ EOF
         bin="$(pwd)"/c.out
         case "${RUST_TARGET}" in
             arm* | thumb* | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) ;;
-            *) cp "${bin}" "${out_dir}" ;;
+            *) cp -- "${bin}" "${out_dir}" ;;
         esac
         if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
             x "${runner}" "${bin}" | grep -E "^Hello C!"
@@ -454,7 +449,7 @@ EOF
             bin="$(pwd)"/cpp.out
             case "${RUST_TARGET}" in
                 arm* | thumb* | mips-unknown-linux-uclibc | mipsel-unknown-linux-uclibc) ;;
-                *) cp "${bin}" "${out_dir}" ;;
+                *) cp -- "${bin}" "${out_dir}" ;;
             esac
             if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
                 x "${runner}" "${bin}" | grep -E "^Hello C\+\+!"
@@ -464,24 +459,24 @@ EOF
     popd >/dev/null
 
     # Build Rust with C/C++
-    pushd rust >/dev/null
+    pushd -- rust >/dev/null
     # Static linking
     case "${RUST_TARGET}" in
         *-linux-musl*)
             case "${RUST_TARGET}" in
                 # TODO(hexagon): run-fail (segfault)
                 # TODO(powerpc-unknown-linux-musl)
-                # TODO(riscv*-unknown-linux-musl)
+                # TODO(riscv32-unknown-linux-musl)
                 # TODO(s390x-unknown-linux-musl)
-                # TODO(powerpc64le,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-                hexagon-* | powerpc-* | powerpc64le-* | riscv* | s390x-* | thumbv7neon-* | mips*) ;;
+                # TODO(thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
+                hexagon-* | powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
                 *)
                     RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
                         run_cargo build --no-default-features
                     bin="${out_dir}/rust-test-no-cpp-static${exe}"
-                    cp "$(pwd)/target/${RUST_TARGET}/${build_mode}/rust-test${exe}" "${bin}"
+                    cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}/rust-test${exe}" "${bin}"
                     if [[ -n "${runner}" ]]; then
-                        x "${runner}" "${bin}" | tee run.log
+                        x "${runner}" "${bin}" | tee -- run.log
                         if ! grep -Eq '^Hello Rust!' run.log; then
                             bail
                         fi
@@ -504,22 +499,22 @@ EOF
             ;;
     esac
     run_cargo build || (tail -n +1 "target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/*.log && exit 1)
-    x ls "$(pwd)/target/${RUST_TARGET}/${build_mode}"
+    x ls -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"
     if [[ -z "${no_rust_c}" ]]; then
-        x ls "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
+        x ls -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
     fi
-    cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/rust*test"${exe}" "${out_dir}"
+    cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/rust*test"${exe}" "${out_dir}"
     if [[ -z "${no_rust_c}" ]]; then
-        cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_c.o "${out_dir}"
+        cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_c.o "${out_dir}"
         if [[ -z "${no_rust_cpp}" ]]; then
-            cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_cpp.o "${out_dir}"
+            cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_cpp.o "${out_dir}"
         fi
-        cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
-            || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
+        cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
+            || cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
     fi
     bin="$(pwd)/target/${RUST_TARGET}/${build_mode}/rust${rust_bin_separator}test${exe}"
     if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
-        x "${runner}" "${bin}" | tee run.log
+        x "${runner}" "${bin}" | tee -- run.log
         if ! grep -Eq '^Hello Rust!' run.log; then
             bail
         fi
@@ -543,7 +538,7 @@ EOF
     popd >/dev/null
 
     # Build Rust tests
-    pushd rust >/dev/null
+    pushd -- rust >/dev/null
     if [[ -z "${no_build_test}" ]]; then
         case "${RUST_TARGET}" in
             # TODO(hexagon): relocation R_HEX_B22_PCREL out of range: 2156604 is not in [-2097152, 2097151]
@@ -568,8 +563,8 @@ else
         amd64) ;;
         *)
             if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-                echo >&2 "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-                runner=""
+                printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
+                runner=''
             fi
             ;;
     esac
@@ -611,7 +606,7 @@ else
                     cargo_args+=(--features qemu-system)
                     case "${RUST_TARGET}" in
                         # TODO: As of QEMU 8.2, qemu-system-arm doesn't support Cortex-R machine.
-                        # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (ARMv8-R AArch32)
+                        # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (Armv8-R AArch32)
                         armv7r* | armebv7r*) continue ;;
                         thumbv6m* | thumbv7m* | thumbv7em* | thumbv8m* | aarch64* | arm64* | riscv*)
                             _linker=link.x
@@ -626,7 +621,7 @@ else
                     esac
                     ;;
             esac
-            pushd no-std-qemu >/dev/null
+            pushd -- no-std-qemu >/dev/null
             # To link to pre-compiled C libraries provided by a C
             # toolchain use GCC as the linker.
             case "${linker}" in
@@ -639,11 +634,11 @@ else
             else
                 RUSTFLAGS="${target_rustflags}" \
                     run_cargo "${cargo_args[@]}" --features cpp
-                [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
-                [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
+                [[ -e "${out_dir}/no-std-qemu-test-${linker}-c.o" ]] || cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_c.o "${out_dir}/no-std-qemu-test-${linker}-c.o"
+                [[ -e "${out_dir}/no-std-qemu-test-${linker}-cpp.o" ]] || cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/no-std-qemu-test-*/out/int_cpp.o "${out_dir}/no-std-qemu-test-${linker}-cpp.o"
             fi
             bin="$(pwd)/target/${RUST_TARGET}/${build_mode}"/no-std-qemu-test
-            cp "${bin}" "${out_dir}/no-std-qemu-test-${linker}-${_runner}"
+            cp -- "${bin}" "${out_dir}/no-std-qemu-test-${linker}-${_runner}"
             if [[ -n "${runner}" ]]; then
                 if [[ "${_runner}" == "qemu-user" ]]; then
                     # TODO(none,cortex-m)
@@ -651,7 +646,7 @@ else
                         thumbv6m-* | thumbv7m-* | thumbv7em-* | thumbv8m.*) continue ;;
                     esac
                 fi
-                x "${RUST_TARGET}-runner-${_runner}" "${bin}" | tee run.log
+                x "${RUST_TARGET}-runner-${_runner}" "${bin}" | tee -- run.log
                 if ! grep -Eq '^Hello Rust!' run.log; then
                     bail
                 fi
@@ -1128,7 +1123,7 @@ for bin in "${out_dir}"/*; do
             *) assert_file_info "statically linked" "${bin}" ;;
         esac
         assert_not_file_info "interpreter" "${bin}"
-        if (readelf -d "${bin}" || true) | grep 'NEEDED'; then
+        if { readelf -d "${bin}" || true; } | grep -Fq NEEDED; then
             bail
         fi
     fi
@@ -1157,4 +1152,4 @@ for bin in "${out_dir}"/*; do
     done
 done
 
-rm -rf "${test_dir}"
+rm -rf -- "${test_dir}"

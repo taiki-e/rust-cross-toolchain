@@ -21,7 +21,7 @@ ARG NETBSD_VERSION
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${NETBSD_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS toolchain
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -43,9 +43,9 @@ case "${RUST_TARGET}" in
     sparc-*) cc_target=sparc--netbsd ;;
     sparc64-*) cc_target=sparc64--netbsd ;;
     x86_64*) cc_target=x86_64--netbsd ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-echo "${cc_target}" >/CC_TARGET
+printf '%s\n' "${cc_target}" >/CC_TARGET
 EOF
 
 ARG NETBSD_VERSION
@@ -59,7 +59,7 @@ export COMMON_FLAGS="-L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG REAL_HOST_ARCH
 COPY /test-base.sh /
@@ -70,17 +70,17 @@ RUN /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG NETBSD_VERSION
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh gcc
 RUN /test/test.sh clang
-RUN touch /DONE
+RUN touch -- /DONE
 
 FROM test-base AS test
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG NETBSD_VERSION
@@ -92,7 +92,7 @@ RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

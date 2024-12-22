@@ -279,6 +279,9 @@ redox_targets=(
     i686-unknown-redox # tier3
     x86_64-unknown-redox
 )
+rtems_targets=(
+    armv7-rtems-eabihf # tier3
+)
 sgx_targets=(
     x86_64-fortanix-unknown-sgx
 )
@@ -367,9 +370,6 @@ none_targets=(
     xtensa-esp32s2-none-elf # tier3
     xtensa-esp32s3-none-elf # tier3
 )
-rtems_targets=(
-    armv7-rtems-eabihf # tier3
-)
 targets=(
     ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
     ${linux_musl_targets[@]+"${linux_musl_targets[@]}"}
@@ -407,6 +407,7 @@ targets=(
     ${psp_targets[@]+"${psp_targets[@]}"}
     ${psx_targets[@]+"${psx_targets[@]}"}
     ${redox_targets[@]+"${redox_targets[@]}"}
+    ${rtems_targets[@]+"${rtems_targets[@]}"}
     ${sgx_targets[@]+"${sgx_targets[@]}"}
     ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
     ${teeos_targets[@]+"${teeos_targets[@]}"}
@@ -417,5 +418,4 @@ targets=(
     ${xous_targets[@]+"${xous_targets[@]}"}
     ${zkvm_targets[@]+"${zkvm_targets[@]}"}
     ${none_targets[@]+"${none_targets[@]}"}
-    ${rtems_targets[@]+"${rtems_targets[@]}"}
 )

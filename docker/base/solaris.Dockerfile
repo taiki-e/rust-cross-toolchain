@@ -13,32 +13,32 @@ ARG BINUTILS_VERSION=2.33.1
 ARG GCC_VERSION=8.5.0
 
 FROM ghcr.io/taiki-e/downloader AS binutils-src
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
-RUN mkdir -p /binutils-src
+RUN mkdir -p -- /binutils-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
 FROM ghcr.io/taiki-e/downloader AS gcc-src
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG GCC_VERSION
-RUN mkdir -p /gcc-src
+RUN mkdir -p -- /gcc-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /gcc-src
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS sysroot
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-RUN mkdir -p /tmp/sysroot
+RUN mkdir -p -- /tmp/sysroot
 WORKDIR /tmp/sysroot
 RUN <<EOF
 case "${RUST_TARGET}" in
     x86_64*) dpkg_arch=solaris-i386 ;;
     sparcv9-*) dpkg_arch=solaris-sparc ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 apt-key adv --batch --yes --keyserver keyserver.ubuntu.com --recv-keys 74DA7924C5513486
-echo "deb https://apt.dilos.org/dilos dilos2 main" >/etc/apt/sources.list.d/dilos.list
+printf 'deb https://apt.dilos.org/dilos dilos2 main\n' >/etc/apt/sources.list.d/dilos.list
 dpkg --add-architecture "${dpkg_arch}"
 apt-get -o Acquire::Retries=10 -qq update
 apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --download-only --no-install-recommends \
@@ -52,11 +52,11 @@ apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --download-only --n
     "libsocket:${dpkg_arch}" \
     "system-crt:${dpkg_arch}" \
     "system-header:${dpkg_arch}"
-ls /var/cache/apt/archives/
+ls -- /var/cache/apt/archives/
 set +x
 for deb in /var/cache/apt/archives/*"${dpkg_arch}.deb"; do
     dpkg -x "${deb}" .
-    rm "${deb}"
+    rm -- "${deb}"
 done
 apt-get clean
 EOF
@@ -65,15 +65,16 @@ EOF
 # This makes all those symlinks.
 RUN <<EOF
 set +x
+# shellcheck disable=SC2044
 for lib in $(find . -name '*.so.*'); do
     target="${lib%.so.*}.so"
-    ln -s "${lib##*/}" "${target}" || echo "warning: silenced error symlinking ${lib}"
+    ln -s -- "${lib##*/}" "${target}" || printf '%s\n' "warning: silenced error symlinking ${lib}"
 done
 EOF
 # Remove Solaris 11 functions that are optionally used by libbacktrace.
 # This is for Solaris 10 compatibility.
 RUN <<EOF
-rm usr/include/link.h
+rm -- usr/include/link.h
 patch -p0 <<'EOF2'
 --- usr/include/string.h
 +++ usr/include/string10.h
@@ -85,20 +86,20 @@ RUN <<EOF
 case "${RUST_TARGET}" in
     x86_64*) lib_arch=amd64 ;;
     sparcv9-*) lib_arch=sparcv9 ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-mkdir -p /sysroot/{usr,lib}
-mv usr/include /sysroot/usr/include
-mv usr/lib/"${lib_arch}"/* /sysroot/lib
-mv lib/"${lib_arch}"/* /sysroot/lib
-ln -s usr/include /sysroot/sys-include
-ln -s usr/include /sysroot/include
+mkdir -p -- /sysroot/{usr,lib}
+mv -- usr/include /sysroot/usr/include
+mv -- usr/lib/"${lib_arch}"/* /sysroot/lib
+mv -- lib/"${lib_arch}"/* /sysroot/lib
+ln -s -- usr/include /sysroot/sys-include
+ln -s -- usr/include /sysroot/include
 EOF
 WORKDIR /
 
 # TODO: "error: Building GCC requires GMP 4.2+, MPFR 2.4.0+ and MPC 0.8.0+." on the latest alpine
 FROM ghcr.io/taiki-e/build-base@sha256:13b4216cb5813be57dfa09afc872dfd42a54f855ccf4110887914ba37dcc06ee AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apk --no-cache add \
     gmp-dev \
@@ -108,14 +109,14 @@ RUN apk --no-cache add \
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p -- "${TOOLCHAIN_DIR}"
 ARG SOLARIS_VERSION
 RUN <<EOF
 cc_target="${RUST_TARGET}${SOLARIS_VERSION}"
-echo "${cc_target}" >/CC_TARGET
-cd "${TOOLCHAIN_DIR}"
-mkdir -p "${cc_target}"
-ln -s "${cc_target}" "${RUST_TARGET}"
+printf '%s\n' "${cc_target}" >/CC_TARGET
+cd -- "${TOOLCHAIN_DIR}"
+mkdir -p -- "${cc_target}"
+ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
 COPY --from=binutils-src /binutils-src /tmp/binutils-src
@@ -135,8 +136,9 @@ export CXXFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
 export CC="gcc -static --static"
 export CXX="g++ -static --static"
 export LDFLAGS="-s -static --static"
-mkdir -p /tmp/gcc-build
-cd /tmp/gcc-build
+mkdir -p -- /tmp/gcc-build
+cd -- /tmp/gcc-build
+set +C
 /tmp/gcc-src/configure \
     --prefix="${TOOLCHAIN_DIR}" \
     --target="$(</CC_TARGET)" \
@@ -167,7 +169,7 @@ RUN --mount=type=bind,target=/base \
     /base/common.sh
 
 FROM ubuntu AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"

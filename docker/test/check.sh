@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
 
 # Check the toolchain.
 # This does not include building the source code and checking its output.
+
+bail() {
+    printf >&2 'error: %s\n' "$*"
+    exit 1
+}
 
 set -x
 
@@ -15,12 +18,12 @@ toolchain_dir="/${RUST_TARGET}"
 
 # In Ubuntu's binutils-* packages, ${toolchain}/${target}/bin/* are symlinks to ${toolchain}/bin/*.
 if [[ -e "${toolchain_dir}/${RUST_TARGET}/bin" ]]; then
-    pushd "${toolchain_dir}/${RUST_TARGET}/bin" >/dev/null
+    pushd -- "${toolchain_dir}/${RUST_TARGET}/bin" >/dev/null
     set +x
     for path in "${toolchain_dir}/${RUST_TARGET}/bin"/*; do
-        tool=$(basename "${path}")
+        tool="${path##*/}"
         if [[ ! -L "${tool}" ]] && [[ -e ../../bin/"${RUST_TARGET}-${tool}" ]]; then
-            ln -sf ../../bin/"${RUST_TARGET}-${tool}" "${tool}"
+            ln -sf -- ../../bin/"${RUST_TARGET}-${tool}" "${tool}"
         fi
     done
     set -x
@@ -33,29 +36,23 @@ for bin_dir in "${toolchain_dir}/bin" "${toolchain_dir}/${RUST_TARGET}/bin"; do
         set +x
         for path in "${bin_dir}"/*; do
             file_info=$(file "${path}")
-            if grep <<<"${file_info}" -Eq 'not stripped'; then
+            if grep -Fq 'not stripped' <<<"${file_info}"; then
                 strip "${path}"
             fi
-            if grep <<<"${file_info}" -Eq 'dynamically linked'; then
+            if grep -Fq 'dynamically linked' <<<"${file_info}"; then
                 case "${RUST_TARGET}" in
                     hexagon-unknown-linux-musl) ;;
-                    *-linux-musl* | *-solaris* | *-illumos*)
-                        echo >&2 "binaries must be statically linked"
-                        exit 1
-                        ;;
+                    *-linux-musl* | *-solaris* | *-illumos*) bail "binaries must be statically linked" ;;
                     *-freebsd* | *-openbsd*)
                         case "${path}" in
-                            *clang | *clang++) ;; # symlink to host clang
-                            *)
-                                echo >&2 "binaries must be statically linked"
-                                exit 1
-                                ;;
+                            *clang | *clang++) ;; # symlink to host Clang
+                            *) bail "binaries must be statically linked" ;;
                         esac
                         ;;
                 esac
-                echo -n "${path}: "
+                printf '%s' "${path}: "
                 # https://stackoverflow.com/questions/3436008/how-to-determine-version-of-glibc-glibcxx-binary-will-depend-on
-                objdump -T "${path}" | { grep GLIBC_ || :; } | sed 's/.*GLIBC_\([.0-9]*\).*/\1/g' | sort -Vu | { tail -1 || :; }
+                objdump -T "${path}" | { grep -F GLIBC_ || :; } | sed -E 's/.*GLIBC_([.0-9]*).*/\1/g' | LC_ALL=C sort -Vu | { tail -1 || :; }
             fi
         done
         set -x

@@ -5,12 +5,12 @@ ARG DISTRO=ubuntu
 ARG DISTRO_VERSION=18.04
 
 FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
+RUN mkdir -p -- "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 
 RUN --mount=type=bind,target=/docker \
     /docker/linux-gnu.sh
@@ -19,16 +19,17 @@ RUN <<EOF
 apt_target=$(</APT_TARGET)
 for dir in "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr "${TOOLCHAIN_DIR}"/sysroot/usr "${TOOLCHAIN_DIR}"/target/usr; do
     if [[ -d "${dir}"/share ]]; then
-        rm -rf "${dir}"/share/{doc,i18n,lintian,locale,man}
+        rm -rf -- "${dir}"/share/{doc,i18n,lintian,locale,man}
     fi
 done
+# shellcheck disable=SC2046
 case "${RUST_TARGET}" in
-    # There are {include,lib,libexec} for both gcc 9.4.0 and 6.3.0
-    arm-*hf) rm -rf $(find "${TOOLCHAIN_DIR}" -name '6.3.0') $(find "${TOOLCHAIN_DIR}" -name '*gcc-6.3.0') ;;
+    # There are {include,lib,libexec} for both GCC 9.4.0 and 6.3.0
+    arm-*hf) rm -rf -- $(find "${TOOLCHAIN_DIR}" -name '6.3.0') $(find "${TOOLCHAIN_DIR}" -name '*gcc-6.3.0') ;;
     # libc6-dev-armhf-cross (g++-arm-linux-gnueabihf) contains /usr/arm-linux-gnueabi/{lib/hf,libhf}
-    arm*hf | thumbv7neon-*) rm -rf "${TOOLCHAIN_DIR}/arm-linux-gnueabi" ;;
+    arm*hf | thumbv7neon-*) rm -rf -- "${TOOLCHAIN_DIR}/arm-linux-gnueabi" ;;
     # libc6-dev-armel-cross (g++-arm-linux-gnueabi) contains /usr/arm-linux-gnueabihf/{lib/sf,libsf}
-    arm*) rm -rf "${TOOLCHAIN_DIR}/arm-linux-gnueabihf" ;;
+    arm*) rm -rf -- "${TOOLCHAIN_DIR}/arm-linux-gnueabihf" ;;
 esac
 EOF
 
@@ -42,9 +43,9 @@ case "${RUST_TARGET}" in
     sparc-*)
         # The interpreter for sparc-linux-gnu is /lib/ld-linux.so.2,
         # so lib/ld-linux.so.2 must be target sparc-linux-gnu to run binaries on qemu-user.
-        rm -rf "${TOOLCHAIN_DIR}/${apt_target}/lib"
-        rm -rf "${TOOLCHAIN_DIR}/${apt_target}/lib64"
-        ln -s lib32 "${TOOLCHAIN_DIR}/${apt_target}/lib"
+        rm -rf -- "${TOOLCHAIN_DIR:?}/${apt_target}/lib"
+        rm -rf -- "${TOOLCHAIN_DIR:?}/${apt_target}/lib64"
+        ln -s -- lib32 "${TOOLCHAIN_DIR}/${apt_target}/lib"
         common_flags="-m32 -mv8plus -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib32 -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/gcc-cross/${RUST_TARGET}/${gcc_version}/32"
         ;;
     *) exit 0 ;;
@@ -52,13 +53,13 @@ esac
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" <<EOF2
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 exec "\${toolchain_dir}"/bin/${apt_target}-gcc ${common_flags} "\$@"
 EOF2
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++" <<EOF2
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 exec "\${toolchain_dir}"/bin/${apt_target}-g++ ${common_flags} "\$@"
 EOF2
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
@@ -99,7 +100,7 @@ esac
 EOF
 
 FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" AS test-base
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG REAL_HOST_ARCH
 COPY /test-base.sh /
@@ -112,7 +113,7 @@ COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
 FROM test-base AS test-relocated
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 # Note: currently works only on this location
@@ -127,10 +128,10 @@ case "${RUST_TARGET}" in
     *) /test/test.sh clang ;;
 esac
 EOF
-RUN touch /DONE
+RUN touch -- /DONE
 
 FROM test-base AS test
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
@@ -156,7 +157,7 @@ EOF
 COPY --from=test-relocated /DONE /
 
 FROM "${DISTRO}":"${DISTRO_VERSION}" AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

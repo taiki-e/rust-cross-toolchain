@@ -17,19 +17,19 @@ ARG MUSL_VERSION
 FROM ghcr.io/taiki-e/rust-cross-toolchain:"${RUST_TARGET}${MUSL_VERSION}-base${TOOLCHAIN_TAG:+"-${TOOLCHAIN_TAG}"}-${HOST_ARCH}" AS toolchain
 
 FROM rust:alpine AS build-libunwind
-SHELL ["/bin/sh", "-eux", "-c"]
+SHELL ["/bin/sh", "-CeEuxo", "pipefail", "-c"]
 COPY /build-libunwind /build-libunwind
 WORKDIR /build-libunwind
 ARG CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
 ARG CARGO_PROFILE_RELEASE_DEBUG=1
 ARG CARGO_PROFILE_RELEASE_LTO=true
 ARG RUSTFLAGS='-C target-feature=+crt-static -C link-self-contained=yes'
-RUN cargo build --release --target "$(rustc -vV | grep '^host:' | cut -d' ' -f2)"
-RUN mv target/"$(rustc -vV | grep '^host:' | cut -d' ' -f2)"/release/build-libunwind /usr/local/bin/
+RUN cargo build --release --target "$(rustc -vV | grep -E '^host:' | cut -d' ' -f2)"
+RUN mv -- target/"$(rustc -vV | grep -E '^host:' | cut -d' ' -f2)"/release/build-libunwind /usr/local/bin/
 WORKDIR /
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -49,13 +49,13 @@ case "${RUST_TARGET}" in
     riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
     *) cc_target="${RUST_TARGET/-unknown/}" ;;
 esac
-echo "${cc_target}" >/CC_TARGET
+printf '%s\n' "${cc_target}" >/CC_TARGET
 EOF
 
 RUN --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
     hexagon-*)
-        rm -f "${TOOLCHAIN_DIR}"/bin/qemu-* # TODO: rm
+        rm -f -- "${TOOLCHAIN_DIR}"/bin/qemu-* # TODO: rm
         exit 0
         ;;
 esac
@@ -79,7 +79,7 @@ esac
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG REAL_HOST_ARCH
 COPY /test-base.sh /
@@ -92,7 +92,7 @@ COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 COPY --from=build-libunwind /usr/local/bin/build-libunwind /usr/local/bin/
 
 FROM test-base AS test-relocated
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
@@ -103,10 +103,10 @@ case "${RUST_TARGET}" in
 esac
 EOF
 RUN /test/test.sh clang
-RUN touch /DONE
+RUN touch -- /DONE
 
 FROM test-base AS test
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
@@ -128,7 +128,7 @@ EOF
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

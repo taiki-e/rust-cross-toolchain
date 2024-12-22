@@ -17,9 +17,9 @@ ARG NETBSD_VERSION
 # TODO(fortran)
 
 FROM ghcr.io/taiki-e/downloader AS build-src
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG NETBSD_VERSION
-RUN mkdir -p /build-src
+RUN mkdir -p -- /build-src
 WORKDIR /build-src
 RUN <<EOF
 case "${NETBSD_VERSION}" in
@@ -34,10 +34,10 @@ EOF
 WORKDIR /
 
 FROM ghcr.io/taiki-e/downloader AS sysroot
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG NETBSD_VERSION
-RUN mkdir -p /sysroot
+RUN mkdir -p -- /sysroot
 # https://ftp.netbsd.org/pub/NetBSD
 # https://wiki.netbsd.org/ports
 RUN <<EOF
@@ -54,7 +54,7 @@ case "${RUST_TARGET}" in
     sparc-*) netbsd_arch=sparc ;;
     sparc64-*) netbsd_arch=sparc64 ;;
     x86_64*) netbsd_arch=amd64 ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 ext=tar.xz
 case "${RUST_TARGET}" in
@@ -85,7 +85,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "${base_url
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     zlib1g-dev
@@ -93,7 +93,7 @@ RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p -- "${TOOLCHAIN_DIR}"
 
 # NB: When updating this, the reminder to update docker/netbsd.Dockerfile.
 ARG NETBSD_VERSION
@@ -111,12 +111,12 @@ case "${RUST_TARGET}" in
     sparc-*) cc_target=sparc--netbsd ;;
     sparc64-*) cc_target=sparc64--netbsd ;;
     x86_64*) cc_target=x86_64--netbsd ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-echo "${cc_target}" >/CC_TARGET
-cd "${TOOLCHAIN_DIR}"
-mkdir -p "${cc_target}"
-ln -s "${cc_target}" "${RUST_TARGET}"
+printf '%s\n' "${cc_target}" >/CC_TARGET
+cd -- "${TOOLCHAIN_DIR}"
+mkdir -p -- "${cc_target}"
+ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
 COPY --from=build-src /build-src /tmp/build-src
@@ -138,13 +138,13 @@ case "${RUST_TARGET}" in
     sparc-*) args=(-m sparc) ;;
     sparc64-*) args=(-m sparc64) ;;
     x86_64*) args=(-m amd64) ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 MKUNPRIVED=yes TOOLDIR="${TOOLCHAIN_DIR}" \
     MKSHARE=no MKDOC=no MKHTML=no MKINFO=no MKKMOD=no MKLINT=no MKMAN=no MKNLS=no MKPROFILE=no \
     ./build.sh -j"$(nproc)" "${args[@]}" tools &>build.log || (tail <build.log -5000 && exit 1)
 EOF
-RUN rm -rf "${TOOLCHAIN_DIR}"/man
+RUN rm -rf -- "${TOOLCHAIN_DIR}"/man
 WORKDIR /
 
 RUN <<EOF
@@ -156,13 +156,13 @@ cc_target=$(</CC_TARGET)
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" <<EOF2
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 exec "\${toolchain_dir}"/bin/${cc_target}-gcc${common_flags:-} --sysroot="\${toolchain_dir}"/${RUST_TARGET} "\$@"
 EOF2
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++" <<EOF2
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 exec "\${toolchain_dir}"/bin/${cc_target}-g++${common_flags:-} --sysroot="\${toolchain_dir}"/${RUST_TARGET} "\$@"
 EOF2
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
@@ -172,7 +172,7 @@ RUN --mount=type=bind,target=/base \
     /base/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"

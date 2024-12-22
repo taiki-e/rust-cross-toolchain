@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-cd "$(dirname "$0")"/../..
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
+cd -- "$(dirname -- "$0")"/../..
 
 # USAGE:
 #    ./docker/base/build-docker.sh <TARGET>
 
 x() {
-    local cmd="$1"
-    shift
     (
         set -x
-        "${cmd}" "$@"
+        "$@"
     )
+}
+bail() {
+    printf >&2 'error: %s\n' "$*"
+    exit 1
 }
 
 if [[ "${1:-}" == "-"* ]] || [[ $# -ne 1 ]]; then
@@ -45,7 +45,7 @@ case "${arch}" in
         docker_arch=arm64v8
         platform=linux/arm64/v8
         ;;
-    *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
+    *) bail "unsupported architecture '${arch}'" ;;
 esac
 time=$(date -u '+%Y-%m-%d-%H-%M-%S')
 
@@ -59,11 +59,11 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        x docker buildx build --provenance=false --push "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --provenance=false --push "$@" || (printf '%s\n' "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker pull "${tag}"
         x docker history "${tag}"
     else
-        x docker buildx build --provenance=false --load "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --provenance=false --load "$@" || (printf '%s\n' "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker history "${tag}"
     fi
 }
@@ -82,7 +82,7 @@ build() {
     )
     local tag="${repository}:${target}"
     log_dir="tmp/log/base/${base}/${target}"
-    if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
+    if [[ "${1:-}" =~ ^[0-9]+ ]]; then
         local sys_version="$1"
         shift
         tag+="${sys_version}"
@@ -91,9 +91,9 @@ build() {
     tag+="-base-${github_tag}-${docker_arch}"
     build_args+=(--tag "${tag}")
 
-    mkdir -p "${log_dir}"
-    __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee "${log_dir}/build-docker-${time}.log"
-    echo "info: build log saved at ${log_dir}/build-docker-${time}.log"
+    mkdir -p -- "${log_dir}"
+    __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee -- "${log_dir}/build-docker-${time}.log"
+    printf '%s\n' "info: build log saved at ${log_dir}/build-docker-${time}.log"
 }
 
 case "${target}" in
@@ -163,7 +163,7 @@ case "${target}" in
             build "various" "${target}" --build-arg "TARGET=${target}"
         done
         ;;
-    *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
+    *) bail "unrecognized target '${target}'" ;;
 esac
 
 x docker images "${repository}"

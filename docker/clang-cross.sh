@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
 
 # Refs:
 # - https://clang.llvm.org/docs/CrossCompilation.html
@@ -16,8 +14,8 @@ case "${RUST_TARGET}" in
     *-linux-musl* | *-linux-gnu* | *-freebsd* | *-netbsd* | *-openbsd*) cc_target="${CC_TARGET:-"$(</CC_TARGET)"}" ;;
     *) cc_target="${CC_TARGET:-"${RUST_TARGET}"}" ;;
 esac
-common_flags=""
-common_flags_last=""
+common_flags=''
+common_flags_last=''
 case "${RUST_TARGET}" in
     # The --target option is last because the cross-build of LLVM uses
     # --target without an OS version.
@@ -36,7 +34,7 @@ case "${RUST_TARGET}" in
             armv5te-*) common_flags+=" -march=armv5te -marm -mfloat-abi=soft" ;;
             armv7-*hf) common_flags+=" -march=armv7-a -marm -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
             armv7-*) common_flags+=" -march=armv7-a -marm -mfloat-abi=softfp" ;;
-            # builtin armeb-unknown-linux-gnueabi is ARMv8
+            # builtin armeb-unknown-linux-gnueabi is v8
             # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
             armeb-*hf) common_flags+=" -march=armv8-a -marm -mfloat-abi=hard -mstrict-align" ;; # TODO: -mfpu?
             armeb-*) common_flags+=" -march=armv8-a -marm -mfloat-abi=soft -mstrict-align" ;;
@@ -93,11 +91,11 @@ esac
 # Get the directory of the toolchain dynamically so that it does not depend on
 # the installation location of the toolchain.
 if [[ "${cflags}${cflags_last}" == *"{toolchain_dir}"* ]] || [[ "${cxxflags}${cxxflags_last}" == *"{toolchain_dir}"* ]]; then
-    get_toolchain_dir="toolchain_dir=\"\$(cd \"\$(dirname \"\$0\")\"/.. && pwd)\"
+    get_toolchain_dir="toolchain_dir=\"\$(cd -- \"\$(dirname -- \"\$0\")\"/.. && pwd)\"
 "
 fi
 
-mkdir -p "${TOOLCHAIN_DIR}/bin"
+mkdir -p -- "${TOOLCHAIN_DIR}/bin"
 cat >"${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-clang" <<EOF
 #!/bin/sh
 set -eu

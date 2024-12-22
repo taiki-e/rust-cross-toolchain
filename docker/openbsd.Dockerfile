@@ -12,17 +12,17 @@ ARG OPENBSD_VERSION
 ARG BINUTILS_VERSION=2.37
 
 FROM ghcr.io/taiki-e/downloader AS binutils-src
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
-RUN mkdir -p /binutils-src
+RUN mkdir -p -- /binutils-src
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
         | tar xzf - --strip-components 1 -C /binutils-src
 
 FROM ghcr.io/taiki-e/downloader AS sysroot
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
 ARG OPENBSD_VERSION
-RUN mkdir -p /sysroot
+RUN mkdir -p -- /sysroot
 # Download OpenBSD libraries and header files.
 # https://cdn.openbsd.org/pub/OpenBSD
 # https://www.openbsd.org/plat.html
@@ -37,7 +37,7 @@ case "${RUST_TARGET}" in
     riscv64*) openbsd_arch=riscv64 ;;
     sparc64-*) openbsd_arch=sparc64 ;;
     x86_64*) openbsd_arch=amd64 ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cdn.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/${openbsd_arch}/base${OPENBSD_VERSION/./}.tgz" \
     | tar xzf - -C /sysroot ./usr/include ./usr/lib
@@ -46,22 +46,22 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://cd
 EOF
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p -- "${TOOLCHAIN_DIR}"
 ARG OPENBSD_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
     riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc/}${OPENBSD_VERSION}" ;;
     *) cc_target="${RUST_TARGET}${OPENBSD_VERSION}" ;;
 esac
-echo "${cc_target}" >/CC_TARGET
-cd "${TOOLCHAIN_DIR}"
-mkdir -p "${cc_target}"
-ln -s "${cc_target}" "${RUST_TARGET}"
+printf '%s\n' "${cc_target}" >/CC_TARGET
+cd -- "${TOOLCHAIN_DIR}"
+mkdir -p -- "${cc_target}"
+ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
 # sparc64: ld.lld: error: relocation R_SPARC_64 cannot be used against local symbol; recompile with -fPIC
@@ -94,7 +94,7 @@ esac
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG REAL_HOST_ARCH
 COPY /test-base.sh /
@@ -105,15 +105,15 @@ RUN /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh clang
-RUN touch /DONE
+RUN touch -- /DONE
 
 FROM test-base AS test
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
@@ -123,7 +123,7 @@ RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

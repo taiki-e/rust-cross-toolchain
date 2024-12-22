@@ -1,32 +1,28 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-cd "$(dirname "$0")"/..
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
+cd -- "$(dirname -- "$0")"/..
 
 # USAGE:
 #    ./tools/build-docker.sh [TARGET]...
 
 x() {
-    local cmd="$1"
-    shift
     if [[ -n "${dry_run}" ]]; then
         (
             IFS=' '
-            echo "+ ${cmd} $*"
+            printf '+ %s\n' "$*"
         )
     else
         (
             set -x
-            "${cmd}" "$@"
+            "$@"
         )
     fi
 }
 bail() {
-    echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
+    printf >&2 'error: %s\n' "$*"
     exit 1
 }
 
@@ -104,7 +100,7 @@ esac
 time=$(date -u '+%Y-%m-%d-%H-%M-%S')
 
 github_tag="dev"
-is_release=""
+is_release=''
 if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     github_tag="${GITHUB_REF_NAME}"
     is_release=1
@@ -115,11 +111,11 @@ __build() {
     shift
 
     if [[ -n "${PUSH_TO_GHCR:-}" ]]; then
-        x docker buildx build --provenance=false --push "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --provenance=false --push "$@" || (printf '%s\n' "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker pull "${tag}"
         x docker history "${tag}"
     else
-        x docker buildx build --provenance=false --load "$@" || (echo "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
+        x docker buildx build --provenance=false --load "$@" || (printf '%s\n' "info: build log saved at ${log_dir}/build-docker-${time}.log" && exit 1)
         x docker history "${tag}"
     fi
 }
@@ -160,9 +156,9 @@ build() {
     tag+="-${github_tag}-${docker_arch}"
     build_args+=(--tag "${tag}")
 
-    mkdir -p "${log_dir}"
-    __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee "${log_dir}/build-docker-${time}.log"
-    echo "info: build log saved at ${log_dir}/build-docker-${time}.log"
+    mkdir -p -- "${log_dir}"
+    __build "${tag}" "${build_args[@]}" "$@" 2>&1 | tee -- "${log_dir}/build-docker-${time}.log"
+    printf '%s\n' "info: build log saved at ${log_dir}/build-docker-${time}.log"
 }
 
 for target in "${targets[@]}"; do
@@ -255,7 +251,7 @@ for target in "${targets[@]}"; do
                 # FreeBSD have binary compatibility with previous releases.
                 # Therefore, the default is the minimum supported version.
                 # However, we don't support old FreeBSD for the following targets:
-                # - powerpc,powerpc64: FreeBSD 12 uses gcc instead of clang.
+                # - powerpc,powerpc64: FreeBSD 12 uses GCC instead of Clang.
                 # - powerpc64le,riscv64: available on FreeBSD 13+.
                 # See also https://www.freebsd.org/releases/13.0R/announce.
                 #
@@ -265,7 +261,7 @@ for target in "${targets[@]}"; do
                 # https://www.freebsd.org/security/unsupported
                 # https://endoflife.date/freebsd
                 # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-                # TODO: 14.2 will be EoL on 2025-03-31.
+                # TODO: 14.1 will be EoL on 2025-03-31.
                 freebsd_versions=("13.4" "14.1")
             fi
             default_freebsd_version=13
@@ -360,7 +356,7 @@ for target in "${targets[@]}"; do
             ;;
         *-windows-gnu*)
             case "${target}" in
-                # i686-pc-windows-gnu needs to build gcc from source.
+                # i686-pc-windows-gnu needs to build toolchain from source.
                 i686-pc-windows-gnu)
                     case "${arch}" in
                         x86_64) ;;

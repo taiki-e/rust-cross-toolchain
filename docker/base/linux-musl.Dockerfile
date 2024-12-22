@@ -19,17 +19,17 @@ ARG MUSL_VERSION
 ARG LINUX_VERSION=headers-4.19.88-2
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MUSL_CROSS_MAKE_REV
-RUN mkdir -p /musl-cross-make
+RUN mkdir -p -- /musl-cross-make
 RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://github.com/richfelker/musl-cross-make/archive/${MUSL_CROSS_MAKE_REV}.tar.gz" \
         | tar xzf - --strip-components 1 -C /musl-cross-make
 
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
-RUN mkdir -p "${TOOLCHAIN_DIR}"
+RUN mkdir -p -- "${TOOLCHAIN_DIR}"
 
 # NB: When updating this, the reminder to update docker/linux-musl.Dockerfile.
 RUN <<EOF
@@ -44,7 +44,7 @@ case "${RUST_TARGET}" in
     riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
     *) cc_target="${RUST_TARGET/-unknown/}" ;;
 esac
-echo "${cc_target}" >/CC_TARGET
+printf '%s\n' "${cc_target}" >/CC_TARGET
 EOF
 
 ARG BINUTILS_VERSION
@@ -58,7 +58,7 @@ ARG LINUX_VERSION
 # Use GCC 8 for powerpcspe GCC 9 removed support for this target: https://gcc.gnu.org/gcc-8/changes.html
 # Use binutils 2.40 for riscv because linker error "unknown z ISA extension `zmmul'" with LLVM 19
 # Use GCC 13 for riscv because linker error "relocation R_RISCV_JAL against `__udivsi3' which may bind externally can not be used when making a shared object; recompile with -fPIC"
-# Use musl 1.2.5 for riscv32/loongarch64 because support for them has been added in 1.2.5: https://github.com/bminor/musl/commit/01d9fe4d9f7cce7a6dbaece0e2e405a2e3279244 / https://github.com/bminor/musl/commit/522bd54edaa2fa404fd428f8ad0bcb0f0bec5639
+# Use musl 1.2.5 for riscv32/loongarch64 because support for them has been added in 1.2.5: https://github.com/bminor/musl/blob/v1.2.5/WHATSNEW#L2411-L2413
 RUN <<EOF
 cc_target=$(</CC_TARGET)
 case "${RUST_TARGET}" in
@@ -77,7 +77,7 @@ if [[ "${MUSL_VERSION}" == "1.2.3" ]]; then
     esac
 fi
 export CFLAGS="-fPIC -g1 ${CFLAGS:-}"
-cd musl-cross-make
+cd -- musl-cross-make
 cat >./config.mak <<EOF2
 OUTPUT = ${TOOLCHAIN_DIR}
 TARGET = ${cc_target}
@@ -115,8 +115,8 @@ case "${RUST_TARGET}" in
     riscv64*) common_config="--with-arch=rv64gc --with-abi=lp64d --with-cmodel=medany" ;;
     thumbv7neon-*) common_config="--with-arch=armv7-a --with-fpu=neon-vfpv4 --with-float=hard --with-mode=thumb" ;;
 esac
-echo "${common_config:+"COMMON_CONFIG += ${common_config}"}" >>./config.mak
-cat ./config.mak
+printf '%s\n' "${common_config:+"COMMON_CONFIG += ${common_config}"}" >>./config.mak
+cat -- ./config.mak
 make install -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
 EOF
 
@@ -143,15 +143,16 @@ case "${RUST_TARGET}" in
     riscv64*) ldso_arch=riscv64 ;;
     s390x-*) ldso_arch=s390x ;;
     x86_64*) ldso_arch=x86_64 ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
-cd "${SYSROOT_DIR}/lib"
-ls | grep '\.so'
-ln -sf libc.so "ld-musl-${ldso_arch}.so.1"
+cd -- "${SYSROOT_DIR}/lib"
+# shellcheck disable=SC2010
+ls | grep -F '.so'
+ln -sf -- libc.so "ld-musl-${ldso_arch}.so.1"
 EOF
 
 FROM ubuntu AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"

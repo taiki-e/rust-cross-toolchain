@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
 
 # Generate entrypoint.sh.
 
-set -x
-
 bail() {
     set +x
-    echo >&2 "error: ${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}: $*"
+    printf >&2 'error: %s\n' "$*"
     exit 1
 }
+
+set -x
 
 cc="$1"
 
@@ -34,7 +32,7 @@ if type -P "${RUST_TARGET}-${cc}"; then
             fi
             ;;
     esac
-    toolchain_dir=$(dirname "$(dirname "$(type -P "${target_cc}")")")
+    toolchain_dir=$(dirname -- "$(dirname -- "$(type -P "${target_cc}")")")
 else
     target_cc="${cc}"
     target_cxx="${cxx}"
@@ -59,7 +57,7 @@ case "${RUST_TARGET}" in
     *) sysroot_suffix="${RUST_TARGET}" ;;
 esac
 dev_tools_dir="${toolchain_dir}/share/rust-cross-toolchain/${RUST_TARGET}"
-mkdir -p "${toolchain_dir}/bin" "${dev_tools_dir}"
+mkdir -p -- "${toolchain_dir}/bin" "${dev_tools_dir}"
 
 # Except for the linux-gnu target, all toolchains are designed to work
 # independent of the installation location.
@@ -70,11 +68,11 @@ mkdir -p "${toolchain_dir}/bin" "${dev_tools_dir}"
 # that depend on the toolchain position, at runtime.
 env_path="${dev_tools_dir}/${cc}-env"
 entrypoint_path="${dev_tools_dir}/${cc}-entrypoint.sh"
-touch "${env_path}"
+touch -- "${env_path}"
 cat >"${entrypoint_path}" <<EOF
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/../../../.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/../../../.. && pwd)"
 EOF
 chmod +x "${entrypoint_path}"
 
@@ -252,7 +250,7 @@ export CXXFLAGS_${rust_target_lower}="-mabi=lp64d \${CXXFLAGS_${rust_target_lowe
 EOF
         ;;
     armeb-unknown-linux-gnueabi)
-        # builtin armeb-unknown-linux-gnueabi is ARMv8
+        # builtin armeb-unknown-linux-gnueabi is v8
         # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
         case "${cc}" in
             gcc)
@@ -266,7 +264,7 @@ EOF
     # https://developer.android.com/ndk/guides/abis
     armv7-linux-androideabi)
         case "${cc}" in
-            # cc-rs doesn't emit any flags when cc is clang family and target is android.
+            # cc-rs doesn't emit any flags when cc is Clang family and target is android.
             # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L3179-L3186
             # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1691-L1706
             clang)
@@ -279,7 +277,7 @@ EOF
         ;;
     thumbv7neon-linux-androideabi)
         case "${cc}" in
-            # cc-rs doesn't emit any flags when cc is clang family and target is android.
+            # cc-rs doesn't emit any flags when cc is Clang family and target is android.
             # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L3179-L3186
             # https://github.com/rust-lang/cc-rs/blob/1.0.73/src/lib.rs#L1691-L1706
             clang)
@@ -310,7 +308,7 @@ esac
 
 case "${RUST_TARGET}" in
     *-linux-musl*)
-        [[ -f "${dev_tools_dir}/build-libunwind" ]] || cp "$(type -P "build-libunwind")" "${dev_tools_dir}"
+        [[ -f "${dev_tools_dir}/build-libunwind" ]] || cp -- "$(type -P "build-libunwind")" "${dev_tools_dir}"
         ;;
 esac
 
@@ -336,16 +334,16 @@ case "${RUST_TARGET}" in
                     *) qemu_arch=arm ;;
                 esac
                 case "${RUST_TARGET}" in
-                    # ARMv4: https://en.wikipedia.org/wiki/StrongARM
+                    # Armv4: https://en.wikipedia.org/wiki/StrongARM
                     armv4t-*) qemu_cpu=sa1110 ;;
-                    # ARMv5TE
+                    # Armv5TE
                     armv5te-*) qemu_cpu=arm1026 ;;
-                    # ARMv7-A+NEONv2
+                    # Armv7-A+NEONv2
                     armv7-* | thumbv7neon-* | arm-*-android*) qemu_cpu=cortex-a15 ;;
-                    # builtin armeb-unknown-linux-gnueabi is ARMv8
+                    # builtin armeb-unknown-linux-gnueabi is Armv8
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
                     armeb-*) ;;
-                    # ARMv6: https://en.wikipedia.org/wiki/ARM11
+                    # Armv6: https://en.wikipedia.org/wiki/ARM11
                     arm-* | armv6-*) qemu_cpu=arm11mpcore ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
@@ -401,7 +399,7 @@ case "${RUST_TARGET}" in
                 qemu_arch=x86_64
                 # qemu does not seem to support emulating x86_64 CPU features on x86_64 hosts.
                 # > qemu-x86_64: warning: TCG doesn't support requested feature
-                # The same warning does not seem to appear on aarch64 hosts, so use qemu-user as runner.
+                # The same warning does not seem to appear on AArch64 hosts, so use qemu-user as runner.
                 #
                 # A way that works well for emulating x86_64 CPU features on x86_64 hosts is to use Intel SDE.
                 # https://www.intel.com/content/www/us/en/developer/articles/tool/software-development-emulator.html
@@ -426,17 +424,17 @@ case "${RUST_TARGET}" in
             *) qemu_ld_prefix=" -L \"\${toolchain_dir}\"/${sysroot_suffix}" ;;
         esac
         # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
-        [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
+        [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp -- "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
         "qemu-${qemu_arch}" --version
         runner="${RUST_TARGET}-runner"
-        cat >"${toolchain_dir}/bin/${runner}" <<EOF
+        cat >|"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 exec qemu-${qemu_arch}${qemu_cpu:-}${qemu_ld_prefix:-} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
-        cat "${toolchain_dir}/bin/${runner}"
+        cat -- "${toolchain_dir}/bin/${runner}"
         ;;
     *-none*)
         # https://github.com/taiki-e/semihosting/blob/HEAD/tools/qemu-system-runner.sh
@@ -456,15 +454,15 @@ EOF
                     armeb* | thumbeb*) qemu_user_arch=armeb ;;
                 esac
                 case "${RUST_TARGET}" in
-                    # ARMv7-A
+                    # Armv7-A
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7a_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7a_none_eabihf.rs
                     armv7a-none-eabi | armv7a-none-eabihf) qemu_cpu=cortex-a9 ;;
-                    # Cortex-R4/Cortex-R5 (ARMv7-R)
+                    # Cortex-R4/Cortex-R5 (Armv7-R)
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7r_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armebv7r_none_eabi.rs
                     armv7r-none-eabi | armebv7r-none-eabi) qemu_cpu=cortex-r5 ;;
-                    # Cortex-R4F/Cortex-R5F (ARMv7-R)
+                    # Cortex-R4F/Cortex-R5F (Armv7-R)
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv7r_none_eabihf.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armebv7r_none_eabihf.rs
                     armv7r-none-eabihf | armebv7r-none-eabihf) qemu_cpu=cortex-r5f ;;
@@ -474,18 +472,18 @@ EOF
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armv5te_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv5te_none_eabi.rs
                     armv5te-none-eabi | thumbv5te-none-eabi) qemu_cpu=arm926 ;;
-                    # Cortex-M0/Cortex-M0+/Cortex-M1 (ARMv6-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv6m_none_eabi.rs
+                    # Cortex-M0/Cortex-M0+/Cortex-M1 (Armv6-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv6m_none_eabi.rs
                     thumbv6m-none-eabi) qemu_cpu=cortex-m0 ;;
-                    # Cortex-M4/Cortex-M7 (ARMv7E-M):
+                    # Cortex-M4/Cortex-M7 (Armv7E-M):
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7em_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7em_none_eabihf.rs
                     thumbv7em-none-eabi | thumbv7em-none-eabihf) qemu_cpu=cortex-m7 ;;
-                    # Cortex-M3 (ARMv7-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7m_none_eabi.rs
+                    # Cortex-M3 (Armv7-M): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv7m_none_eabi.rs
                     thumbv7m-none-eabi) qemu_cpu=cortex-m3 ;;
-                    # Cortex-M23 (ARMv8-M Baseline): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_base_none_eabi.rs
-                    # TODO: As of QEMU 9.0, QEMU doesn't support -cpu cortex-m23
+                    # Cortex-M23 (Armv8-M Baseline): https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_base_none_eabi.rs
+                    # TODO: As of QEMU 9.2, QEMU doesn't support -cpu cortex-m23
                     thumbv8m.base-none-eabi) qemu_cpu=cortex-m33 ;;
-                    # Cortex-M33 (ARMV8-M Mainline):
+                    # Cortex-M33 (ArmV8-M Mainline):
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_main_none_eabi.rs
                     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/thumbv8m_main_none_eabihf.rs
                     thumbv8m.main-none-eabi | thumbv8m.main-none-eabihf) qemu_cpu=cortex-m33 ;;
@@ -498,7 +496,7 @@ EOF
                     # Cortex-a
                     armv7a-*) qemu_machine=xilinx-zynq-a9 ;;
                     # TODO: As of QEMU 8.2, qemu-system-arm doesn't support Cortex-R machine.
-                    # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (ARMv8-R AArch32)
+                    # TODO: mps3-an536 added in QEMU 9.0 is Cortex-R52 board (Armv8-R AArch32)
                     arm*v7r-*) ;;
                     *) bail "unrecognized target '${RUST_TARGET}'" ;;
                 esac
@@ -548,7 +546,7 @@ EOF
             qemu_cpu=" -cpu \${QEMU_CPU:-${qemu_cpu}}"
         fi
         # Include qemu-user in the toolchain, regardless of whether it is actually used by runner.
-        [[ -f "${toolchain_dir}/bin/qemu-${qemu_user_arch}" ]] || cp "$(type -P "qemu-${qemu_user_arch}")" "${toolchain_dir}/bin"
+        [[ -f "${toolchain_dir}/bin/qemu-${qemu_user_arch}" ]] || cp -- "$(type -P "qemu-${qemu_user_arch}")" "${toolchain_dir}/bin"
         "qemu-${qemu_user_arch}" --version
         runner_qemu_user="${RUST_TARGET}-runner-qemu-user"
         cat >"${toolchain_dir}/bin/${runner_qemu_user}" <<EOF
@@ -557,7 +555,7 @@ set -eu
 exec qemu-${qemu_user_arch}${qemu_cpu:-} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner_qemu_user}"
-        cat "${toolchain_dir}/bin/${runner_qemu_user}"
+        cat -- "${toolchain_dir}/bin/${runner_qemu_user}"
         case "${RUST_TARGET}" in
             armv5te-* | armv7a-* | thumb* | aarch64* | arm64* | riscv*)
                 # No default runner is set.
@@ -565,49 +563,49 @@ EOF
                 cat >"${toolchain_dir}/bin/${runner_qemu_system}" <<EOF
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 export QEMU_AUDIO_DRV="${QEMU_AUDIO_DRV:-none}"
 exec qemu-system-${qemu_system_arch} -M ${qemu_machine}${qemu_cpu:-} -display none -semihosting -kernel "\$@"
 EOF
                 chmod +x "${toolchain_dir}/bin/${runner_qemu_system}"
-                cat "${toolchain_dir}/bin/${runner_qemu_system}"
+                cat -- "${toolchain_dir}/bin/${runner_qemu_system}"
                 ;;
             # TODO(none)
             *) ;;
         esac
         ;;
     *-wasi*)
-        [[ -f "${toolchain_dir}/bin/wasmtime" ]] || cp "$(type -P "wasmtime")" "${toolchain_dir}/bin"
+        [[ -f "${toolchain_dir}/bin/wasmtime" ]] || cp -- "$(type -P "wasmtime")" "${toolchain_dir}/bin"
         runner="${RUST_TARGET}-runner"
         wasi_options=''
         case "${RUST_TARGET}" in
             *-threads) wasi_options+=' -S threads' ;;
         esac
-        cat >"${toolchain_dir}/bin/${runner}" <<EOF
+        cat >|"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
 exec wasmtime run -W all-proposals${wasi_options} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
-        cat "${toolchain_dir}/bin/${runner}"
+        cat -- "${toolchain_dir}/bin/${runner}"
         ;;
     *-emscripten*)
         runner="${RUST_TARGET}-runner"
         cat >"${toolchain_dir}/${runner}" <<EOF
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")" && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")" && pwd)"
 exec "\${toolchain_dir}"/node/${NODE_VERSION}_64bit/bin/node "\$@"
 EOF
         chmod +x "${toolchain_dir}/${runner}"
-        cat "${toolchain_dir}/${runner}"
+        cat -- "${toolchain_dir}/${runner}"
         ;;
     *-windows-gnu*)
         runner="${RUST_TARGET}-runner"
         case "${RUST_TARGET}" in
             *-gnullvm*) winepath="\${toolchain_dir}/${RUST_TARGET}/bin" ;;
             *)
-                gcc_lib=$(basename "$(ls -d "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix)")
+                gcc_lib=$(basename -- "$(ls -d -- "${toolchain_dir}/lib/gcc/${RUST_TARGET}"/*posix)")
                 winepath="\${toolchain_dir}/lib/gcc/${RUST_TARGET}/${gcc_lib};\${toolchain_dir}/${RUST_TARGET}/lib"
                 ;;
         esac
@@ -620,15 +618,15 @@ EOF
                 case "${host_arch}" in
                     x86_64)
                         for bin in wine wineserver wine-preloader; do
-                            sed -i "s/qemu-${qemu_arch}-static/qemu-${qemu_arch}/g" "${wine_root}/bin/${bin}"
+                            sed -Ei "s/qemu-${qemu_arch}-static/qemu-${qemu_arch}/g" "${wine_root}/bin/${bin}"
                         done
-                        cp "${wine_root}"/lib/ld-linux-aarch64.so.1 /lib/
-                        [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
+                        cp -- "${wine_root}"/lib/ld-linux-aarch64.so.1 /lib/
+                        [[ -f "${toolchain_dir}/bin/qemu-${qemu_arch}" ]] || cp -- "$(type -P "qemu-${qemu_arch}")" "${toolchain_dir}/bin"
                         "qemu-${qemu_arch}" --version
                         ;;
                     aarch64)
                         for bin in wine wineserver wine-preloader; do
-                            sed -i "s/qemu-${qemu_arch}-static//g" "${wine_root}/bin/${bin}"
+                            sed -Ei "s/qemu-${qemu_arch}-static//g" "${wine_root}/bin/${bin}"
                         done
                         ;;
                     *) bail "unsupported host architecture '${host_arch}'" ;;
@@ -636,15 +634,15 @@ EOF
                 ;;
             *) wine_exe=wine ;;
         esac
-        cat >"${toolchain_dir}/bin/${runner}" <<EOF
+        cat >|"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
-toolchain_dir="\$(cd "\$(dirname "\$0")"/.. && pwd)"
+toolchain_dir="\$(cd -- "\$(dirname -- "\$0")"/.. && pwd)"
 export WINEPATH="${winepath};\${WINEPATH:-}"
 exec ${wine_exe} "\$@"
 EOF
         chmod +x "${toolchain_dir}/bin/${runner}"
-        cat "${toolchain_dir}/bin/${runner}"
+        cat -- "${toolchain_dir}/bin/${runner}"
         ;;
 esac
 if [[ -n "${runner:-}" ]]; then

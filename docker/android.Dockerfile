@@ -16,20 +16,20 @@ ARG HOST_ARCH=amd64
 ARG NDK_VERSION
 
 FROM ghcr.io/taiki-e/downloader AS ndk
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG NDK_VERSION
-RUN mkdir -p /ndk
 RUN <<EOF
-cd /ndk
+mkdir -p -- /ndk
+cd -- /ndk
 ndk_file="android-ndk-${NDK_VERSION}-linux.zip"
 curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused -O "https://dl.google.com/android/repository/${ndk_file}"
 unzip -q "${ndk_file}"
-rm "${ndk_file}"
-mv android-ndk-* ndk
+rm -- "${ndk_file}"
+mv -- android-ndk-* ndk
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG RUST_TARGET
@@ -43,14 +43,14 @@ case "${RUST_TARGET}" in
 esac
 # Lowest API level
 api_level=21
-echo "${cc_target}${api_level}" >/CC_TARGET
+printf '%s\n' "${cc_target}${api_level}" >/CC_TARGET
 EOF
 
 RUN --mount=type=bind,target=/docker \
     /docker/base/common.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG REAL_HOST_ARCH
 COPY /test-base.sh /
@@ -61,7 +61,7 @@ ARG RUST_TARGET
 COPY --from=ndk /ndk/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot /ndk-sysroot
 # https://dl.google.com/android/repository/sys-img/android/sys-img.xml
 RUN <<EOF
-mkdir -p /system/{bin,lib,lib64}
+mkdir -p -- /system/{bin,lib,lib64}
 # TODO: use 21 instead of 24 for 32-bit targets: libc: error getting old personality value: Operation not permitted
 case "${RUST_TARGET}" in
     aarch64* | arm64*)
@@ -88,7 +88,7 @@ case "${RUST_TARGET}" in
         img_api_level=24
         revision=r08
         ;;
-    *) echo >&2 "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
+    *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac
 file="${arch}-${img_api_level}_${revision}.zip"
 prefix=''
@@ -99,13 +99,12 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused -O "https:/
 unzip -q "${file}" "${arch}/system.img"
 e2cp -p "${arch}/system.img:/bin/linker${prefix}" "/system/bin/"
 for lib in "ndk-sysroot/usr/lib/${lib_target}/${img_api_level}"/*.so; do
-    lib=$(basename "${lib}")
     # TODO: error with img_api_level < 24: Attempt to read block from filesystem resulted in short readError copying file /lib/libGLESv3.so to /system/lib//libGLESv3.so
-    e2cp -p "${arch}/system.img:/lib${prefix}/${lib}" "/system/lib${prefix}/" || true
+    e2cp -p "${arch}/system.img:/lib${prefix}/${lib##*/}" "/system/lib${prefix}/" || true
 done
-cp "ndk-sysroot/usr/lib/${lib_target}/libc++_shared.so" "/system/lib${prefix}/"
-rm "${file}"
-rm -rf "${arch}"
+cp -- "ndk-sysroot/usr/lib/${lib_target}/libc++_shared.so" "/system/lib${prefix}/"
+rm -- "${file}"
+rm -rf -- "${arch}"
 EOF
 ENV ANDROID_DNS_MODE=local
 ENV ANDROID_ROOT=/system
@@ -116,15 +115,15 @@ COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 
 FROM test-base AS test-relocated
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}"/. /usr/local/
 RUN /test/test.sh clang
-RUN touch /DONE
+RUN touch -- /DONE
 
 FROM test-base AS test
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=builder /"${RUST_TARGET}" /"${RUST_TARGET}"
@@ -134,7 +133,7 @@ RUN /test/test.sh clang
 # COPY --from=test-relocated /DONE /
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
-SHELL ["/bin/bash", "-eEuxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 COPY --from=test /"${RUST_TARGET}" /"${RUST_TARGET}"

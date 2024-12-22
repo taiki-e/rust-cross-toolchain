@@ -1,27 +1,23 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0 OR MIT
-set -eEuo pipefail
+set -CeEuo pipefail
 IFS=$'\n\t'
-cd "$(dirname "$0")"/..
-
-# shellcheck disable=SC2154
-trap 's=$?; echo >&2 "$0: error on line "${LINENO}": ${BASH_COMMAND}"; exit ${s}' ERR
+trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
+cd -- "$(dirname -- "$0")"/..
 
 # USAGE:
 #   ./tools/docker-manifest.sh [TARGET]...
 
 x() {
-    local cmd="$1"
-    shift
     if [[ -n "${dry_run}" ]]; then
         (
             IFS=' '
-            echo "+ ${cmd} $*"
+            printf '+ %s\n' "$*"
         )
     else
         (
             set -x
-            "${cmd}" "$@"
+            "$@"
         )
     fi
 }
@@ -34,6 +30,10 @@ retry() {
         fi
     done
     "$@"
+}
+bail() {
+    printf >&2 'error: %s\n' "$*"
+    exit 1
 }
 
 if [[ "${1:-}" == "-"* ]]; then
@@ -51,15 +51,14 @@ if [[ $# -gt 0 ]]; then
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --dry-run) dry_run=1 ;;
-            -*) echo >&2 "error: unknown argument '$1'" && exit 1 ;;
+            -*) bail "unknown argument '$1'" ;;
             *) targets+=("$1") ;;
         esac
         shift
     done
 fi
 if [[ ${#targets[@]} -eq 0 ]]; then
-    echo >&2 "error: no target to build"
-    exit 1
+    bail "no target to build"
 fi
 
 export DOCKER_BUILDKIT=1
@@ -69,7 +68,7 @@ owner="${OWNER:-taiki-e}"
 repository="ghcr.io/${owner}/rust-cross-toolchain"
 
 github_tag="dev"
-is_release=""
+is_release=''
 if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     github_tag="${GITHUB_REF_NAME}"
     is_release=1
@@ -81,7 +80,7 @@ docker_manifest() {
 
     local tag="${repository}:${target}"
     local tags=()
-    if [[ "${1:-}" =~ ^[0-9]+.* ]]; then
+    if [[ "${1:-}" =~ ^[0-9]+ ]]; then
         local sys_version="$1"
         local default_sys_version="$2"
         shift
@@ -112,7 +111,7 @@ docker_manifest() {
                 arm64v8)
                     x docker manifest annotate --os linux --arch arm64 --variant v8 "${tag}" "${tag}-${arch}"
                     ;;
-                *) echo >&2 "error: unsupported architecture '${arch}'" && exit 1 ;;
+                *) bail "unsupported architecture '${arch}'" ;;
             esac
         done
     done
@@ -247,7 +246,7 @@ for target in "${targets[@]}"; do
         *-windows-gnu*)
             arches=(amd64 arm64v8)
             case "${target}" in
-                # i686-pc-windows-gnu needs to build gcc from source.
+                # i686-pc-windows-gnu needs to build toolchain from source.
                 i686-pc-windows-gnu) arches=(amd64) ;;
             esac
             docker_manifest "${target}"
@@ -260,6 +259,6 @@ for target in "${targets[@]}"; do
             esac
             docker_manifest "${target}"
             ;;
-        *) echo >&2 "error: unrecognized target '${target}'" && exit 1 ;;
+        *) bail "unrecognized target '${target}'" ;;
     esac
 done

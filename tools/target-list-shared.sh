@@ -85,6 +85,7 @@ linux_uclibc_targets=(
 linux_ohos_targets=(
     # aarch64-unknown-linux-ohos
     # armv7-unknown-linux-ohos
+    # loongarch64-unknown-linux-ohos # tier3
     # x86_64-unknown-linux-ohos
 )
 # Linux (no libc)
@@ -124,6 +125,7 @@ ios_targets=(
 tvos_targets=(
     # aarch64-apple-tvos # tier3
     # aarch64-apple-tvos-sim # tier3
+    # arm64e-apple-tvos # tier3
     # x86_64-apple-tvos # tier3
 )
 # watchOS
@@ -250,10 +252,8 @@ espidf_targets=(
 )
 # Fuchsia
 fuchsia_targets=(
-    # aarch64-fuchsia # tier3
     # aarch64-unknown-fuchsia
     # riscv64gc-unknown-fuchsia # tier3
-    # x86_64-fuchsia # tier3
     # x86_64-unknown-fuchsia
 )
 # Haiku
@@ -273,8 +273,9 @@ horizon_targets=(
     # armv6k-nintendo-3ds # tier3
 )
 # GNU Hurd
-l4re_targets=(
+hurd_targets=(
     # i686-unknown-hurd-gnu # tier3
+    # x86_64-unknown-hurd-gnu # tier3
 )
 # L4Re
 l4re_targets=(
@@ -316,6 +317,10 @@ redox_targets=(
     # i686-unknown-redox # tier3
     x86_64-unknown-redox
 )
+# RTEMS
+rtems_targets=(
+    # armv7-rtems-eabihf # tier3
+)
 # SGX
 sgx_targets=(
     # x86_64-fortanix-unknown-sgx
@@ -332,6 +337,7 @@ teeos_targets=(
 trusty_targets=(
     # aarch64-unknown-trusty # tier3
     # armv7-unknown-trusty # tier3
+    # x86_64-unknown-trusty # tier3
 )
 # UEFI
 uefi_targets=(
@@ -350,6 +356,8 @@ vxworks_targets=(
     # powerpc-wrs-vxworks # tier3
     # powerpc-wrs-vxworks-spe # tier3
     # powerpc64-wrs-vxworks # tier3
+    # riscv32-wrs-vxworks # tier3
+    # riscv64-wrs-vxworks # tier3
     # x86_64-wrs-vxworks # tier3
 )
 xous_targets=(
@@ -397,6 +405,7 @@ none_targets=(
     thumbv8m.base-none-eabi
     thumbv8m.main-none-eabi
     thumbv8m.main-none-eabihf
+    # wasm32v1-none
     # x86_64-unknown-none
     # xtensa-esp32-none-elf # tier3
     # xtensa-esp32s2-none-elf # tier3
@@ -439,6 +448,7 @@ targets=(
     ${psp_targets[@]+"${psp_targets[@]}"}
     ${psx_targets[@]+"${psx_targets[@]}"}
     ${redox_targets[@]+"${redox_targets[@]}"}
+    ${rtems_targets[@]+"${rtems_targets[@]}"}
     ${sgx_targets[@]+"${sgx_targets[@]}"}
     ${solid_asp3_targets[@]+"${solid_asp3_targets[@]}"}
     ${teeos_targets[@]+"${teeos_targets[@]}"}
