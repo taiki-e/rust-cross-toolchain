@@ -240,7 +240,7 @@ case "${RUST_TARGET}" in
     # TODO(android):
     # TODO(aarch64-unknown-openbsd): Clang segfault
     # TODO(sparc64-unknown-openbsd): error: undefined symbol: main
-    # TODO(wasm32-wasip1-threads): not output # TODO: fixed in sdk 23?
+    # TODO(wasm32-wasip1-threads): not output # This mode of WASI does not have threads enabled
     arm*-android* | thumb*-android* | i686-*-android* | aarch64-unknown-openbsd | sparc64-unknown-openbsd | wasm32-wasip1-threads) no_cpp=1 ;;
     # TODO(redox): /x86_64-unknown-redox/x86_64-unknown-redox/include/bits/wchar.h:12:28: error: cannot combine with previous 'int' declaration specifier
     *-redox*)
@@ -288,8 +288,7 @@ no_run_test=''
 case "${RUST_TARGET}" in
     # TODO(powerpc-unknown-linux-*spe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
     # TODO(riscv32gc-unknown-linux-musl): unsafe precondition(s) violated: ptr::write_bytes requires that the destination pointer is aligned and non-null
-    # TODO(wasm32-wasip1-threads): failed to invoke command default # TODO: fixed in sdk 23?
-    powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl | wasm32-wasip1-threads) no_run_test=1 ;;
+    powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl) no_run_test=1 ;;
 esac
 
 build_mode=debug

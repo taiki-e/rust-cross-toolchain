@@ -63,7 +63,7 @@ linux_musl_targets=(
     mips64el-unknown-linux-muslabi64 # tier3
     mipsel-unknown-linux-musl        # tier3
     powerpc-unknown-linux-musl       # tier3
-    powerpc-unknown-linux-muslspe    # tier3, TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/powerpc-unknown-linux-muslspe.md
+    powerpc-unknown-linux-muslspe    # tier3
     # powerpc64-unknown-linux-musl # tier3, TODO: ABI version 1 is not compatible with ABI version 2 output
     powerpc64le-unknown-linux-musl
     riscv32gc-unknown-linux-musl         # tier3
@@ -221,7 +221,7 @@ windows_gnu_targets=(
 wasi_targets=(
     wasm32-wasip1
     wasm32-wasip1-threads
-    # wasm32-wasip2 # TODO: fixed in sdk 23?
+    wasm32-wasip2
 )
 # Emscripten
 emscripten_targets=(

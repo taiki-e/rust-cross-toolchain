@@ -297,6 +297,7 @@ clang version and wasi-libc hash can be found here: https://github.com/WebAssemb
 
 - `wasm32-wasip1`
 - `wasm32-wasip1-threads`
+- `wasm32-wasip2`
 
 ### Emscripten
 
