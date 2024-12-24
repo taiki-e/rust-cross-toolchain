@@ -97,8 +97,7 @@ ln -s -- usr/include /sysroot/include
 EOF
 WORKDIR /
 
-# TODO: "error: Building GCC requires GMP 4.2+, MPFR 2.4.0+ and MPC 0.8.0+." on the latest alpine
-FROM ghcr.io/taiki-e/build-base@sha256:13b4216cb5813be57dfa09afc872dfd42a54f855ccf4110887914ba37dcc06ee AS builder
+FROM ghcr.io/taiki-e/build-base:alpine AS builder
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apk --no-cache add \
