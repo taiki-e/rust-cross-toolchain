@@ -75,10 +75,13 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-unknown-redox
 - [ ] i686-uwp-windows-gnu
 - [ ] i686-uwp-windows-msvc
+- [ ] i686-win7-windows-gnu
 - [ ] i686-win7-windows-msvc
 - [ ] i686-wrs-vxworks
 - [ ] loongarch64-unknown-linux-ohos
 - [ ] m68k-unknown-linux-gnu
+- [ ] m68k-unknown-none-elf
+- [ ] mips-mti-none-elf
 - [x] mips-unknown-linux-gnu
 - [x] mips-unknown-linux-musl
 - [x] mips-unknown-linux-uclibc
@@ -87,6 +90,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] mips64-unknown-linux-muslabi64
 - [x] mips64el-unknown-linux-gnuabi64
 - [x] mips64el-unknown-linux-muslabi64
+- [ ] mipsel-mti-none-elf
 - [ ] mipsel-sony-psp
 - [ ] mipsel-sony-psx
 - [x] mipsel-unknown-linux-gnu
@@ -169,6 +173,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-unknown-trusty
 - [ ] x86_64-uwp-windows-gnu
 - [ ] x86_64-uwp-windows-msvc
+- [ ] x86_64-win7-windows-gnu
 - [ ] x86_64-win7-windows-msvc
 - [ ] x86_64-wrs-vxworks
 - [ ] x86_64h-apple-darwin
