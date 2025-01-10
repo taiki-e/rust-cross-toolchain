@@ -193,9 +193,11 @@ windows_gnu_targets=(
     i686-pc-windows-gnu
     i686-pc-windows-gnullvm
     i686-uwp-windows-gnu # tier3
+    i686-win7-windows-gnu # tier3
     x86_64-pc-windows-gnu
     x86_64-pc-windows-gnullvm
     x86_64-uwp-windows-gnu # tier3
+    x86_64-win7-windows-gnu # tier3
 )
 wasi_targets=(
     wasm32-wasip1
@@ -341,6 +343,9 @@ none_targets=(
     hexagon-unknown-none-elf # tier3
     loongarch64-unknown-none
     loongarch64-unknown-none-softfloat
+    m68k-unknown-none-elf # tier3
+    mips-mti-none-elf # tier3
+    mipsel-mti-none-elf # tier3
     mipsel-unknown-none # tier3
     msp430-none-elf # tier3
     riscv32e-unknown-none-elf # tier3
