@@ -9,65 +9,65 @@ cd -- "$(dirname -- "$0")"/..
 #    ./tools/gen.sh
 
 bail() {
-    printf >&2 'error: %s\n' "$*"
-    exit 1
+  printf >&2 'error: %s\n' "$*"
+  exit 1
 }
 
 known_target_group=(
-    # Linux
-    linux_gnu
-    linux_musl
-    linux_uclibc
-    linux_ohos
-    linux_none
-    android
-    # Darwin
-    macos
-    ios
-    tvos
-    watchos
-    visionos
-    # BSD
-    freebsd
-    netbsd
-    openbsd
-    dragonfly
-    # Solarish
-    solaris
-    illumos
-    # Windows
-    windows_msvc
-    windows_gnu
-    # WASM
-    wasi
-    emscripten
-    wasm_unknown
-    # Other
-    aix
-    cuda
-    espidf
-    fuchsia
-    haiku
-    hermit
-    horizon
-    hurd
-    l4re
-    nto
-    nuttx
-    psp
-    psx
-    redox
-    rtems
-    sgx
-    solid_asp3
-    teeos
-    trusty
-    uefi
-    vita
-    vxworks
-    xous
-    zkvm
-    none
+  # Linux
+  linux_gnu
+  linux_musl
+  linux_uclibc
+  linux_ohos
+  linux_none
+  android
+  # Darwin
+  macos
+  ios
+  tvos
+  watchos
+  visionos
+  # BSD
+  freebsd
+  netbsd
+  openbsd
+  dragonfly
+  # Solarish
+  solaris
+  illumos
+  # Windows
+  windows_msvc
+  windows_gnu
+  # WASM
+  wasi
+  emscripten
+  wasm_unknown
+  # Other
+  aix
+  cuda
+  espidf
+  fuchsia
+  haiku
+  hermit
+  horizon
+  hurd
+  l4re
+  nto
+  nuttx
+  psp
+  psx
+  redox
+  rtems
+  sgx
+  solid_asp3
+  teeos
+  trusty
+  uefi
+  vita
+  vxworks
+  xous
+  zkvm
+  none
 )
 
 rm -rf -- tmp/gen/os
@@ -77,25 +77,25 @@ rustc_targets=($(rustc --print target-list))
 # shellcheck disable=SC2207
 rustup_targets=($(rustup target list | cut -d' ' -f1))
 for target_spec in $(rustc -Z unstable-options --print all-target-specs-json | jq -c '. | to_entries[]'); do
-    eval "$(jq -r '@sh "target=\(.key) os=\(.value.os // "none") ENV=\(.value.env // "none")"' <<<"${target_spec}")"
-    if [[ "${ENV}" == "none" ]] && [[ "${os}" != "linux" ]]; then
-        case "${target}" in
-            wasm*-unknown-unknown) printf '%s\n' "${target}" >>"tmp/gen/os/wasm_unknown" ;;
-            *) printf '%s\n' "${target}" >>"tmp/gen/os/${os}" ;;
-        esac
-    else
-        case "${os}" in
-            linux | windows) printf '%s\n' "${target}" >>"tmp/gen/os/${os}_${ENV}" ;;
-            none | unknown)
-                if [[ "${target}" == "avr"* ]]; then
-                    printf '%s\n' "${target}" >>"tmp/gen/os/none"
-                else
-                    printf '%s\n' "${target}" >>"tmp/gen/os/${ENV}"
-                fi
-                ;;
-            *) printf '%s\n' "${target}" >>"tmp/gen/os/${os}" ;;
-        esac
-    fi
+  eval "$(jq -r '@sh "target=\(.key) os=\(.value.os // "none") ENV=\(.value.env // "none")"' <<<"${target_spec}")"
+  if [[ "${ENV}" == "none" ]] && [[ "${os}" != "linux" ]]; then
+    case "${target}" in
+      wasm*-unknown-unknown) printf '%s\n' "${target}" >>"tmp/gen/os/wasm_unknown" ;;
+      *) printf '%s\n' "${target}" >>"tmp/gen/os/${os}" ;;
+    esac
+  else
+    case "${os}" in
+      linux | windows) printf '%s\n' "${target}" >>"tmp/gen/os/${os}_${ENV}" ;;
+      none | unknown)
+        if [[ "${target}" == "avr"* ]]; then
+          printf '%s\n' "${target}" >>"tmp/gen/os/none"
+        else
+          printf '%s\n' "${target}" >>"tmp/gen/os/${ENV}"
+        fi
+        ;;
+      *) printf '%s\n' "${target}" >>"tmp/gen/os/${os}" ;;
+    esac
+  fi
 done
 target_list_file=tools/target-list-generated
 cat >|"${target_list_file}" <<EOF
@@ -109,41 +109,41 @@ cat >|"${target_list_file}" <<EOF
 EOF
 os_list=()
 emit_targets() {
-    os_list+=("${os}")
-    printf '%s_targets=(\n' "${os}" >>"${target_list_file}"
-    # shellcheck disable=SC2013
-    for target in $(<"${os_targets}"); do
-        tier3=1
-        for t in "${rustup_targets[@]}"; do
-            if [[ "${target}" == "${t}" ]]; then
-                tier3=''
-                printf '    %s\n' "${target}" >>"${target_list_file}"
-                break
-            fi
-        done
-        if [[ -n "${tier3}" ]]; then
-            printf '    %s # tier3\n' "${target}" >>"${target_list_file}"
-        fi
+  os_list+=("${os}")
+  printf '%s_targets=(\n' "${os}" >>"${target_list_file}"
+  # shellcheck disable=SC2013
+  for target in $(<"${os_targets}"); do
+    tier3=1
+    for t in "${rustup_targets[@]}"; do
+      if [[ "${target}" == "${t}" ]]; then
+        tier3=''
+        printf '  %s\n' "${target}" >>"${target_list_file}"
+        break
+      fi
     done
-    printf ')\n' >>"${target_list_file}"
+    if [[ -n "${tier3}" ]]; then
+      printf '  %s # tier3\n' "${target}" >>"${target_list_file}"
+    fi
+  done
+  printf ')\n' >>"${target_list_file}"
 }
 for os in "${known_target_group[@]}"; do
-    os_targets="tmp/gen/os/${os}"
-    if [[ -e "${os_targets}" ]]; then
-        emit_targets
-        rm -f -- "${os_targets}"
-    else
-        bail "there is no target for '${os}_targets' group"
-    fi
+  os_targets="tmp/gen/os/${os}"
+  if [[ -e "${os_targets}" ]]; then
+    emit_targets
+    rm -f -- "${os_targets}"
+  else
+    bail "there is no target for '${os}_targets' group"
+  fi
 done
 rmdir -- tmp/gen/os 2>/dev/null \
-    || for os_targets in tmp/gen/os/*; do
-        os="${os_targets##*/}"
-        emit_targets
-    done
+  || for os_targets in tmp/gen/os/*; do
+    os="${os_targets##*/}"
+    emit_targets
+  done
 printf 'targets=(\n' >>"${target_list_file}"
 for os in "${os_list[@]}"; do
-    printf "    \${%s_targets[@]+\"\${%s_targets[@]}\"}\n" "${os}" "${os}" >>"${target_list_file}"
+  printf "  \${%s_targets[@]+\"\${%s_targets[@]}\"}\n" "${os}" "${os}" >>"${target_list_file}"
 done
 printf ')\n' >>"${target_list_file}"
 
@@ -173,21 +173,21 @@ See [${support_status_file}](${support_status_file}) for Tier 1 & Tier 2 platfor
 EOF
 support_list=$(<tools/target-list-shared.sh)
 for target in "${rustc_targets[@]}"; do
-    tier3=1
-    for t in "${rustup_targets[@]}"; do
-        if [[ "${target}" == "${t}" ]]; then
-            tier3=''
-            break
-        fi
-    done
-    if grep -Eq "^ +${target}( |$)" <<<"${support_list}"; then
-        status='- [x]'
-    else
-        status='- [ ]'
+  tier3=1
+  for t in "${rustup_targets[@]}"; do
+    if [[ "${target}" == "${t}" ]]; then
+      tier3=''
+      break
     fi
-    if [[ -n "${tier3}" ]]; then
-        printf '%s %s\n' "${status}" "${target}" >>"${tier3_support_status_file}"
-    else
-        printf '%s %s\n' "${status}" "${target}" >>"${support_status_file}"
-    fi
+  done
+  if grep -Eq "^ +${target}( |$)" <<<"${support_list}"; then
+    status='- [x]'
+  else
+    status='- [ ]'
+  fi
+  if [[ -n "${tier3}" ]]; then
+    printf '%s %s\n' "${status}" "${target}" >>"${tier3_support_status_file}"
+  else
+    printf '%s %s\n' "${status}" "${target}" >>"${support_status_file}"
+  fi
 done
