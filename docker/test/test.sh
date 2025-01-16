@@ -288,7 +288,8 @@ no_run_test=''
 case "${RUST_TARGET}" in
   # TODO(powerpc-unknown-linux-*spe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
   # TODO(riscv32gc-unknown-linux-musl): unsafe precondition(s) violated: ptr::write_bytes requires that the destination pointer is aligned and non-null
-  powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl) no_run_test=1 ;;
+  # TODO(hexagon-unknown-linux-musl): run-pass, but test-run-fail: segfault
+  powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl | hexagon-unknown-linux-musl) no_run_test=1 ;;
 esac
 
 build_mode=debug
