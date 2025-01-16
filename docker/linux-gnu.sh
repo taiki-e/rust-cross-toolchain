@@ -138,9 +138,9 @@ case "${RUST_TARGET}" in
 esac
 
 case "${RUST_TARGET}" in
-  arm*hf | thumbv7neon-*) cc_target=arm-linux-gnueabihf ;;
-  arm*) cc_target=arm-linux-gnueabi ;;
-  riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
+  arm*hf | thumb*hf) cc_target=arm-linux-gnueabihf ;;
+  arm* | thumb*) cc_target=arm-linux-gnueabi ;;
+  riscv??gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
   sparc-*)
     cc_target=sparc-linux-gnu
     apt_target=sparc64-linux-gnu
@@ -151,8 +151,8 @@ esac
 lib_arch="${RUST_TARGET%-unknown*}"
 case "${RUST_TARGET}" in
   aarch64-*) lib_arch=arm64 ;;
-  arm*hf | thumbv7neon-*) lib_arch=armhf ;;
-  arm*) lib_arch=armel ;;
+  arm*hf | thumb*hf) lib_arch=armhf ;;
+  arm* | thumb*) lib_arch=armel ;;
   i?86-*) lib_arch=i386 ;;
   mipsisa32r6*) lib_arch="${lib_arch/isa32/}" ;;
   mipsisa64r6*) lib_arch="${lib_arch/isa64/64}" ;;
@@ -160,7 +160,7 @@ case "${RUST_TARGET}" in
   powerpc-*) lib_arch=powerpc ;;
   powerpc64-*) lib_arch=ppc64 ;;
   powerpc64le-*) lib_arch=ppc64el ;;
-  riscv32gc-* | riscv64gc-*) lib_arch="${RUST_TARGET%gc-unknown*}" ;;
+  riscv??gc-*) lib_arch="${RUST_TARGET%gc-unknown*}" ;;
   sparc-*) lib_arch=sparc64 ;;
   x86_64*x32) lib_arch=x32 ;;
   x86_64*) lib_arch=amd64 ;;

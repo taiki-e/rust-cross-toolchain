@@ -27,9 +27,9 @@ case "${RUST_TARGET}" in
     # There are {include,lib,libexec} for both GCC 9.4.0 and 6.3.0
     arm-*hf) rm -rf -- $(find "${TOOLCHAIN_DIR}" -name '6.3.0') $(find "${TOOLCHAIN_DIR}" -name '*gcc-6.3.0') ;;
     # libc6-dev-armhf-cross (g++-arm-linux-gnueabihf) contains /usr/arm-linux-gnueabi/{lib/hf,libhf}
-    arm*hf | thumbv7neon-*) rm -rf -- "${TOOLCHAIN_DIR}/arm-linux-gnueabi" ;;
+    arm*hf | thumb*hf) rm -rf -- "${TOOLCHAIN_DIR}/arm-linux-gnueabi" ;;
     # libc6-dev-armel-cross (g++-arm-linux-gnueabi) contains /usr/arm-linux-gnueabihf/{lib/sf,libsf}
-    arm*) rm -rf -- "${TOOLCHAIN_DIR}/arm-linux-gnueabihf" ;;
+    arm* | thumb*) rm -rf -- "${TOOLCHAIN_DIR}/arm-linux-gnueabihf" ;;
 esac
 EOF
 

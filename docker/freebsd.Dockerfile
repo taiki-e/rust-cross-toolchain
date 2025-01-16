@@ -31,10 +31,10 @@ RUN mkdir -p -- /sysroot
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) freebsd_arch=arm64/aarch64 ;;
-    arm*) freebsd_arch="arm/${RUST_TARGET%%-*}" ;;
+    arm*) freebsd_arch=arm/"${RUST_TARGET%%-*}" ;;
     i?86-*) freebsd_arch=i386/i386 ;;
-    powerpc*) freebsd_arch="powerpc/${RUST_TARGET%%-*}" ;;
-    riscv64*) freebsd_arch="riscv/riscv64" ;;
+    powerpc*) freebsd_arch=powerpc/"${RUST_TARGET%%-*}" ;;
+    riscv64*) freebsd_arch=riscv/riscv64 ;;
     x86_64*) freebsd_arch=amd64/amd64 ;;
     *) printf >&2 '%s\n' "unrecognized target '${RUST_TARGET}'" && exit 1 ;;
 esac

@@ -214,7 +214,7 @@ no_std=''
 case "${RUST_TARGET}" in
   *-linux-none*) ;;
   # https://github.com/rust-lang/rust/blob/1.80.0/library/std/build.rs#L57
-  *-none* | *-psp* | *-psx* | *-cuda* | avr-*) no_std=1 ;;
+  *-none* | *-psp* | *-psx* | *-cuda* | avr*) no_std=1 ;;
 esac
 no_cc_bin=''
 case "${RUST_TARGET}" in
@@ -957,8 +957,8 @@ case "${RUST_TARGET}" in
         case "${RUST_TARGET}" in
           aarch64-*) ldso='/lib/ld-linux-aarch64\.so\.1' ;;
           aarch64_be-*) ldso='/lib/ld-linux-aarch64_be\.so\.1' ;;
-          arm*hf | thumbv7neon-*) ldso='/lib/ld-linux-armhf\.so\.3' ;;
-          arm*) ldso='/lib/ld-linux\.so\.3' ;;
+          arm*hf | thumb*hf) ldso='/lib/ld-linux-armhf\.so\.3' ;;
+          arm* | thumb*) ldso='/lib/ld-linux\.so\.3' ;;
           csky-*) ldso='/lib/ld\.so\.1' ;;
           i?86-*) ldso='/lib/ld-linux\.so\.2' ;;
           loongarch64-*) ldso='/lib64/ld-linux-loongarch-lp64d\.so\.1' ;;
@@ -988,8 +988,8 @@ case "${RUST_TARGET}" in
       *-linux-musl*)
         case "${RUST_TARGET}" in
           aarch64-*) ldso_arch=aarch64 ;;
-          arm*hf | thumbv7neon-*) ldso_arch=armhf ;;
-          arm*) ldso_arch=arm ;;
+          arm*hf | thumb*hf) ldso_arch=armhf ;;
+          arm* | thumb*) ldso_arch=arm ;;
           hexagon-*) ldso_arch=hexagon ;;
           i?86-*) ldso_arch=i386 ;;
           mips-*) ldso_arch=mips-sf ;;

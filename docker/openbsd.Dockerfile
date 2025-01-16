@@ -55,7 +55,7 @@ RUN mkdir -p -- "${TOOLCHAIN_DIR}"
 ARG OPENBSD_VERSION
 RUN <<EOF
 case "${RUST_TARGET}" in
-    riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc/}${OPENBSD_VERSION}" ;;
+    riscv??gc-*) cc_target="${RUST_TARGET/gc/}${OPENBSD_VERSION}" ;;
     *) cc_target="${RUST_TARGET}${OPENBSD_VERSION}" ;;
 esac
 printf '%s\n' "${cc_target}" >/CC_TARGET

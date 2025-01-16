@@ -339,7 +339,7 @@ case "${RUST_TARGET}" in
           # Armv5TE
           armv5te-*) qemu_cpu=arm1026 ;;
           # Armv7-A+NEONv2
-          armv7-* | thumbv7neon-* | arm-*-android*) qemu_cpu=cortex-a15 ;;
+          armv7-* | thumbv7* | arm-*-android*) qemu_cpu=cortex-a15 ;;
           # builtin armeb-unknown-linux-gnueabi is Armv8
           # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
           armeb-*) ;;

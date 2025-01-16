@@ -7,6 +7,7 @@
 # - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/musl-toolchain.sh
 
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
+# TODO: https://github.com/rust-lang/rust/pull/130471
 
 # Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add some hashes for riscv.
 # https://github.com/taiki-e/musl-cross-make/tree/dev
@@ -34,14 +35,14 @@ RUN mkdir -p -- "${TOOLCHAIN_DIR}"
 # NB: When updating this, the reminder to update docker/linux-musl.Dockerfile.
 RUN <<EOF
 case "${RUST_TARGET}" in
-    arm*hf | thumbv7neon-*) cc_target=arm-linux-musleabihf ;;
-    arm*) cc_target=arm-linux-musleabi ;;
+    arm*hf | thumb*hf) cc_target=arm-linux-musleabihf ;;
+    arm* | thumb*) cc_target=arm-linux-musleabi ;;
     hexagon-*) cc_target="${RUST_TARGET}" ;;
     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_musl.rs#L7
     # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_musl.rs#L6
     mips-*) cc_target=mips-linux-muslsf ;;
     mipsel-*) cc_target=mipsel-linux-muslsf ;;
-    riscv32gc-* | riscv64gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
+    riscv??gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;
     *) cc_target="${RUST_TARGET/-unknown/}" ;;
 esac
 printf '%s\n' "${cc_target}" >/CC_TARGET
@@ -127,8 +128,8 @@ RUN --mount=type=bind,target=/base \
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) ldso_arch=aarch64 ;;
-    arm*hf | thumbv7neon-*) ldso_arch=armhf ;;
-    arm*) ldso_arch=arm ;;
+    arm*hf | thumb*hf) ldso_arch=armhf ;;
+    arm* | thumb*) ldso_arch=arm ;;
     hexagon-*) ldso_arch=hexagon ;;
     i?86-*) ldso_arch=i386 ;;
     mips-*) ldso_arch=mips-sf ;;
