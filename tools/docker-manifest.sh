@@ -176,6 +176,7 @@ for target in "${targets[@]}"; do
       done
       ;;
     *-netbsd*)
+      arches=(amd64 arm64v8)
       if [[ -n "${NETBSD_VERSION:-}" ]]; then
         netbsd_versions=("${NETBSD_VERSION}")
       else

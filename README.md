@@ -183,7 +183,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| netbsd [1] | 7.5.0 | host | ✓ (libstdc++) |  | x86_64 Linux (glibc 2.27+) |
+| netbsd [1] | 7.5.0 | host | ✓ (libstdc++) |  | x86_64/aarch64 Linux (glibc 2.27+) |
 
 [1] See target list below for details<br>
 

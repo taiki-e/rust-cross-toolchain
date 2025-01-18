@@ -50,6 +50,8 @@ jobs:
           - target: freebsd
             os: ubuntu-24.04-arm
           - target: netbsd
+          - target: netbsd
+            os: ubuntu-24.04-arm
           - target: openbsd
           - target: openbsd
             os: ubuntu-24.04-arm
