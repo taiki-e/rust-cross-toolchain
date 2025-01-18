@@ -132,31 +132,26 @@ for target in "${targets[@]}"; do
     *-linux-gnu*)
       arches=(amd64 arm64v8)
       case "${target}" in
-        aarch64_be-* | armeb-* | arm-*hf | csky-* | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
-          # aarch64_be-*|armeb-*|arm-*hf|csky-*|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
-          # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
-          arches=(amd64)
-          ;;
+        # aarch64_be-*|armeb-*|arm-*hf|csky-*|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
+        # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
+        aarch64_be-* | armeb-* | arm-*hf | csky-* | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe) arches=(amd64) ;;
       esac
       docker_manifest "${target}"
       ;;
     *-linux-musl*)
+      arches=(amd64 arm64v8)
+      case "${target}" in
+        # hexagon-*: Toolchains for these targets are not available on non-x86_64 host.
+        hexagon-*) arches=(amd64) ;;
+      esac
       if [[ -n "${MUSL_VERSION:-}" ]]; then
         musl_versions=("${MUSL_VERSION}")
       else
         # NB: When updating this, the reminder to update tools/build-docker.sh.
-        musl_versions=("1.1" "1.2")
+        musl_versions=("1.2")
       fi
-      default_musl_version="1.1"
+      default_musl_version="1.2"
       for musl_version in "${musl_versions[@]}"; do
-        case "${target}" in
-          hexagon-* | powerpc-*spe | riscv32*)
-            default_musl_version="1.2"
-            if [[ "${musl_version}" != "${default_musl_version}" ]]; then
-              continue
-            fi
-            ;;
-        esac
         docker_manifest "${target}" "${musl_version}" "${default_musl_version}"
       done
       ;;
@@ -167,15 +162,8 @@ for target in "${targets[@]}"; do
       ndk_version="${NDK_VERSION:-"${default_ndk_version}"}"
       docker_manifest "${target}" "${ndk_version}" "${default_ndk_version}"
       ;;
-    *-macos*) docker_manifest "${target}" ;;
-    *-ios*) docker_manifest "${target}" ;;
     *-freebsd*)
-      case "${target}" in
-        riscv64*)
-          # riscv64 needs to build binutils from source.
-          arches=(amd64)
-          ;;
-      esac
+      arches=(amd64 arm64v8)
       if [[ -n "${FREEBSD_VERSION:-}" ]]; then
         freebsd_versions=("${FREEBSD_VERSION}")
       else
@@ -208,12 +196,7 @@ for target in "${targets[@]}"; do
       done
       ;;
     *-openbsd*)
-      case "${target}" in
-        sparc64-*)
-          # sparc64 needs to build binutils from source.
-          arches=(amd64)
-          ;;
-      esac
+      arches=(amd64 arm64v8)
       if [[ -n "${OPENBSD_VERSION:-}" ]]; then
         openbsd_versions=("${OPENBSD_VERSION}")
       else
@@ -226,6 +209,7 @@ for target in "${targets[@]}"; do
       done
       ;;
     *-dragonfly*)
+      arches=(amd64 arm64v8)
       # NB: When updating this, the reminder to update tools/build-docker.sh.
       dragonfly_version="${DRAGONFLY_VERSION:-"6.4.0"}"
       default_dragonfly_version="6"
@@ -245,10 +229,6 @@ for target in "${targets[@]}"; do
       ;;
     *-windows-gnu*)
       arches=(amd64 arm64v8)
-      case "${target}" in
-        # i686-pc-windows-gnu needs to build toolchain from source.
-        i686-pc-windows-gnu) arches=(amd64) ;;
-      esac
       docker_manifest "${target}"
       ;;
     *-none*)

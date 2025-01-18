@@ -57,19 +57,13 @@ COPY /test-base.sh /
 RUN /test-base.sh
 ARG RUST_TARGET
 RUN <<EOF
+case "${RUST_TARGET}" in
+    aarch64* | arm64*) exit 0 ;;
+esac
 dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
-    amd64) dpkg --add-architecture i386 ;;
-    arm64)
-        dpkg --add-architecture armhf
-        # TODO: do not skip if actual host is arm64
-        exit 0
-        ;;
-    *) printf >&2 '%s\n' "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
-esac
-case "${RUST_TARGET}" in
-    aarch64* | arm64*) ;;
-    *)
+    amd64)
+        dpkg --add-architecture i386
         # Install the latest wine: https://wiki.winehq.org/Ubuntu
         codename=$(grep -E '^VERSION_CODENAME=' /etc/os-release | cut -d= -f2)
         # shellcheck disable=SC2174
@@ -80,13 +74,17 @@ case "${RUST_TARGET}" in
             | tee -- "/etc/apt/sources.list.d/winehq-${codename}.sources" >/dev/null
         apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
             winehq-stable
-        # apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-        #     wine-stable \
-        #     wine32 \
-        #     wine64
-        wine --version
         ;;
+    arm64)
+        dpkg --add-architecture armhf
+        apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+            wine \
+            wine32 \
+            wine64
+        ;;
+    *) printf >&2 '%s\n' "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
 esac
+wine --version
 EOF
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-aarch64 /usr/bin/
 # https://www.linaro.org/blog/emulate-windows-on-arm

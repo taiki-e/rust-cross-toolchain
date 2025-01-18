@@ -7,7 +7,6 @@ on:
   # pull_request:
   push:
     # branches:
-    #   - main
     #   - dev
     tags:
       - 'base-[0-9]+-[0-9]+-[0-9]+'
@@ -31,28 +30,70 @@ jobs:
         include:
           # Linux (musl)
           - target: aarch64-unknown-linux-musl
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-24.04-arm
           - target: arm-unknown-linux-musleabi
+          - target: arm-unknown-linux-musleabi
+            os: ubuntu-24.04-arm
           - target: arm-unknown-linux-musleabihf
+          - target: arm-unknown-linux-musleabihf
+            os: ubuntu-24.04-arm
           - target: armv5te-unknown-linux-musleabi
+          - target: armv5te-unknown-linux-musleabi
+            os: ubuntu-24.04-arm
           - target: armv7-unknown-linux-musleabi
+          - target: armv7-unknown-linux-musleabi
+            os: ubuntu-24.04-arm
           - target: armv7-unknown-linux-musleabihf
+          - target: armv7-unknown-linux-musleabihf
+            os: ubuntu-24.04-arm
           - target: hexagon-unknown-linux-musl # tier3
           - target: i586-unknown-linux-musl
+          - target: i586-unknown-linux-musl
+            os: ubuntu-24.04-arm
           - target: i686-unknown-linux-musl
+          - target: i686-unknown-linux-musl
+            os: ubuntu-24.04-arm
           # - target: loongarch64-unknown-linux-musl # musl-cross-make doesn't support this target
           - target: mips-unknown-linux-musl # tier3
+          - target: mips-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: mips64-unknown-linux-muslabi64 # tier3
+          - target: mips64-unknown-linux-muslabi64 # tier3
+            os: ubuntu-24.04-arm
           - target: mips64el-unknown-linux-muslabi64 # tier3
+          - target: mips64el-unknown-linux-muslabi64 # tier3
+            os: ubuntu-24.04-arm
           - target: mipsel-unknown-linux-musl # tier3
+          - target: mipsel-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: powerpc-unknown-linux-musl # tier3
+          - target: powerpc-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: powerpc-unknown-linux-muslspe # tier3
+          - target: powerpc-unknown-linux-muslspe # tier3
+            os: ubuntu-24.04-arm
           - target: powerpc64-unknown-linux-musl # tier3
-          - target: powerpc64le-unknown-linux-musl # tier3
+          - target: powerpc64-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
+          - target: powerpc64le-unknown-linux-musl
+          - target: powerpc64le-unknown-linux-musl
+            os: ubuntu-24.04-arm
           - target: riscv32gc-unknown-linux-musl # tier3
+          - target: riscv32gc-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: riscv64gc-unknown-linux-musl
+          - target: riscv64gc-unknown-linux-musl
+            os: ubuntu-24.04-arm
           - target: s390x-unknown-linux-musl # tier3
+          - target: s390x-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: thumbv7neon-unknown-linux-musleabihf # tier3
+          - target: thumbv7neon-unknown-linux-musleabihf # tier3
+            os: ubuntu-24.04-arm
           - target: x86_64-unknown-linux-musl
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-24.04-arm
 
           # NetBSD
           - target: aarch64-unknown-netbsd # tier3
@@ -75,16 +116,18 @@ jobs:
 
           # Windows (MinGW)
           - target: i686-pc-windows-gnu
+          - target: i686-pc-windows-gnu
+            os: ubuntu-24.04-arm
           - target: x86_64-pc-windows-gnu
           - target: x86_64-pc-windows-gnu
-            host: aarch64
+            os: ubuntu-24.04-arm
 
           # Misc
           - target: various
           - target: various
-            host: aarch64
+            os: ubuntu-24.04-arm
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     timeout-minutes: 120
     permissions:
       contents: read
@@ -93,10 +136,10 @@ jobs:
       - uses: taiki-e/checkout-action@v1
       - uses: taiki-e/github-actions/free-device-space@main
       - uses: taiki-e/github-actions/setup-docker@main
+        with:
+          qemu: false
       - run: |
           docker login ghcr.io -u "${{ github.actor }}" --password-stdin <<<"${{ secrets.GITHUB_TOKEN }}"
           printf 'PUSH_TO_GHCR=1\n' >>"${GITHUB_ENV}"
         if: github.repository_owner == 'taiki-e' && (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/')) || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
       - run: docker/base/build-docker.sh "${{ matrix.target }}"
-        env:
-          HOST_ARCH: ${{ matrix.host }}
