@@ -140,10 +140,6 @@ for target in "${targets[@]}"; do
       ;;
     *-linux-musl*)
       arches=(amd64 arm64v8)
-      case "${target}" in
-        # hexagon-*: Toolchains for these targets are not available on non-x86_64 host.
-        hexagon-*) arches=(amd64) ;;
-      esac
       if [[ -n "${MUSL_VERSION:-}" ]]; then
         musl_versions=("${MUSL_VERSION}")
       else

@@ -4,20 +4,26 @@
 # musl-cross-make doesn't support this target
 #
 # Refs:
-# - https://codelinaro.jfrog.io/ui/native/codelinaro-toolchain-for-hexagon
-# - https://github.com/qemu/qemu/blob/v9.0.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
+# - https://github.com/rust-lang/rust/blob/1.80.0/src/doc/rustc/src/platform-support/hexagon-unknown-linux-musl.md
+# - https://github.com/qemu/qemu/blob/v9.2.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG RUST_TARGET
-ARG TOOLCHAIN_DIR=/toolchain/x86_64-linux-gnu
-RUN mkdir -p -- /toolchain
-# https://codelinaro.jfrog.io/ui/native/codelinaro-toolchain-for-hexagon
-ARG LLVM_VERSION=17.0.0-rc3
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://codelinaro.jfrog.io/artifactory/codelinaro-toolchain-for-hexagon/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-cross-hexagon-unknown-linux-musl.tar.xz" \
-        | tar xJf - --strip-components 1 -C /toolchain
-
+ARG TOOLCHAIN_DIR=/toolchain
+RUN mkdir -p -- /tmp/toolchain
+# https://github.com/quic/toolchain_for_hexagon/releases
+ARG LLVM_VERSION=19.1.5
 RUN <<EOF
+dpkg_arch=$(dpkg --print-architecture)
+case "${dpkg_arch##*-}" in
+    amd64) host=x86_64-linux-musl ;;
+    arm64) host=aarch64-linux-gnu ;;
+    *) printf >&2 '%s\n' "unsupported architecture '${dpkg_arch}'" && exit 1 ;;
+esac
+curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-cross-hexagon-unknown-linux-musl_${host}.tar.zst" \
+    | tar xf - --zstd --strip-components 1 -C /tmp/toolchain
+mv -- /tmp/toolchain/"${host}" "${TOOLCHAIN_DIR}"
 cd -- "${TOOLCHAIN_DIR}"
 ln -s -- "target/${RUST_TARGET}" "${RUST_TARGET}"
 EOF
@@ -29,5 +35,5 @@ FROM ubuntu AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
-COPY --from=builder /toolchain/x86_64-linux-gnu /"${RUST_TARGET}"
+COPY --from=builder /toolchain /"${RUST_TARGET}"
 ENV PATH="/${RUST_TARGET}/bin:$PATH"

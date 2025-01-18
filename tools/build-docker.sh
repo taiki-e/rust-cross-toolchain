@@ -201,15 +201,6 @@ for target in "${targets[@]}"; do
         --build-arg "DISTRO_VERSION=${ubuntu_version}"
       ;;
     *-linux-musl*)
-      case "${target}" in
-        # hexagon-*: Toolchains for these targets are not available on non-x86_64 host.
-        hexagon-*)
-          case "${arch}" in
-            x86_64) ;;
-            *) continue ;;
-          esac
-          ;;
-      esac
       if [[ -n "${MUSL_VERSION:-}" ]]; then
         musl_versions=("${MUSL_VERSION}")
       else

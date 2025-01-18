@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docker:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -48,6 +48,8 @@ jobs:
           - target: armv7-unknown-linux-musleabihf
             os: ubuntu-24.04-arm
           - target: hexagon-unknown-linux-musl # tier3
+          - target: hexagon-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: i586-unknown-linux-musl
           - target: i586-unknown-linux-musl
             os: ubuntu-24.04-arm

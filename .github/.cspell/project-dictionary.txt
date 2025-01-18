@@ -142,4 +142,5 @@ WINEPREFIX
 wineserver
 zmmul
 Znwm
+zstd
 zynq
