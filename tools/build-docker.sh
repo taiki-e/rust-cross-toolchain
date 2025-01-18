@@ -162,14 +162,14 @@ build() {
 }
 
 for target in "${targets[@]}"; do
+  # NB: When updating this, the reminder to update tools/update-manifest.sh.
   case "${target}" in
     *-linux-gnu*)
       ubuntu_version=18.04
-      # NB: When updating this, the reminder to update tools/update-manifest.sh.
       case "${target}" in
+        # aarch64_be-*|armeb-*|arm-*hf|csky-*|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
+        # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
         aarch64_be-* | armeb-* | arm-*hf | csky-* | loongarch64-* | riscv32* | powerpc64-* | powerpc-*spe)
-          # aarch64_be-*|armeb-*|arm-*hf|csky-*|loongarch64-*|riscv32*: Toolchains for these targets are not available on non-x86_64 host.
-          # powerpc64-*|powerpc-*spe: gcc-(powerpc64-linux-gnu|powerpc-linux-gnuspe) for arm64 host is not available on 24.04.
           case "${arch}" in
             x86_64) ;;
             *) continue ;;
@@ -201,24 +201,25 @@ for target in "${targets[@]}"; do
         --build-arg "DISTRO_VERSION=${ubuntu_version}"
       ;;
     *-linux-musl*)
+      case "${target}" in
+        # hexagon-*: Toolchains for these targets are not available on non-x86_64 host.
+        hexagon-*)
+          case "${arch}" in
+            x86_64) ;;
+            *) continue ;;
+          esac
+          ;;
+      esac
       if [[ -n "${MUSL_VERSION:-}" ]]; then
         musl_versions=("${MUSL_VERSION}")
       else
         # https://musl.libc.org/releases.html
         # https://github.com/rust-lang/libc/issues/1848
         # NB: When updating this, the reminder to update docker/base/build-docker.sh and README.md.
-        musl_versions=("1.1" "1.2")
+        musl_versions=("1.2")
       fi
-      default_musl_version="1.1"
+      default_musl_version="1.2"
       for musl_version in "${musl_versions[@]}"; do
-        case "${target}" in
-          hexagon-* | powerpc-*spe | riscv32*)
-            default_musl_version="1.2"
-            if [[ "${musl_version}" != "${default_musl_version}" ]]; then
-              continue
-            fi
-            ;;
-        esac
         build "linux-musl" "${target}" "${musl_version}" "${default_musl_version}" \
           --build-arg "MUSL_VERSION=${musl_version}"
       done
@@ -232,19 +233,7 @@ for target in "${targets[@]}"; do
       build "android" "${target}" "${ndk_version}" "${default_ndk_version}" \
         --build-arg "NDK_VERSION=${ndk_version}"
       ;;
-    *-macos*) build "macos" "${target}" ;;
-    *-ios*) build "ios" "${target}" ;;
     *-freebsd*)
-      case "${target}" in
-        riscv64*)
-          # riscv64 needs to build binutils from source.
-          # TODO: don't skip if actual host is arm64
-          case "${arch}" in
-            x86_64) ;;
-            *) continue ;;
-          esac
-          ;;
-      esac
       if [[ -n "${FREEBSD_VERSION:-}" ]]; then
         freebsd_versions=("${FREEBSD_VERSION}")
       else
@@ -303,16 +292,6 @@ for target in "${targets[@]}"; do
       done
       ;;
     *-openbsd*)
-      case "${target}" in
-        sparc64-*)
-          # sparc64 needs to build binutils from source.
-          # TODO: don't skip if actual host is arm64
-          case "${arch}" in
-            x86_64) ;;
-            *) continue ;;
-          esac
-          ;;
-      esac
       if [[ -n "${OPENBSD_VERSION:-}" ]]; then
         openbsd_versions=("${OPENBSD_VERSION}")
       else
@@ -355,15 +334,6 @@ for target in "${targets[@]}"; do
       esac
       ;;
     *-windows-gnu*)
-      case "${target}" in
-        # i686-pc-windows-gnu needs to build toolchain from source.
-        i686-pc-windows-gnu)
-          case "${arch}" in
-            x86_64) ;;
-            *) continue ;;
-          esac
-          ;;
-      esac
       case "${target}" in
         *-gnullvm*) build "windows-gnullvm" "${target}" ;;
         *) build "windows-gnu" "${target}" ;;

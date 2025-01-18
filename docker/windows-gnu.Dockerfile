@@ -52,7 +52,7 @@ dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
     amd64) dpkg --add-architecture i386 ;;
     arm64)
-        dpkg --add-architecture armhf
+        # dpkg --add-architecture armhf
         # TODO: do not skip if actual host is arm64
         exit 0
         ;;
@@ -69,7 +69,7 @@ curl --proto '=https' --tlsv1.2 -fsSLR --retry 10 --retry-connrefused "https://d
 apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     winehq-stable
 # apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
-#     wine-stable \
+#     wine \
 #     wine32 \
 #     wine64
 wine --version

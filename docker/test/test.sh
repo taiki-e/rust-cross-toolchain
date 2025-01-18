@@ -274,14 +274,14 @@ case "${RUST_TARGET}" in
   # TODO(csky): qemu: 0x3efa92de: unhandled CPU                 exception 0x2 - aborting
   #             qemu:handle_cpu_signal received signal outside vCPU context @ pc=0x7fffff81f9a4
   x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | csky-*) ;;
-  aarch64-pc-windows-gnullvm)
+  *-windows-gnu*)
     # TODO: AArch64 host
     case "${dpkg_arch##*-}" in
       amd64) no_run='' ;;
     esac
     ;;
   # TODO(redox):
-  *-linux-* | *-android* | *-wasi* | *-emscripten* | *-windows-gnu*) no_run='' ;;
+  *-linux-* | *-android* | *-wasi* | *-emscripten*) no_run='' ;;
 esac
 # Whether or not to run the test.
 no_run_test=''

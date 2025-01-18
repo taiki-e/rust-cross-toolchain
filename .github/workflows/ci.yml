@@ -40,18 +40,22 @@ jobs:
         include:
           - target: linux-gnu
           - target: linux-gnu
-            host: aarch64
-          # TODO(linux-musl): https://github.com/rust-lang/rust/pull/107129/
-          # - target: linux-musl
-          #   musl: '1.1'
+            os: ubuntu-24.04-arm
           - target: linux-musl
-            musl: '1.2'
+          - target: linux-musl
+            os: ubuntu-24.04-arm
           - target: linux-uclibc
           - target: android
           - target: freebsd
+          - target: freebsd
+            os: ubuntu-24.04-arm
           - target: netbsd
           - target: openbsd
+          - target: openbsd
+            os: ubuntu-24.04-arm
           - target: dragonfly
+          - target: dragonfly
+            os: ubuntu-24.04-arm
           # TODO: undefined reference to `__sysconf_xpg7'/'__xnet7_socket'
           # - target: solaris
           - target: illumos
@@ -59,17 +63,17 @@ jobs:
           # - target: fuchsia
           - target: wasi
           - target: wasi
-            host: aarch64
+            os: ubuntu-24.04-arm
           - target: emscripten
           - target: emscripten
-            host: aarch64
+            os: ubuntu-24.04-arm
           - target: windows-gnu
           - target: windows-gnu
-            host: aarch64
+            os: ubuntu-24.04-arm
           - target: none
           - target: none
-            host: aarch64
-    runs-on: ubuntu-latest
+            os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     timeout-minutes: 150
     permissions:
       contents: read
@@ -78,14 +82,13 @@ jobs:
       - uses: taiki-e/checkout-action@v1
       - uses: taiki-e/github-actions/free-device-space@main
       - uses: taiki-e/github-actions/setup-docker@main
+        with:
+          qemu: false
       - run: |
           docker login ghcr.io -u "${{ github.actor }}" --password-stdin <<<"${{ secrets.GITHUB_TOKEN }}"
           printf 'PUSH_TO_GHCR=1\n' >>"${GITHUB_ENV}"
         if: github.repository_owner == 'taiki-e' && (github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
       - run: tools/build-docker.sh "${{ matrix.target }}"
-        env:
-          HOST_ARCH: ${{ matrix.host }}
-          MUSL_VERSION: ${{ matrix.musl }}
 
   manifest:
     if: github.repository_owner == 'taiki-e' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
