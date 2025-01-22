@@ -262,9 +262,10 @@ no_run=1
 case "${RUST_TARGET}" in
   # TODO(x86_64-unknown-linux-gnux32): Invalid ELF image for this architecture
   # TODO(armeb-unknown-linux-gnueabi): QEMU bug: https://github.com/taiki-e/setup-cross-toolchain-action/commit/ac9e913254a978d102152e484dc4d4b7a144e1ab
+  # TODO(hexagon): segfault
   # TODO(csky): qemu: 0x3efa92de: unhandled CPU                 exception 0x2 - aborting
   #             qemu:handle_cpu_signal received signal outside vCPU context @ pc=0x7fffff81f9a4
-  x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | csky-*) ;;
+  x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | hexagon-* | csky-*) ;;
   *-windows-gnu*)
     # TODO: AArch64 host
     case "${dpkg_arch##*-}" in
@@ -279,8 +280,7 @@ no_run_test=''
 case "${RUST_TARGET}" in
   # TODO(powerpc-unknown-linux-*spe): run-pass, but test-run-fail: process didn't exit successfully: `qemu-ppc /tmp/test-gcc/rust/target/powerpc-unknown-linux-gnuspe/debug/deps/rust_test-14b6784dbe26b668` (signal: 4, SIGILL: illegal instruction)
   # TODO(riscv32gc-unknown-linux-musl): unsafe precondition(s) violated: ptr::write_bytes requires that the destination pointer is aligned and non-null
-  # TODO(hexagon-unknown-linux-musl): run-pass, but test-run-fail: segfault
-  powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl | hexagon-unknown-linux-musl) no_run_test=1 ;;
+  powerpc-unknown-linux-*spe | riscv32gc-unknown-linux-musl) no_run_test=1 ;;
 esac
 
 build_mode=debug
