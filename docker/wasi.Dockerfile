@@ -51,7 +51,6 @@ RUN --mount=type=bind,target=/docker \
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh
 ARG WASMTIME_VERSION

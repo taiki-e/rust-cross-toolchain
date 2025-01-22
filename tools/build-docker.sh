@@ -92,11 +92,6 @@ case "${arch}" in
     ;;
   *) bail "unsupported host architecture '${arch}'" ;;
 esac
-case "$(uname -m)" in
-  x86_64 | x86-64 | x64 | amd64) real_host_arch=x86_64 ;;
-  aarch64 | arm64) real_host_arch=aarch64 ;;
-  *) bail "unsupported host architecture '${arch}'" ;;
-esac
 time=$(date -u '+%Y-%m-%d-%H-%M-%S')
 
 github_tag="dev"
@@ -132,7 +127,6 @@ build() {
     --platform "${platform}"
     --build-arg "RUST_TARGET=${target}"
     --build-arg "HOST_ARCH=${docker_arch}"
-    --build-arg "REAL_HOST_ARCH=${real_host_arch}"
   )
   local tag="${repository}:${target}"
   log_dir="tmp/log/${base}/${target}"

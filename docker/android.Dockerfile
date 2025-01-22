@@ -11,7 +11,6 @@
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=20.04
 ARG TOOLCHAIN_TAG=dev
-ARG HOST_ARCH=amd64
 
 ARG NDK_VERSION
 
@@ -52,7 +51,6 @@ RUN --mount=type=bind,target=/docker \
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-ARG REAL_HOST_ARCH
 COPY /test-base.sh /
 RUN /test-base.sh
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \

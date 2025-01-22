@@ -8,17 +8,6 @@ trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit w
 
 set -x
 
-dpkg_arch=$(dpkg --print-architecture)
-case "${dpkg_arch##*-}" in
-  amd64) ;;
-  *)
-    if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-      printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-      exit 0
-    fi
-    ;;
-esac
-
 export CARGO_NET_RETRY=10
 export RUSTUP_MAX_RETRIES=10
 

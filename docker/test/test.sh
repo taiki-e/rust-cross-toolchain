@@ -180,16 +180,6 @@ case "${RUST_TARGET}" in
     ;;
 esac
 
-dpkg_arch=$(dpkg --print-architecture)
-case "${dpkg_arch##*-}" in
-  amd64) ;;
-  *)
-    if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-      printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-      exit 0
-    fi
-    ;;
-esac
 if [[ -n "${NO_RUN:-}" ]]; then
   exit 0
 fi
@@ -201,6 +191,7 @@ export RUST_TEST_THREADS=1 # TODO: set in entrypoint.sh? https://github.com/taik
 export RUSTFLAGS="${RUSTFLAGS:-} -D warnings --print link-args"
 export PATH="${HOME}/.cargo/bin:${PATH}"
 
+dpkg_arch=$(dpkg --print-architecture)
 case "${RUST_TARGET}" in
   wasm*) exe=.wasm ;;
   *-windows*) exe=.exe ;;
@@ -338,12 +329,6 @@ if [[ -z "${no_std}" ]]; then
             fi
             ;;
         esac
-        ;;
-      *)
-        if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-          printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-          runner=''
-        fi
         ;;
     esac
   fi
@@ -558,17 +543,6 @@ EOF
   fi
   popd >/dev/null
 else
-  runner=1
-  case "${dpkg_arch##*-}" in
-    amd64) ;;
-    *)
-      if [[ "${REAL_HOST_ARCH}" == "x86_64" ]]; then
-        printf >&2 '%s\n' "info: testing on hosts other than amd64 is currently being skipped: '${dpkg_arch}'"
-        runner=''
-      fi
-      ;;
-  esac
-
   linkers=(
     # rust-lld (default)
     rust-lld
@@ -639,24 +613,22 @@ else
       fi
       bin="$(pwd)/target/${RUST_TARGET}/${build_mode}"/no-std-qemu-test
       cp -- "${bin}" "${out_dir}/no-std-qemu-test-${linker}-${_runner}"
-      if [[ -n "${runner}" ]]; then
-        if [[ "${_runner}" == "qemu-user" ]]; then
-          # TODO(none,cortex-m)
-          case "${RUST_TARGET}" in
-            thumbv6m-* | thumbv7m-* | thumbv7em-* | thumbv8m.*) continue ;;
-          esac
-        fi
-        x "${RUST_TARGET}-runner-${_runner}" "${bin}" | tee -- run.log
-        if ! grep -Eq '^Hello Rust!' run.log; then
+      if [[ "${_runner}" == "qemu-user" ]]; then
+        # TODO(none,cortex-m)
+        case "${RUST_TARGET}" in
+          thumbv6m-* | thumbv7m-* | thumbv7em-* | thumbv8m.*) continue ;;
+        esac
+      fi
+      x "${RUST_TARGET}-runner-${_runner}" "${bin}" | tee -- run.log
+      if ! grep -Eq '^Hello Rust!' run.log; then
+        bail
+      fi
+      if [[ -n "${test_cpp}" ]]; then
+        if ! grep -Eq '^x = 5' run.log; then
           bail
         fi
-        if [[ -n "${test_cpp}" ]]; then
-          if ! grep -Eq '^x = 5' run.log; then
-            bail
-          fi
-          if ! grep -Eq '^y = 6' run.log; then
-            bail
-          fi
+        if ! grep -Eq '^y = 6' run.log; then
+          bail
         fi
       fi
       popd >/dev/null
