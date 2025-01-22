@@ -211,7 +211,8 @@ for target in "${targets[@]}"; do
       ;;
     *-linux-uclibc*) build "linux-uclibc" "${target}" ;;
     *-android*)
-      # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L9
+      # https://github.com/rust-lang/rust/blob/1.81.0/src/ci/docker/host-x86_64/dist-android/Dockerfile#L9
+      # TODO: updated in Rust 1.82 https://github.com/rust-lang/rust/commit/8bf9aeaa80fcb9d30fa2dfab85f323d38ea9c6f2
       # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
       default_ndk_version="r25b"
       ndk_version="${NDK_VERSION:-"${default_ndk_version}"}"

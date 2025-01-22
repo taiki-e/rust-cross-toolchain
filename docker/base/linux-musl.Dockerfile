@@ -4,7 +4,7 @@
 # Refs:
 # - https://github.com/richfelker/musl-cross-make
 # - https://musl.cc
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/musl-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/scripts/musl-toolchain.sh
 
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 # TODO: https://github.com/rust-lang/rust/pull/130471
@@ -38,8 +38,8 @@ case "${RUST_TARGET}" in
     arm*hf | thumb*hf) cc_target=arm-linux-musleabihf ;;
     arm* | thumb*) cc_target=arm-linux-musleabi ;;
     hexagon-*) cc_target="${RUST_TARGET}" ;;
-    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_musl.rs#L7
-    # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_musl.rs#L6
+    # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_musl.rs#L7
+    # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_musl.rs#L6
     mips-*) cc_target=mips-linux-muslsf ;;
     mipsel-*) cc_target=mipsel-linux-muslsf ;;
     riscv??gc-*) cc_target="${RUST_TARGET/gc-unknown/}" ;;

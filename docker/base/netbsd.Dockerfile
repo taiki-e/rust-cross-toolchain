@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/host-x86_64/dist-x86_64-netbsd/build-netbsd-toolchain.sh
 
 # When using clang:
 # - aarch64, i686, and x86_64 work without gnu binutils.

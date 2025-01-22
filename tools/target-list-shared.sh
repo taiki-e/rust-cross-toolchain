@@ -242,7 +242,7 @@ cuda_targets=(
 )
 # ESP-IDF
 espidf_targets=(
-  # TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/esp-idf.md#cross-compilation-toolchains-and-c-code
+  # TODO: https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/esp-idf.md#cross-compilation-toolchains-and-c-code
   # riscv32imac-esp-espidf # tier3
   # riscv32imafc-esp-espidf # tier3
   # riscv32imc-esp-espidf # tier3
@@ -289,7 +289,7 @@ nto_targets=(
   # x86_64-pc-nto-qnx710 # tier3
 )
 nuttx_targets=(
-  # TODO: https://github.com/rust-lang/rust/blob/842d6fc32e3d0d26bb11fbe6a2f6ae2afccc06cb/src/doc/rustc/src/platform-support/nuttx.md#building-the-target
+  # TODO: https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/nuttx.md#building-the-target
   # riscv32imac-unknown-nuttx-elf # tier3
   # riscv32imafc-unknown-nuttx-elf # tier3
   # riscv32imc-unknown-nuttx-elf # tier3

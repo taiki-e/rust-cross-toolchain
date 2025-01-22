@@ -4,7 +4,7 @@
 # musl-cross-make doesn't support this target
 #
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/doc/rustc/src/platform-support/hexagon-unknown-linux-musl.md
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/hexagon-unknown-linux-musl.md
 # - https://github.com/qemu/qemu/blob/v9.2.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
 
 FROM ghcr.io/taiki-e/build-base:alpine AS builder

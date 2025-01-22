@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-various-1/install-x86_64-redox.sh
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/host-x86_64/dist-various-1/install-x86_64-redox.sh
 
 ARG UBUNTU_VERSION=22.04
 

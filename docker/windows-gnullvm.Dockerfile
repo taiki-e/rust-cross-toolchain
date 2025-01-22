@@ -3,7 +3,7 @@
 
 # Refs:
 # - https://github.com/mstorsjo/llvm-mingw
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/doc/rustc/src/platform-support/pc-windows-gnullvm.md
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/pc-windows-gnullvm.md
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=22.04

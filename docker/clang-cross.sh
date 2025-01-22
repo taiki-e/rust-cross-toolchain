@@ -19,7 +19,7 @@ common_flags_last=''
 case "${RUST_TARGET}" in
   # The --target option is last because the cross-build of LLVM uses
   # --target without an OS version.
-  # https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/freebsd-toolchain.sh#L70-L75
+  # https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/scripts/freebsd-toolchain.sh#L70-L75
   *-freebsd* | *-openbsd*) common_flags_last+=" --target=${cc_target}" ;;
   *) common_flags+=" --target=${cc_target}" ;;
 esac
@@ -35,16 +35,16 @@ case "${RUST_TARGET}" in
       armv7-*hf) common_flags+=" -march=armv7-a -marm -mfpu=vfpv3-d16 -mfloat-abi=hard" ;;
       armv7-*) common_flags+=" -march=armv7-a -marm -mfloat-abi=softfp" ;;
       # builtin armeb-unknown-linux-gnueabi is v8
-      # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
+      # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/armeb_unknown_linux_gnueabi.rs#L18
       armeb-*hf) common_flags+=" -march=armv8-a -marm -mfloat-abi=hard -mstrict-align" ;; # TODO: -mfpu?
       armeb-*) common_flags+=" -march=armv8-a -marm -mfloat-abi=soft -mstrict-align" ;;
       mips-* | mipsel-*)
         common_flags+=" -march=mips32r2"
-        # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_musl.rs#L7
-        # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_musl.rs#L6
+        # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_musl.rs#L7
+        # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_musl.rs#L6
         # TODO(linux-uclibc): Rust targets are soft-float, but toolchain is hard-float.
-        # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_uclibc.rs#L19
-        # https://github.com/rust-lang/rust/blob/1.80.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_uclibc.rs#L18
+        # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/mips_unknown_linux_uclibc.rs#L19
+        # https://github.com/rust-lang/rust/blob/1.84.0/compiler/rustc_target/src/spec/targets/mipsel_unknown_linux_uclibc.rs#L18
         case "${RUST_TARGET}" in
           *-linux-musl*) common_flags+=" -mfloat-abi=soft" ;;
         esac

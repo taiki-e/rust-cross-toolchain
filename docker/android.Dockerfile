@@ -5,8 +5,9 @@
 # - https://developer.android.com/ndk
 # - https://android.googlesource.com/platform/ndk/+/refs/heads/ndk-r15-release/docs/user/standalone_toolchain.md
 # - https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/host-x86_64/dist-android/Dockerfile
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/android-ndk.sh
+# - https://github.com/rust-lang/rust/blob/1.81.0/src/ci/docker/host-x86_64/dist-android/Dockerfile
+#   TODO: updated in Rust 1.82 https://github.com/rust-lang/rust/commit/8bf9aeaa80fcb9d30fa2dfab85f323d38ea9c6f2
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/scripts/android-ndk.sh
 
 ARG RUST_TARGET
 ARG UBUNTU_VERSION=20.04

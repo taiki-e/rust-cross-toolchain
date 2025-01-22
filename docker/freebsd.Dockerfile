@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/ci/docker/scripts/freebsd-toolchain.sh
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/scripts/freebsd-toolchain.sh
 
 ARG UBUNTU_VERSION=20.04
 

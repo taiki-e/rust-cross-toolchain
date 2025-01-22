@@ -119,7 +119,7 @@ case "${RUST_TARGET}" in
     exit 0
     ;;
   csky-unknown-linux-gnuabiv2*)
-    # https://github.com/rust-lang/rust/blob/1.80.0/src/doc/rustc/src/platform-support/csky-unknown-linux-gnuabiv2.md
+    # https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/csky-unknown-linux-gnuabiv2.md
     toolchain_source_id=1356021/1619528643136
     toolchain_date=20210423
     qemu_source_id=1689324918932

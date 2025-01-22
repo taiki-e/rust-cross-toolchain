@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 # Refs:
-# - https://github.com/rust-lang/rust/blob/1.80.0/src/doc/rustc/src/platform-support/openbsd.md
+# - https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/openbsd.md
 
 ARG UBUNTU_VERSION=20.04
 
