@@ -22,6 +22,9 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] aarch64-unknown-netbsd
 - [ ] aarch64-unknown-nto-qnx700
 - [ ] aarch64-unknown-nto-qnx710
+- [ ] aarch64-unknown-nto-qnx710_iosock
+- [ ] aarch64-unknown-nto-qnx800
+- [ ] aarch64-unknown-nuttx
 - [x] aarch64-unknown-openbsd
 - [ ] aarch64-unknown-redox
 - [ ] aarch64-unknown-teeos
@@ -54,6 +57,8 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv7a-kmc-solid_asp3-eabi
 - [ ] armv7a-kmc-solid_asp3-eabihf
 - [x] armv7a-none-eabihf
+- [ ] armv7a-nuttx-eabi
+- [ ] armv7a-nuttx-eabihf
 - [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
 - [ ] armv8r-none-eabihf
@@ -149,6 +154,8 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] thumbv4t-none-eabi
 - [x] thumbv5te-none-eabi
 - [ ] thumbv6m-nuttx-eabi
+- [ ] thumbv7a-nuttx-eabi
+- [ ] thumbv7a-nuttx-eabihf
 - [ ] thumbv7a-pc-windows-msvc
 - [ ] thumbv7a-uwp-windows-msvc
 - [ ] thumbv7em-nuttx-eabi
@@ -162,6 +169,8 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
 - [ ] x86_64-pc-nto-qnx710
+- [ ] x86_64-pc-nto-qnx710_iosock
+- [ ] x86_64-pc-nto-qnx800
 - [ ] x86_64-unikraft-linux-musl
 - [x] x86_64-unknown-dragonfly
 - [ ] x86_64-unknown-haiku
