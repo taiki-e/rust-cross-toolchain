@@ -66,8 +66,8 @@ linux_musl_targets=(
   powerpc-unknown-linux-muslspe    # tier3
   # powerpc64-unknown-linux-musl # tier3, TODO: ABI version 1 is not compatible with ABI version 2 output
   powerpc64le-unknown-linux-musl
-  riscv32gc-unknown-linux-musl         # tier3
-  riscv64gc-unknown-linux-musl         # tier3
+  riscv32gc-unknown-linux-musl # tier3
+  riscv64gc-unknown-linux-musl
   s390x-unknown-linux-musl             # tier3
   thumbv7neon-unknown-linux-musleabihf # tier3
   # x86_64-unikraft-linux-musl # tier3, TODO
@@ -156,7 +156,7 @@ freebsd_targets=(
 # NetBSD
 netbsd_targets=(
   aarch64-unknown-netbsd # tier3
-  # aarch64_be-unknown-netbsd   # tier3, TODO: https://github.com/BurntSushi/memchr/pull/162
+  # aarch64_be-unknown-netbsd # tier3, TODO: https://github.com/BurntSushi/memchr/pull/162
   armv6-unknown-netbsd-eabihf # tier3
   armv7-unknown-netbsd-eabihf # tier3
   i586-unknown-netbsd         # tier3
@@ -213,9 +213,11 @@ windows_gnu_targets=(
   i686-pc-windows-gnu
   i686-pc-windows-gnullvm
   # i686-uwp-windows-gnu # tier3
+  # i686-win7-windows-gnu # tier3
   x86_64-pc-windows-gnu
   x86_64-pc-windows-gnullvm
   # x86_64-uwp-windows-gnu # tier3
+  # x86_64-win7-windows-gnu # tier3
 )
 # WASI
 wasi_targets=(
@@ -285,17 +287,26 @@ l4re_targets=(
 nto_targets=(
   # aarch64-unknown-nto-qnx700 # tier3
   # aarch64-unknown-nto-qnx710 # tier3
+  # aarch64-unknown-nto-qnx710_iosock # tier3
+  # aarch64-unknown-nto-qnx800 # tier3
   # i586-pc-nto-qnx700 # tier3
   # x86_64-pc-nto-qnx710 # tier3
+  # x86_64-pc-nto-qnx710_iosock # tier3
+  # x86_64-pc-nto-qnx800 # tier3
 )
 nuttx_targets=(
   # TODO: https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/nuttx.md#building-the-target
+  # aarch64-unknown-nuttx # tier3
+  # armv7a-nuttx-eabi # tier3
+  # armv7a-nuttx-eabihf # tier3
   # riscv32imac-unknown-nuttx-elf # tier3
   # riscv32imafc-unknown-nuttx-elf # tier3
   # riscv32imc-unknown-nuttx-elf # tier3
   # riscv64gc-unknown-nuttx-elf # tier3
   # riscv64imac-unknown-nuttx-elf # tier3
   # thumbv6m-nuttx-eabi # tier3
+  # thumbv7a-nuttx-eabi # tier3
+  # thumbv7a-nuttx-eabihf # tier3
   # thumbv7em-nuttx-eabi # tier3
   # thumbv7em-nuttx-eabihf # tier3
   # thumbv7m-nuttx-eabi # tier3
@@ -385,8 +396,14 @@ none_targets=(
   # hexagon-unknown-none-elf # tier3
   # loongarch64-unknown-none
   # loongarch64-unknown-none-softfloat
+  # m68k-unknown-none-elf # tier3
+  # mips-mti-none-elf # tier3
+  # mipsel-mti-none-elf # tier3
   # mipsel-unknown-none # tier3
   # msp430-none-elf # tier3
+  # riscv32e-unknown-none-elf   # tier3, TODO
+  # riscv32em-unknown-none-elf  # tier3, TODO
+  # riscv32emc-unknown-none-elf # tier3, TODO
   riscv32i-unknown-none-elf
   riscv32im-unknown-none-elf
   # riscv32ima-unknown-none-elf # tier3, TODO
