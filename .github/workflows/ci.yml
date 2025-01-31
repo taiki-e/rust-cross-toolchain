@@ -40,22 +40,22 @@ jobs:
         include:
           - target: linux-gnu
           - target: linux-gnu
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: linux-musl
           - target: linux-musl
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: linux-uclibc
           - target: android
           - target: freebsd
           - target: freebsd
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: netbsd
           - target: openbsd
           - target: openbsd
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: dragonfly
           - target: dragonfly
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           # TODO: undefined reference to `__sysconf_xpg7'/'__xnet7_socket'
           # - target: solaris
           - target: illumos
@@ -63,16 +63,16 @@ jobs:
           # - target: fuchsia
           - target: wasi
           - target: wasi
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: emscripten
           - target: emscripten
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: windows-gnu
           - target: windows-gnu
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - target: none
           - target: none
-            os: ubuntu-24.04-arm
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     timeout-minutes: 150
     permissions:
