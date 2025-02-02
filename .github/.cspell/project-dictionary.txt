@@ -20,14 +20,11 @@ distro
 earmv
 EHABI
 elfv
-emcc
-EMSDK
 evbarm
 evbmips
 evbppc
 fexceptions
 ffreestanding
-fmin
 fstrict
 funwind
 fvisibility
@@ -36,7 +33,6 @@ gnusrc
 HWCAPS
 Icelake
 INLINES
-isnan
 isystem
 keyserver
 lclang
@@ -63,8 +59,6 @@ libsendfile
 libsf
 libsocket
 libssp
-libstdc
-libunwind
 libvtv
 libx
 linaro
@@ -98,13 +92,13 @@ mstrict
 mthumb
 multilib
 muslsf
-NDEBUG
 neoverse
 netbsdelf
 nofp
 nosimd
 nostartfiles
 nostdinc
+objcopy
 octeon
 opensbi
 PCREL
@@ -134,7 +128,6 @@ vfpv
 Vger
 virt
 wasmtime
-wchar
 WINEBOOT
 winehq
 WINEPATH
