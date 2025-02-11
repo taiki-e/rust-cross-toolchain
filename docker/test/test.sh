@@ -288,8 +288,6 @@ if [[ -f /BUILD_STD ]]; then
             export RUSTFLAGS="${RUSTFLAGS:-} -C link-args=-lclang_rt.builtins-hexagon"
             build_std+=(-Z build-std-features=llvm-libunwind)
             ;;
-        # TODO(mips): LLVM bug: Undefined temporary symbol error when building std.
-        mips-* | mipsel-*) build_mode=release ;;
     esac
 fi
 
