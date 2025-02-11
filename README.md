@@ -86,7 +86,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 [3] hexagon-unknown-linux-musl requires release mode for building test<br>
 [4] Except for powerpc-unknown-linux-muslspe and riscv32gc-unknown-linux-musl<br>
 [5] See target list below for details<br>
-[6] 1.2.5 for riscv32
+[6] 1.2.5 for riscv32 and loongarch64
 
 ([Dockerfile](docker/linux-musl.Dockerfile))
 
@@ -103,6 +103,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `hexagon-unknown-linux-musl` (tier3) | x86_64 Linux (glibc 2.27+) |
 | `i586-unknown-linux-musl` | x86_64 Linux (any libc) |
 | `i686-unknown-linux-musl` | x86_64 Linux (any libc) |
+| `loongarch64-unknown-linux-musl` | x86_64 Linux (any libc) |
 | `mips-unknown-linux-musl` (tier3) | x86_64 Linux (any libc) |
 | `mips64-unknown-linux-muslabi64` (tier3) | x86_64 Linux (any libc) |
 | `mips64el-unknown-linux-muslabi64` (tier3) | x86_64 Linux (any libc) |

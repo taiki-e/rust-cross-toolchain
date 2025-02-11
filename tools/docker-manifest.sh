@@ -151,7 +151,7 @@ for target in "${targets[@]}"; do
             default_musl_version="1.1"
             for musl_version in "${musl_versions[@]}"; do
                 case "${target}" in
-                    hexagon-* | powerpc-*spe | riscv32*)
+                    hexagon-* | powerpc-*spe | riscv32* | loongarch64-*)
                         default_musl_version="1.2"
                         if [[ "${musl_version}" != "${default_musl_version}" ]]; then
                             continue

@@ -985,6 +985,7 @@ case "${RUST_TARGET}" in
                     arm*) ldso_arch=arm ;;
                     hexagon-*) ldso_arch=hexagon ;;
                     i?86-*) ldso_arch=i386 ;;
+                    loongarch64-*) ldso=loongarch ;;
                     mips-*) ldso_arch=mips-sf ;;
                     mips64-*) ldso_arch=mips64 ;;
                     mips64el-*) ldso_arch=mips64el ;;

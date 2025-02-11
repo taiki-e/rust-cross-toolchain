@@ -29,60 +29,60 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux (musl)
-          - target: aarch64-unknown-linux-musl
-          - target: arm-unknown-linux-musleabi
-          - target: arm-unknown-linux-musleabihf
-          - target: armv5te-unknown-linux-musleabi
-          - target: armv7-unknown-linux-musleabi
-          - target: armv7-unknown-linux-musleabihf
-          - target: hexagon-unknown-linux-musl # tier3
-          - target: i586-unknown-linux-musl
-          - target: i686-unknown-linux-musl
-          # - target: loongarch64-unknown-linux-musl # musl-cross-make doesn't support this target
-          - target: mips-unknown-linux-musl # tier3
-          - target: mips64-unknown-linux-muslabi64 # tier3
-          - target: mips64el-unknown-linux-muslabi64 # tier3
-          - target: mipsel-unknown-linux-musl # tier3
-          - target: powerpc-unknown-linux-musl # tier3
-          - target: powerpc-unknown-linux-muslspe # tier3
-          - target: powerpc64-unknown-linux-musl # tier3
-          - target: powerpc64le-unknown-linux-musl # tier3
-          - target: riscv32gc-unknown-linux-musl # tier3
-          - target: riscv64gc-unknown-linux-musl
-          - target: s390x-unknown-linux-musl # tier3
-          - target: thumbv7neon-unknown-linux-musleabihf # tier3
-          - target: x86_64-unknown-linux-musl
+          # # Linux (musl)
+          # - target: aarch64-unknown-linux-musl
+          # - target: arm-unknown-linux-musleabi
+          # - target: arm-unknown-linux-musleabihf
+          # - target: armv5te-unknown-linux-musleabi
+          # - target: armv7-unknown-linux-musleabi
+          # - target: armv7-unknown-linux-musleabihf
+          # - target: hexagon-unknown-linux-musl # tier3
+          # - target: i586-unknown-linux-musl
+          # - target: i686-unknown-linux-musl
+          - target: loongarch64-unknown-linux-musl # musl-cross-make doesn't support this target
+          # - target: mips-unknown-linux-musl # tier3
+          # - target: mips64-unknown-linux-muslabi64 # tier3
+          # - target: mips64el-unknown-linux-muslabi64 # tier3
+          # - target: mipsel-unknown-linux-musl # tier3
+          # - target: powerpc-unknown-linux-musl # tier3
+          # - target: powerpc-unknown-linux-muslspe # tier3
+          # - target: powerpc64-unknown-linux-musl # tier3
+          # - target: powerpc64le-unknown-linux-musl # tier3
+          # - target: riscv32gc-unknown-linux-musl # tier3
+          # - target: riscv64gc-unknown-linux-musl
+          # - target: s390x-unknown-linux-musl # tier3
+          # - target: thumbv7neon-unknown-linux-musleabihf # tier3
+          # - target: x86_64-unknown-linux-musl
 
-          # NetBSD
-          - target: aarch64-unknown-netbsd # tier3
-          - target: aarch64_be-unknown-netbsd # tier3
-          - target: armv6-unknown-netbsd-eabihf # tier3
-          - target: armv7-unknown-netbsd-eabihf # tier3
-          - target: i586-unknown-netbsd # tier3
-          - target: i686-unknown-netbsd # tier3
-          - target: mipsel-unknown-netbsd # tier3
-          - target: powerpc-unknown-netbsd # tier3
-          - target: sparc64-unknown-netbsd # tier3
-          - target: x86_64-unknown-netbsd
+          # # NetBSD
+          # - target: aarch64-unknown-netbsd # tier3
+          # - target: aarch64_be-unknown-netbsd # tier3
+          # - target: armv6-unknown-netbsd-eabihf # tier3
+          # - target: armv7-unknown-netbsd-eabihf # tier3
+          # - target: i586-unknown-netbsd # tier3
+          # - target: i686-unknown-netbsd # tier3
+          # - target: mipsel-unknown-netbsd # tier3
+          # - target: powerpc-unknown-netbsd # tier3
+          # - target: sparc64-unknown-netbsd # tier3
+          # - target: x86_64-unknown-netbsd
 
-          # Solaris
-          - target: sparcv9-sun-solaris
-          - target: x86_64-pc-solaris
+          # # Solaris
+          # - target: sparcv9-sun-solaris
+          # - target: x86_64-pc-solaris
 
-          # illumos
-          - target: x86_64-unknown-illumos
+          # # illumos
+          # - target: x86_64-unknown-illumos
 
-          # Windows (MinGW)
-          - target: i686-pc-windows-gnu
-          - target: x86_64-pc-windows-gnu
-          - target: x86_64-pc-windows-gnu
-            host: aarch64
+          # # Windows (MinGW)
+          # - target: i686-pc-windows-gnu
+          # - target: x86_64-pc-windows-gnu
+          # - target: x86_64-pc-windows-gnu
+          #   host: aarch64
 
-          # Misc
-          - target: various
-          - target: various
-            host: aarch64
+          # # Misc
+          # - target: various
+          # - target: various
+          #   host: aarch64
 
     runs-on: ubuntu-latest
     timeout-minutes: 120
