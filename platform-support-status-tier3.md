@@ -34,6 +34,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
 - [ ] aarch64_be-unknown-netbsd
+- [ ] amdgcn-amd-amdhsa
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin
 - [ ] arm64e-apple-ios
@@ -72,12 +73,12 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i386-apple-ios
 - [ ] i586-pc-nto-qnx700
 - [x] i586-unknown-netbsd
+- [ ] i586-unknown-redox
 - [ ] i686-apple-darwin
 - [ ] i686-unknown-haiku
 - [ ] i686-unknown-hurd-gnu
 - [x] i686-unknown-netbsd
 - [x] i686-unknown-openbsd
-- [ ] i686-unknown-redox
 - [ ] i686-uwp-windows-gnu
 - [ ] i686-uwp-windows-msvc
 - [ ] i686-win7-windows-gnu
@@ -168,6 +169,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
+- [ ] x86_64-pc-cygwin
 - [ ] x86_64-pc-nto-qnx710
 - [ ] x86_64-pc-nto-qnx710_iosock
 - [ ] x86_64-pc-nto-qnx800
