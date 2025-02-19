@@ -11,7 +11,7 @@
 
 # Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add some hashes for riscv.
 # https://github.com/taiki-e/musl-cross-make/tree/dev
-ARG MUSL_CROSS_MAKE_REV=060a2763225cbc325cffce7e7e08e62a7df1ad3b
+ARG MUSL_CROSS_MAKE_REV=966bee4397acebc00dcb63754c0594ae91d08e9a
 # Available versions: https://github.com/taiki-e/musl-cross-make/tree/dev/hashes
 # Default: https://github.com/taiki-e/musl-cross-make/tree/dev/Makefile
 ARG BINUTILS_VERSION=2.33.1
@@ -69,7 +69,7 @@ case "${RUST_TARGET}" in
         ;;
     riscv*)
         BINUTILS_VERSION=2.40
-        GCC_VERSION=13.2.0
+        GCC_VERSION=13.3.0
         ;;
 esac
 if [[ "${MUSL_VERSION}" == "1.2.3" ]]; then
