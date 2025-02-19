@@ -169,7 +169,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
-- [x] x86_64-pc-cygwin
+- [ ] x86_64-pc-cygwin
 - [ ] x86_64-pc-nto-qnx710
 - [ ] x86_64-pc-nto-qnx710_iosock
 - [ ] x86_64-pc-nto-qnx800
