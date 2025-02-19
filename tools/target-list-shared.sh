@@ -238,9 +238,17 @@ wasm_targets=(
 aix_targets=(
   # powerpc64-ibm-aix # tier3
 )
+# AMD GPU
+amdhsa_targets=(
+  # amdgcn-amd-amdhsa # tier3
+)
 # CUDA
 cuda_targets=(
   # nvptx64-nvidia-cuda
+)
+# Cygwin
+cygwin_targets=(
+  # x86_64-pc-cygwin # tier3
 )
 # ESP-IDF
 espidf_targets=(
@@ -325,7 +333,7 @@ psx_targets=(
 # Redox
 redox_targets=(
   # aarch64-unknown-redox # tier3
-  # i686-unknown-redox # tier3
+  # i586-unknown-redox # tier3
   x86_64-unknown-redox
 )
 # RTEMS
@@ -452,7 +460,9 @@ targets=(
   ${emscripten_targets[@]+"${emscripten_targets[@]}"}
   ${wasm_unknown_targets[@]+"${wasm_unknown_targets[@]}"}
   ${aix_targets[@]+"${aix_targets[@]}"}
+  ${amdhsa_targets[@]+"${amdhsa_targets[@]}"}
   ${cuda_targets[@]+"${cuda_targets[@]}"}
+  ${cygwin_targets[@]+"${cygwin_targets[@]}"}
   ${espidf_targets[@]+"${espidf_targets[@]}"}
   ${fuchsia_targets[@]+"${fuchsia_targets[@]}"}
   ${haiku_targets[@]+"${haiku_targets[@]}"}

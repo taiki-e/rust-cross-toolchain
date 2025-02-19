@@ -214,8 +214,14 @@ wasm_unknown_targets=(
 aix_targets=(
   powerpc64-ibm-aix # tier3
 )
+amdhsa_targets=(
+  amdgcn-amd-amdhsa # tier3
+)
 cuda_targets=(
   nvptx64-nvidia-cuda
+)
+cygwin_targets=(
+  x86_64-pc-cygwin # tier3
 )
 espidf_targets=(
   riscv32imac-esp-espidf # tier3
@@ -287,7 +293,7 @@ psx_targets=(
 )
 redox_targets=(
   aarch64-unknown-redox # tier3
-  i686-unknown-redox # tier3
+  i586-unknown-redox # tier3
   x86_64-unknown-redox
 )
 rtems_targets=(
@@ -408,7 +414,9 @@ targets=(
   ${emscripten_targets[@]+"${emscripten_targets[@]}"}
   ${wasm_unknown_targets[@]+"${wasm_unknown_targets[@]}"}
   ${aix_targets[@]+"${aix_targets[@]}"}
+  ${amdhsa_targets[@]+"${amdhsa_targets[@]}"}
   ${cuda_targets[@]+"${cuda_targets[@]}"}
+  ${cygwin_targets[@]+"${cygwin_targets[@]}"}
   ${espidf_targets[@]+"${espidf_targets[@]}"}
   ${fuchsia_targets[@]+"${fuchsia_targets[@]}"}
   ${haiku_targets[@]+"${haiku_targets[@]}"}
