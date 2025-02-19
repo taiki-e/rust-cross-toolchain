@@ -83,7 +83,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | ---- | --- | ----- | --- | ---- | ---- |
 | musl 1.2.3 [6] | 9.4.0 [1] | [2] | ✓ (libstdc++) [1] | ✓ (qemu) [3] [4] | [5] |
 
-[1] 8.5.0 for powerpc-unknown-linux-muslspe, 13.2.0 for risc64gc-unknown-linux-musl, unavailable for hexagon-unknown-linux-musl<br>
+[1] 8.5.0 for powerpc-unknown-linux-muslspe, 13.3.0 for risc64gc-unknown-linux-musl, unavailable for hexagon-unknown-linux-musl<br>
 [2] 19.1.5 for hexagon-unknown-linux-musl, otherwise host<br>
 [3] hexagon-unknown-linux-musl requires release mode for building test<br>
 [4] Except for powerpc-unknown-linux-muslspe and riscv32gc-unknown-linux-musl<br>
