@@ -44,7 +44,9 @@ known_target_group=(
   wasm_unknown
   # Other
   aix
+  amdhsa
   cuda
+  cygwin
   espidf
   fuchsia
   haiku
@@ -67,6 +69,7 @@ known_target_group=(
   vxworks
   xous
   zkvm
+  # no OS
   none
 )
 
