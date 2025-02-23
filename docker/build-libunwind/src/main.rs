@@ -7,7 +7,9 @@ use std::{env, ffi::OsStr, path::PathBuf, process::Command};
 use fs_err as fs;
 
 fn usage() -> String {
-    println!("USAGE: build-libunwind --target=<TARGET> --out=<OUT_DIR> [--host=<HOST>] [--sysroot=<SYSROOT>]");
+    println!(
+        "USAGE: build-libunwind --target=<TARGET> --out=<OUT_DIR> [--host=<HOST>] [--sysroot=<SYSROOT>]"
+    );
     std::process::exit(1);
 }
 
