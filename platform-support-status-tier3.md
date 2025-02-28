@@ -63,7 +63,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
 - [ ] armv8r-none-eabihf
-- [ ] avr-unknown-gnu-atmega328
+- [ ] avr-none
 - [ ] bpfeb-unknown-none
 - [ ] bpfel-unknown-none
 - [x] csky-unknown-linux-gnuabiv2
@@ -71,10 +71,10 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] hexagon-unknown-linux-musl
 - [ ] hexagon-unknown-none-elf
 - [ ] i386-apple-ios
-- [ ] i586-pc-nto-qnx700
 - [x] i586-unknown-netbsd
 - [ ] i586-unknown-redox
 - [ ] i686-apple-darwin
+- [ ] i686-pc-nto-qnx700
 - [ ] i686-unknown-haiku
 - [ ] i686-unknown-hurd-gnu
 - [x] i686-unknown-netbsd
