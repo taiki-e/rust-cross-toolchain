@@ -6,11 +6,11 @@ ARG TARGET
 FROM ghcr.io/taiki-e/downloader AS aarch64-none-elf
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-ARG ARM_GCC_VERSION=10.3-2021.07
-RUN mkdir -p -- /toolchain
-# https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads
+# https://developer.arm.com/downloads/-/gnu-a
 # https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
 # GCC 10.3.1, newlib 4.1.0, binutils 2.36.1, GDB 10.2
+ARG ARM_GCC_VERSION=10.3-2021.07
+RUN mkdir -p -- /toolchain
 RUN <<EOF
 cc_target=aarch64-none-elf
 dpkg_arch=$(dpkg --print-architecture)
@@ -26,11 +26,11 @@ EOF
 FROM ghcr.io/taiki-e/downloader AS arm-none-eabi
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-ARG ARM_GCC_VERSION=10.3-2021.10
-RUN mkdir -p -- /toolchain
-# https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads
+# https://developer.arm.com/downloads/-/gnu-rm
 # https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
 # The same GCC, newlib, binutils, GDB versions as aarch64-toolchain.
+ARG ARM_GCC_VERSION=10.3-2021.10
+RUN mkdir -p -- /toolchain
 RUN <<EOF
 cc_target=arm-none-eabi
 dpkg_arch=$(dpkg --print-architecture)
