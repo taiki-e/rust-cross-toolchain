@@ -33,7 +33,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-wrs-vxworks
 - [ ] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
-- [ ] aarch64_be-unknown-netbsd
+- [x] aarch64_be-unknown-netbsd
 - [ ] amdgcn-amd-amdhsa
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin

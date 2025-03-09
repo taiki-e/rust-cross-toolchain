@@ -155,8 +155,8 @@ freebsd_targets=(
 )
 # NetBSD
 netbsd_targets=(
-  aarch64-unknown-netbsd # tier3
-  # aarch64_be-unknown-netbsd # tier3, TODO: https://github.com/BurntSushi/memchr/pull/162
+  aarch64-unknown-netbsd      # tier3
+  aarch64_be-unknown-netbsd   # tier3
   armv6-unknown-netbsd-eabihf # tier3
   armv7-unknown-netbsd-eabihf # tier3
   i586-unknown-netbsd         # tier3
