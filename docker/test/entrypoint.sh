@@ -584,7 +584,7 @@ EOF
     cat >|"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
-exec wasmtime run -W all-proposals${wasi_options} "\$@"
+exec wasmtime run -W all-proposals -S inherit-env${wasi_options} "\$@"
 EOF
     chmod +x "${toolchain_dir}/bin/${runner}"
     cat -- "${toolchain_dir}/bin/${runner}"
