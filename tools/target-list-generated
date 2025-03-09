@@ -178,7 +178,6 @@ windows_msvc_targets=(
   aarch64-pc-windows-msvc
   aarch64-uwp-windows-msvc # tier3
   arm64ec-pc-windows-msvc
-  i586-pc-windows-msvc
   i686-pc-windows-msvc
   i686-uwp-windows-msvc # tier3
   i686-win7-windows-msvc # tier3

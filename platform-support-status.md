@@ -40,7 +40,6 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] armv7a-none-eabi
 - [x] armv7r-none-eabi
 - [x] armv7r-none-eabihf
-- [ ] i586-pc-windows-msvc
 - [x] i586-unknown-linux-gnu
 - [x] i586-unknown-linux-musl
 - [x] i686-linux-android
