@@ -166,6 +166,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] thumbv8m.base-nuttx-eabi
 - [ ] thumbv8m.main-nuttx-eabi
 - [ ] thumbv8m.main-nuttx-eabihf
+- [ ] wasm32-wali-linux-musl
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
