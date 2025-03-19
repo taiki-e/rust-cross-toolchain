@@ -98,7 +98,7 @@ android_targets=(
   arm-linux-androideabi
   armv7-linux-androideabi
   i686-linux-android
-  # riscv64-linux-android # tier3, TODO
+  riscv64-linux-android # tier3
   thumbv7neon-linux-androideabi
   x86_64-linux-android
 )

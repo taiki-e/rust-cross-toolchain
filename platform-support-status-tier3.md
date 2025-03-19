@@ -138,7 +138,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imafc-unknown-nuttx-elf
 - [ ] riscv32imc-esp-espidf
 - [ ] riscv32imc-unknown-nuttx-elf
-- [ ] riscv64-linux-android
+- [x] riscv64-linux-android
 - [ ] riscv64-wrs-vxworks
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia

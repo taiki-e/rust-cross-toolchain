@@ -240,6 +240,9 @@ case "${RUST_TARGET}" in
     esac
     ;;
 esac
+no_cmake=''
+case "${RUST_TARGET}" in
+esac
 no_rust_cpp="${no_cpp}"
 case "${RUST_TARGET}" in
   # TODO(wasi):
@@ -265,7 +268,8 @@ case "${RUST_TARGET}" in
   # TODO(hexagon): segfault
   # TODO(csky): qemu: 0x3efa92de: unhandled CPU                 exception 0x2 - aborting
   #             qemu:handle_cpu_signal received signal outside vCPU context @ pc=0x7fffff81f9a4
-  x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | hexagon-* | csky-*) ;;
+  # TODO(riscv64-android):
+  x86_64-unknown-linux-gnux32 | armeb-unknown-linux-gnueabi | hexagon-* | csky-* | riscv64*-android*) ;;
   *-windows-gnu*)
     # TODO: AArch64 host
     case "${dpkg_arch##*-}" in
@@ -447,7 +451,7 @@ EOF
   pushd -- rust >/dev/null
   # Static linking
   case "${RUST_TARGET}" in
-    *-linux-musl*)
+    *-linux-musl* | riscv64*-android)
       case "${RUST_TARGET}" in
         # TODO(hexagon): run-fail (segfault)
         # TODO(powerpc-unknown-linux-musl)
@@ -456,7 +460,12 @@ EOF
         # TODO(thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
         hexagon-* | powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
         *)
-          RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static -C link-self-contained=yes" \
+          self_contained=''
+          case "${RUST_TARGET}" in
+            *-linux-musl*) self_contained=' -C link-self-contained=yes' ;;
+            riscv64*-android) runner="${RUST_TARGET}-runner" ;;
+          esac
+          RUSTFLAGS="${RUSTFLAGS:-} -C target-feature=+crt-static${self_contained}" \
             run_cargo build --no-default-features
           bin="${out_dir}/rust-test-no-cpp-static${exe}"
           cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}/rust-test${exe}" "${bin}"
@@ -472,6 +481,9 @@ EOF
             fi
           fi
           x cargo clean
+          if [[ -n "${no_run}" ]]; then
+            runner=''
+          fi
           ;;
       esac
       ;;
@@ -486,7 +498,10 @@ EOF
   run_cargo build || (tail -n +1 "target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/*.log && exit 1)
   x ls -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"
   if [[ -z "${no_rust_c}" ]]; then
-    x ls -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
+    x ls -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out
+    if [[ -z "${no_cmake}" ]]; then
+      x ls -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir
+    fi
   fi
   cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/rust*test"${exe}" "${out_dir}"
   if [[ -z "${no_rust_c}" ]]; then
@@ -494,8 +509,10 @@ EOF
     if [[ -z "${no_rust_cpp}" ]]; then
       cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/hello_cpp.o "${out_dir}"
     fi
-    cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
-      || cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
+    if [[ -z "${no_cmake}" ]]; then
+      cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.obj "${out_dir}" \
+        || cp -- "$(pwd)/target/${RUST_TARGET}/${build_mode}"/build/rust-test-*/out/build/CMakeFiles/hello_cmake.dir/hello_cmake.o "${out_dir}"
+    fi
   fi
   bin="$(pwd)/target/${RUST_TARGET}/${build_mode}/rust${rust_bin_separator}test${exe}"
   if [[ -n "${runner}" ]] && [[ -x "${bin}" ]]; then
@@ -876,7 +893,7 @@ case "${RUST_TARGET}" in
         case "${RUST_TARGET}" in
           riscv*i-* | riscv*im-*) file_header_pat+=('Flags:\s+0x0') ;;
           riscv*imac-* | riscv*imc-*) file_header_pat+=('Flags:\s+0x1, RVC, soft-float ABI') ;;
-          riscv*gc-*) file_header_pat+=('Flags:\s+0x5, RVC, double-float ABI') ;;
+          riscv*gc-* | riscv64*-android) file_header_pat+=('Flags:\s+0x5, RVC, double-float ABI') ;;
           *) bail "unrecognized target '${RUST_TARGET}'" ;;
         esac
         ;;
@@ -984,7 +1001,7 @@ case "${RUST_TARGET}" in
       *-linux-uclibc*) file_info_pat+=('interpreter /lib/ld-uClibc\.so\.0') ;;
       *-android*)
         case "${RUST_TARGET}" in
-          aarch64-* | x86_64*) file_info_pat+=('interpreter /system/bin/linker64') ;;
+          aarch64-* | riscv64* | x86_64*) file_info_pat+=('interpreter /system/bin/linker64') ;;
           *) file_info_pat+=('interpreter /system/bin/linker') ;;
         esac
         ;;

@@ -42,7 +42,10 @@ case "${RUST_TARGET}" in
     *) cc_target="${RUST_TARGET}" ;;
 esac
 # Lowest API level
-api_level=21
+case "${RUST_TARGET}" in
+    riscv64*) api_level=35 ;;
+    *) api_level=21 ;;
+esac
 printf '%s\n' "${cc_target}${api_level}" >/CC_TARGET
 EOF
 
@@ -80,6 +83,10 @@ case "${RUST_TARGET}" in
         arch=x86
         img_api_level=21
         revision=r05
+        ;;
+    riscv64*)
+        # TODO
+        exit 0
         ;;
     x86_64*)
         lib_target=x86_64-linux-android

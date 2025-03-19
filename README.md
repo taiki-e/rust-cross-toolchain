@@ -140,9 +140,11 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| [1] | N/A | 14.0.6 | ? (libc++) | ✓ (qemu) | x86_64 Linux (glibc 2.17+) |
+| [1] | N/A | 14.0.6 [2] | ? (libc++) | ✓ (qemu) [3] | x86_64 Linux (glibc 2.17+) |
 
 [1] See target list below for details<br>
+[2] 18.0.1 for riscv64-linux-android<br>
+[3] For riscv64-linux-android, only running static-linked binaries is supported<br>
 
 ([Dockerfile](docker/android.Dockerfile))
 
@@ -154,6 +156,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | `arm-linux-androideabi` | 21 |
 | `armv7-linux-androideabi` | 21 |
 | `i686-linux-android` | 21 |
+| `riscv64-linux-android` (tier3) | 35 |
 | `thumbv7neon-linux-androideabi` | 21 |
 | `x86_64-linux-android` | 21 |
 

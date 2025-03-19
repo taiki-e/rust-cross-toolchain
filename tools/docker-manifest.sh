@@ -155,6 +155,9 @@ for target in "${targets[@]}"; do
     *-android*)
       # NB: When updating this, the reminder to update tools/build-docker.sh.
       default_ndk_version="r25b"
+      case "${target}" in
+        riscv64*) default_ndk_version="r27-beta1" ;;
+      esac
       ndk_version="${NDK_VERSION:-"${default_ndk_version}"}"
       docker_manifest "${target}" "${ndk_version}" "${default_ndk_version}"
       ;;

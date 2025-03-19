@@ -215,6 +215,10 @@ for target in "${targets[@]}"; do
       # TODO: updated in Rust 1.82 https://github.com/rust-lang/rust/commit/8bf9aeaa80fcb9d30fa2dfab85f323d38ea9c6f2
       # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
       default_ndk_version="r25b"
+      case "${target}" in
+        # https://github.com/google/android-riscv64/commit/304c0c5ba6a2552fe17f6460ab27aaf4fabfe1aa
+        riscv64*) default_ndk_version="r27-beta1" ;;
+      esac
       ndk_version="${NDK_VERSION:-"${default_ndk_version}"}"
       build "android" "${target}" "${ndk_version}" "${default_ndk_version}" \
         --build-arg "NDK_VERSION=${ndk_version}"
