@@ -288,10 +288,10 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 
 | libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| WASI SDK 25 (wasi-libc 574b88d) | N/A | 19.1.5 | ? (libc++) | ✓ (wasmtime) | x86_64/aarch64 Linux (glibc 2.28+) |
+| WASI SDK 27 (wasi-libc 3f7eb4c) | N/A | 20.1.8 | ? (libc++) | ✓ (wasmtime) | x86_64/aarch64 Linux (glibc 2.28+) |
 
 <!--
-clang version and wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-25/src
+clang version and wasi-libc hash can be found here: https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-27/src
 -->
 
 ([Dockerfile](docker/wasi.Dockerfile))
