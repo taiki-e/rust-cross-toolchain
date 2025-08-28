@@ -240,8 +240,7 @@ for target in "${targets[@]}"; do
         # https://www.freebsd.org/security/unsupported
         # https://endoflife.date/freebsd
         # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-        # TODO: 14.1 will be EoL on 2025-03-31.
-        freebsd_versions=("13.4" "14.1")
+        freebsd_versions=("13.5" "14.3")
       fi
       default_freebsd_version=13
       for freebsd_version in "${freebsd_versions[@]}"; do
@@ -296,9 +295,9 @@ for target in "${targets[@]}"; do
         # https://en.wikipedia.org/wiki/OpenBSD#Releases
         # https://endoflife.date/openbsd
         # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-        openbsd_versions=("7.5" "7.6")
+        openbsd_versions=("7.6" "7.7")
       fi
-      default_openbsd_version="7.5"
+      default_openbsd_version="7.6"
       for openbsd_version in "${openbsd_versions[@]}"; do
         build "openbsd" "${target}" "${openbsd_version}" "${default_openbsd_version}" \
           --build-arg "OPENBSD_VERSION=${openbsd_version}"

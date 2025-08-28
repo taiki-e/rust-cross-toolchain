@@ -174,13 +174,13 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
-| `i686-unknown-freebsd` | 13.4 (default), 14.1 | Linux (any arch, any libc) |
-| `powerpc-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
-| `powerpc64-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
-| `powerpc64le-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | Linux (any arch, any libc) |
-| `riscv64gc-unknown-freebsd` (tier3) | 13.4 (default), 14.1 | x86_64/aarch64 Linux (any libc) |
-| `x86_64-unknown-freebsd` | 13.4 (default), 14.1 | Linux (any arch, any libc) |
+| `aarch64-unknown-freebsd` (tier3) | 13.5 (default), 14.3 | Linux (any arch, any libc) |
+| `i686-unknown-freebsd` | 13.5 (default), 14.3 | Linux (any arch, any libc) |
+| `powerpc-unknown-freebsd` (tier3) | 13.5 (default), 14.3 | Linux (any arch, any libc) |
+| `powerpc64-unknown-freebsd` (tier3) | 13.5 (default), 14.3 | Linux (any arch, any libc) |
+| `powerpc64le-unknown-freebsd` (tier3) | 13.5 (default), 14.3 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-freebsd` (tier3) | 13.5 (default), 14.3 | x86_64/aarch64 Linux (any libc) |
+| `x86_64-unknown-freebsd` | 13.5 (default), 14.3 | Linux (any arch, any libc) |
 
 ### NetBSD
 
@@ -222,13 +222,13 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | target | version | host |
 | ------ | ------- | ---- |
-| `aarch64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
-| `i686-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
-| `powerpc-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
-| `powerpc64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
-| `riscv64gc-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
-| `sparc64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | x86_64/aarch64 Linux (any libc) |
-| `x86_64-unknown-openbsd` (tier3) | 7.5 (default), 7.6 | Linux (any arch, any libc) |
+| `aarch64-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | Linux (any arch, any libc) |
+| `i686-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | Linux (any arch, any libc) |
+| `powerpc-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | Linux (any arch, any libc) |
+| `powerpc64-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | Linux (any arch, any libc) |
+| `riscv64gc-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | Linux (any arch, any libc) |
+| `sparc64-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | x86_64/aarch64 Linux (any libc) |
+| `x86_64-unknown-openbsd` (tier3) | 7.6 (default), 7.7 | Linux (any arch, any libc) |
 
 ### DragonFly BSD
 

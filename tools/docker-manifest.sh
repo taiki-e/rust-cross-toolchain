@@ -167,7 +167,7 @@ for target in "${targets[@]}"; do
         freebsd_versions=("${FREEBSD_VERSION}")
       else
         # NB: When updating this, the reminder to update tools/build-docker.sh.
-        freebsd_versions=("13.4" "14.1")
+        freebsd_versions=("13.5" "14.3")
       fi
       default_freebsd_version=13
       for freebsd_version in "${freebsd_versions[@]}"; do
@@ -200,9 +200,9 @@ for target in "${targets[@]}"; do
         openbsd_versions=("${OPENBSD_VERSION}")
       else
         # NB: When updating this, the reminder to update tools/build-docker.sh.
-        openbsd_versions=("7.5" "7.6")
+        openbsd_versions=("7.6" "7.7")
       fi
-      default_openbsd_version="7.5"
+      default_openbsd_version="7.6"
       for openbsd_version in "${openbsd_versions[@]}"; do
         docker_manifest "${target}" "${openbsd_version}" "${default_openbsd_version}"
       done
