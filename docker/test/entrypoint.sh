@@ -581,10 +581,11 @@ EOF
     case "${RUST_TARGET}" in
       *-threads) wasi_options+=' -S threads' ;;
     esac
+    # stack-switching is not supported on non-x64: https://github.com/bytecodealliance/wasmtime/issues/10248
     cat >|"${toolchain_dir}/bin/${runner}" <<EOF
 #!/bin/sh
 set -eu
-exec wasmtime run -W all-proposals -S inherit-env${wasi_options} "\$@"
+exec wasmtime run -W all-proposals -W stack-switching=n -S inherit-env${wasi_options} "\$@"
 EOF
     chmod +x "${toolchain_dir}/bin/${runner}"
     cat -- "${toolchain_dir}/bin/${runner}"
