@@ -49,11 +49,11 @@ for bin_dir in "${TOOLCHAIN_DIR}/bin" "${TOOLCHAIN_DIR}/${RUST_TARGET}/bin"; do
       if grep -Fq 'dynamically linked' <<<"${file_info}"; then
         case "${RUST_TARGET}" in
           hexagon-unknown-linux-musl) ;;
-          *-linux-musl* | *-solaris* | *-illumos*) bail "binaries must be statically linked" ;;
+          *-linux-musl* | *-solaris* | *-illumos*) bail "binaries must be statically linked: ${path}" ;;
           *-freebsd* | *-openbsd*)
             case "${path}" in
               *clang | *clang++) ;; # symlink to host Clang
-              *) bail "binaries must be statically linked" ;;
+              *) bail "binaries must be statically linked: ${path}" ;;
             esac
             ;;
         esac
