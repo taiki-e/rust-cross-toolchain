@@ -31,9 +31,12 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-unknown-trusty
 - [ ] aarch64-uwp-windows-msvc
 - [ ] aarch64-wrs-vxworks
+- [ ] aarch64_be-unknown-hermit
 - [ ] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
+- [ ] aarch64_be-unknown-linux-musl
 - [x] aarch64_be-unknown-netbsd
+- [ ] aarch64_be-unknown-none-softfloat
 - [ ] amdgcn-amd-amdhsa
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin
@@ -60,6 +63,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] armv7a-none-eabihf
 - [ ] armv7a-nuttx-eabi
 - [ ] armv7a-nuttx-eabihf
+- [ ] armv7a-vex-v5
 - [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
 - [ ] armv8r-none-eabihf
@@ -84,6 +88,8 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] i686-win7-windows-gnu
 - [ ] i686-win7-windows-msvc
 - [ ] i686-wrs-vxworks
+- [ ] loongarch32-unknown-none
+- [ ] loongarch32-unknown-none-softfloat
 - [ ] loongarch64-unknown-linux-ohos
 - [ ] m68k-unknown-linux-gnu
 - [ ] m68k-unknown-none-elf
@@ -140,6 +146,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imc-unknown-nuttx-elf
 - [x] riscv64-linux-android
 - [ ] riscv64-wrs-vxworks
+- [ ] riscv64a23-unknown-linux-gnu
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
@@ -170,6 +177,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
+- [ ] x86_64-lynx-lynxos178
 - [ ] x86_64-pc-cygwin
 - [ ] x86_64-pc-nto-qnx710
 - [ ] x86_64-pc-nto-qnx710_iosock

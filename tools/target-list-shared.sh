@@ -14,7 +14,7 @@ linux_gnu_targets=(
   arm-unknown-linux-gnueabi
   arm-unknown-linux-gnueabihf
   armeb-unknown-linux-gnueabi # tier3
-  # armv4t-unknown-linux-gnueabi # tier3, rustc generate code for armv5t (probably needs to pass +v4t to llvm)
+  # armv4t-unknown-linux-gnueabi # tier3, need to build armv4 libraries
   armv5te-unknown-linux-gnueabi
   armv7-unknown-linux-gnueabi
   armv7-unknown-linux-gnueabihf
@@ -37,6 +37,7 @@ linux_gnu_targets=(
   powerpc64-unknown-linux-gnu
   powerpc64le-unknown-linux-gnu
   riscv32gc-unknown-linux-gnu # tier3
+  # riscv64a23-unknown-linux-gnu # tier3, TODO
   riscv64gc-unknown-linux-gnu
   s390x-unknown-linux-gnu
   # sparc-unknown-linux-gnu # tier3, TODO: relocations in generic ELF (EM: 18)
@@ -48,6 +49,7 @@ linux_gnu_targets=(
 # Linux (musl)
 linux_musl_targets=(
   aarch64-unknown-linux-musl
+  # aarch64_be-unknown-linux-musl # tier3, TODO
   arm-unknown-linux-musleabi
   arm-unknown-linux-musleabihf
   armv5te-unknown-linux-musleabi
@@ -70,6 +72,7 @@ linux_musl_targets=(
   riscv64gc-unknown-linux-musl
   s390x-unknown-linux-musl             # tier3
   thumbv7neon-unknown-linux-musleabihf # tier3
+  # wasm32-wali-linux-musl # tier3, TODO
   # x86_64-unikraft-linux-musl # tier3, TODO
   x86_64-unknown-linux-musl
 )
@@ -273,6 +276,7 @@ haiku_targets=(
 # Hermit
 hermit_targets=(
   # aarch64-unknown-hermit # tier3
+  # aarch64_be-unknown-hermit # tier3
   # riscv64gc-unknown-hermit # tier3
   # x86_64-unknown-hermit # tier3
 )
@@ -289,6 +293,9 @@ hurd_targets=(
 # L4Re
 l4re_targets=(
   # x86_64-unknown-l4re-uclibc # tier3
+)
+lynxos178_targets=(
+  # x86_64-lynx-lynxos178 # tier3
 )
 # QNX Neutrino
 nto_targets=(
@@ -363,6 +370,9 @@ uefi_targets=(
   # i686-unknown-uefi
   # x86_64-unknown-uefi
 )
+vexos_targets=(
+  # armv7a-vex-v5 # tier3
+)
 vita_targets=(
   # armv7-sony-vita-newlibeabihf # tier3
 )
@@ -388,6 +398,7 @@ zkvm_targets=(
 none_targets=(
   aarch64-unknown-none
   aarch64-unknown-none-softfloat
+  # aarch64_be-unknown-none-softfloat # tier3, TODO
   armebv7r-none-eabi
   armebv7r-none-eabihf
   # armv4t-none-eabi # tier3
@@ -397,10 +408,12 @@ none_targets=(
   armv7r-none-eabi
   armv7r-none-eabihf
   # armv8r-none-eabihf # tier3
-  # avr-unknown-gnu-atmega328 # tier3
+  # avr-none # tier3
   # bpfeb-unknown-none # tier3
   # bpfel-unknown-none # tier3
   # hexagon-unknown-none-elf # tier3
+  # loongarch32-unknown-none # tier3
+  # loongarch32-unknown-none-softfloat # tier3
   # loongarch64-unknown-none
   # loongarch64-unknown-none-softfloat
   # m68k-unknown-none-elf # tier3
@@ -457,7 +470,7 @@ targets=(
   ${windows_gnu_targets[@]+"${windows_gnu_targets[@]}"}
   ${wasi_targets[@]+"${wasi_targets[@]}"}
   ${emscripten_targets[@]+"${emscripten_targets[@]}"}
-  ${wasm_unknown_targets[@]+"${wasm_unknown_targets[@]}"}
+  ${wasm_targets[@]+"${wasm_targets[@]}"}
   ${aix_targets[@]+"${aix_targets[@]}"}
   ${amdhsa_targets[@]+"${amdhsa_targets[@]}"}
   ${cuda_targets[@]+"${cuda_targets[@]}"}
@@ -469,6 +482,7 @@ targets=(
   ${horizon_targets[@]+"${horizon_targets[@]}"}
   ${hurd_targets[@]+"${hurd_targets[@]}"}
   ${l4re_targets[@]+"${l4re_targets[@]}"}
+  ${lynxos178_targets[@]+"${lynxos178_targets[@]}"}
   ${nto_targets[@]+"${nto_targets[@]}"}
   ${nuttx_targets[@]+"${nuttx_targets[@]}"}
   ${psp_targets[@]+"${psp_targets[@]}"}
@@ -480,6 +494,7 @@ targets=(
   ${teeos_targets[@]+"${teeos_targets[@]}"}
   ${trusty_targets[@]+"${trusty_targets[@]}"}
   ${uefi_targets[@]+"${uefi_targets[@]}"}
+  ${vexos_targets[@]+"${vexos_targets[@]}"}
   ${vita_targets[@]+"${vita_targets[@]}"}
   ${vxworks_targets[@]+"${vxworks_targets[@]}"}
   ${xous_targets[@]+"${xous_targets[@]}"}

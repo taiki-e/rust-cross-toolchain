@@ -54,6 +54,7 @@ known_target_group=(
   horizon
   hurd
   l4re
+  lynxos178
   nto
   nuttx
   psp
@@ -65,6 +66,7 @@ known_target_group=(
   teeos
   trusty
   uefi
+  vexos
   vita
   vxworks
   xous
