@@ -43,17 +43,15 @@ case "${RUST_TARGET}" in
     ;;
   aarch64_be-unknown-linux-gnu)
     # Toolchains for aarch64_be-linux-gnu is not available in APT.
-    # https://developer.arm.com/downloads/-/gnu-a
     # https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
-    # GCC 10.2.1, Linux header 4.20.13, glibc 2.31, binutils 2.35.1, GDB 10.1
-    # Use 10.2-2020.11 instead of 10.3-2021.07 because 10.3-2021.07 requires glibc 2.33.
-    arm_gcc_version=10.2-2020.11
+    # GCC 14.3, Linux header 4.20.13, glibc 2.40, binutils 2.44, GDB 15
+    arm_gcc_version=14.3.rel1
     cc_target="${RUST_TARGET/-unknown/-none}"
-    gcc_version=10.2.1
+    gcc_version=14.3
     printf '%s\n' "${cc_target}" >/CC_TARGET
     printf '%s\n' "${cc_target}" >/APT_TARGET
     printf '%s\n' "${gcc_version}" >/GCC_VERSION
-    curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://developer.arm.com/-/media/Files/downloads/gnu-a/${arm_gcc_version}/binrel/gcc-arm-${arm_gcc_version}-x86_64-${cc_target}.tar.xz" \
+    curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://developer.arm.com/-/media/Files/downloads/gnu/${arm_gcc_version}/binrel/arm-gnu-toolchain-${arm_gcc_version}-x86_64-aarch64_be-none-linux-gnu.tar.xz" \
       | tar xJf - --strip-components 1 -C "${TOOLCHAIN_DIR}"
     exit 0
     ;;

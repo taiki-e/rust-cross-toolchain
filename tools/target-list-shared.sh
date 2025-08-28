@@ -9,7 +9,7 @@
 linux_gnu_targets=(
   aarch64-unknown-linux-gnu
   # aarch64-unknown-linux-gnu_ilp32 # tier3
-  # aarch64_be-unknown-linux-gnu # tier3, TODO: https://github.com/BurntSushi/memchr/pull/162
+  aarch64_be-unknown-linux-gnu # tier3
   # aarch64_be-unknown-linux-gnu_ilp32 # tier3
   arm-unknown-linux-gnueabi
   arm-unknown-linux-gnueabihf

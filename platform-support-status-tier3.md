@@ -32,7 +32,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-uwp-windows-msvc
 - [ ] aarch64-wrs-vxworks
 - [ ] aarch64_be-unknown-hermit
-- [ ] aarch64_be-unknown-linux-gnu
+- [x] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
 - [ ] aarch64_be-unknown-linux-musl
 - [x] aarch64_be-unknown-netbsd
