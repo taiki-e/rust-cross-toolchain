@@ -108,6 +108,7 @@ rcrt
 rtti
 Scrt
 secureplt
+setsid
 sharesrc
 sjlj
 softfp

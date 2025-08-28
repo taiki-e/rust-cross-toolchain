@@ -60,7 +60,8 @@ jobs:
           # TODO: undefined reference to `__sysconf_xpg7'/'__xnet7_socket'
           # - target: solaris
           - target: illumos
-          - target: redox
+          # TODO: undefined reference to `setsid'
+          # - target: redox
           # - target: fuchsia
           - target: wasi
           - target: wasi
