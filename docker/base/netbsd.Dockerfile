@@ -111,6 +111,7 @@ mkdir -p -- "${cc_target}"
 ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
+# TODO: use --mount=type=bind,from=build-src,source=/build-src,dst=/tmp/build-src
 COPY --from=build-src /build-src /tmp/build-src
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 WORKDIR /tmp/build-src/usr/src

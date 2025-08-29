@@ -45,12 +45,15 @@ libbacktrace
 libcilkrts
 libexec
 libgcc
+libgmp
 libgomp
 libhello
 libhf
 libint
 liblgrp
 libm
+libmpc
+libmpfr
 libpthread
 libquadmath
 libresolv
@@ -87,7 +90,6 @@ MKPROFILE
 MKSHARE
 MKUNPRIVED
 mpcore
-mpfr
 msoft
 mstrict
 mthumb

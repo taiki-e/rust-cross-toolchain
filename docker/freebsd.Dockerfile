@@ -17,8 +17,8 @@ FROM ghcr.io/taiki-e/downloader AS binutils-src
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p -- /binutils-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
-        | tar xzf - --strip-components 1 -C /binutils-src
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz" \
+        | tar xJf - --strip-components 1 -C /binutils-src
 
 FROM ghcr.io/taiki-e/downloader AS sysroot
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
@@ -42,7 +42,7 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://do
     | tar xJf - -C /sysroot ./lib ./usr/include ./usr/lib ./bin/freebsd-version
 EOF
 
-FROM ghcr.io/taiki-e/build-base:alpine AS builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
@@ -59,8 +59,8 @@ ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
 # riscv64: ld.lld: error: hello.c:(.text+0x0): relocation R_RISCV_ALIGN requires unimplemented linker relaxation; recompile with -mno-relax
-COPY --from=binutils-src /binutils-src /tmp/binutils-src
-RUN --mount=type=bind,target=/docker <<EOF
+RUN --mount=type=bind,from=binutils-src,source=/binutils-src,dst=/tmp/binutils-src \
+    --mount=type=bind,target=/docker <<EOF
 case "${RUST_TARGET}" in
     riscv64*) CC_TARGET="$(</CC_TARGET)" /docker/base/build-binutils.sh ;;
 esac

@@ -5,6 +5,8 @@
 # - https://github.com/rust-lang/rust/blob/1.84.0/src/ci/docker/scripts/illumos-toolchain.sh
 # - https://github.com/illumos/sysroot
 
+ARG UBUNTU_VERSION=20.04
+
 # https://github.com/illumos/sysroot/releases
 ARG SYSROOT_VERSION=20181213-de6af22ae73b-v1
 # I guess illumos was originally based on solaris10, but it looks like they
@@ -22,14 +24,14 @@ FROM ghcr.io/taiki-e/downloader AS binutils-src
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG BINUTILS_VERSION
 RUN mkdir -p -- /binutils-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz" \
-        | tar xzf - --strip-components 1 -C /binutils-src
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz" \
+        | tar xJf - --strip-components 1 -C /binutils-src
 FROM ghcr.io/taiki-e/downloader AS gcc-src
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG GCC_VERSION
 RUN mkdir -p -- /gcc-src
-RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz" \
-        | tar xzf - --strip-components 1 -C /gcc-src
+RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz" \
+        | tar xJf - --strip-components 1 -C /gcc-src
 
 FROM ghcr.io/taiki-e/downloader AS sysroot
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
@@ -40,13 +42,13 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://gi
     | tar xzf - -C /sysroot
 EOF
 
-FROM ghcr.io/taiki-e/build-base:alpine AS builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apk --no-cache add \
-    gmp-dev \
-    mpc1-dev \
-    mpfr-dev
+RUN apt-get -o Acquire::Retries=10 update -qq && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
+    libgmp-dev \
+    libmpc-dev \
+    libmpfr-dev
 
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
@@ -61,16 +63,15 @@ mkdir -p -- "${cc_target}"
 ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
-COPY --from=binutils-src /binutils-src /tmp/binutils-src
-RUN --mount=type=bind,target=/base \
+RUN --mount=type=bind,from=binutils-src,source=/binutils-src,dst=/tmp/binutils-src \
+    --mount=type=bind,target=/base \
     CC_TARGET="$(</CC_TARGET)" /base/build-binutils.sh
 
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 ARG GCC_VERSION
-COPY --from=gcc-src /gcc-src /tmp/gcc-src
 # https://gcc.gnu.org/install/configure.html
-RUN <<EOF
+RUN --mount=type=bind,from=gcc-src,source=/gcc-src,dst=/tmp/gcc-src <<EOF
 export CFLAGS="-g0 -O2 -fPIC"
 export CXXFLAGS="-g0 -O2 -fPIC"
 export CFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
@@ -111,7 +112,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu AS final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

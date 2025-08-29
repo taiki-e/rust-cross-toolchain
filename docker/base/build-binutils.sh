@@ -4,14 +4,11 @@ set -CeEuo pipefail
 IFS=$'\n\t'
 trap -- 's=$?; printf >&2 "%s\n" "${0##*/}:${LINENO}: \`${BASH_COMMAND}\` exit with ${s}"; exit ${s}' ERR
 
-ldd_version=$(ldd --version 2>&1 || true)
-if grep -Fq musl <<<"${ldd_version}"; then
-  export CC="gcc -static --static"
-  export CXX="g++ -static --static"
-  export LDFLAGS="-s -static --static"
-fi
-
 set -x
+
+export CC="gcc -static --static"
+export CXX="g++ -static --static"
+export LDFLAGS="-s -static --static ${LDFLAGS:-}"
 
 export CFLAGS="-g0 -O2 -fPIC ${CFLAGS:-}"
 export CXXFLAGS="-g0 -O2 -fPIC ${CXXFLAGS:-}"

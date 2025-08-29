@@ -9,6 +9,8 @@
 # TODO: enable debuginfo https://github.com/rust-lang/rust/pull/90733
 # TODO: https://github.com/rust-lang/rust/pull/130471
 
+ARG UBUNTU_VERSION=20.04
+
 # Use the fork that contains a patch to fix CVE-2020-28928 for musl 1.1 and add some hashes for riscv.
 # https://github.com/taiki-e/musl-cross-make/tree/dev
 ARG MUSL_CROSS_MAKE_REV=966bee4397acebc00dcb63754c0594ae91d08e9a
@@ -19,7 +21,7 @@ ARG GCC_VERSION=9.4.0
 ARG MUSL_VERSION
 ARG LINUX_VERSION=headers-4.19.88-2
 
-FROM ghcr.io/taiki-e/build-base:alpine AS builder
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MUSL_CROSS_MAKE_REV
@@ -152,7 +154,7 @@ ls | grep -F '.so'
 ln -sf -- libc.so "ld-musl-${ldso_arch}.so.1"
 EOF
 
-FROM ubuntu AS final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET

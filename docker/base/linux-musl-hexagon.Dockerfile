@@ -7,8 +7,11 @@
 # - https://github.com/rust-lang/rust/blob/1.84.0/src/doc/rustc/src/platform-support/hexagon-unknown-linux-musl.md
 # - https://github.com/qemu/qemu/blob/v9.2.0/tests/docker/dockerfiles/debian-hexagon-cross.docker
 
-FROM ghcr.io/taiki-e/build-base:alpine AS builder
+ARG UBUNTU_VERSION=20.04
+
+FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS builder
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
 ARG TOOLCHAIN_DIR=/toolchain
 RUN mkdir -p -- /tmp/toolchain
@@ -31,7 +34,7 @@ EOF
 RUN --mount=type=bind,target=/base \
     /base/common.sh
 
-FROM ubuntu AS final
+FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RUST_TARGET
