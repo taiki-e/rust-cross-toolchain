@@ -234,7 +234,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 
 | libc | GCC | Clang | C++ | test | host |
 | ---- | --- | ----- | --- | ---- | ---- |
-| dragonfly 6.4.0 | N/A | host (requires 13+) | ✓ (libstdc++) |  | Linux (any arch, any libc) |
+| dragonfly 6.4.2 | N/A | host (requires 13+) | ✓ (libstdc++) |  | Linux (any arch, any libc) |
 
 ([Dockerfile](docker/dragonfly.Dockerfile))
 

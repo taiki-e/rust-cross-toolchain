@@ -306,7 +306,7 @@ for target in "${targets[@]}"; do
     *-dragonfly*)
       # https://mirror-master.dragonflybsd.org/iso-images
       # NB: When updating this, the reminder to update tools/docker-manifest.sh and README.md.
-      dragonfly_version="${DRAGONFLY_VERSION:-"6.4.0"}"
+      dragonfly_version="${DRAGONFLY_VERSION:-"6.4.2"}"
       default_dragonfly_version="6"
       build "dragonfly" "${target}" "${dragonfly_version%%.*}" "${default_dragonfly_version}" \
         --build-arg "DRAGONFLY_VERSION=${dragonfly_version}"
