@@ -66,7 +66,12 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https:
 FROM "${TARGET}" AS toolchain
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-RUN rm -rf -- /toolchain/share/{doc,i18n,lintian,locale,man}
+# https://wiki.ubuntu.com/ReducingDiskFootprint#Documentation
+RUN <<EOF
+find /toolchain/share/doc -depth -type f ! -name '*copyright*' ! -name '*Copyright*' ! -name '*COPYRIGHT*' -exec rm -- {} + || true
+find /toolchain/share/doc -empty -exec rmdir -- {} + || true
+rm -rf -- /toolchain/share/{groff,i18n,info,linda,lintian,locale,man}
+EOF
 
 FROM ubuntu AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]

@@ -11,7 +11,11 @@ bail() {
 
 set -x
 
-rm -rf -- "${TOOLCHAIN_DIR:?}"/share/{doc,i18n,lintian,locale,man}
+# https://wiki.ubuntu.com/ReducingDiskFootprint#Documentation
+find "${TOOLCHAIN_DIR:?}"/share/doc -depth -type f ! -name '*copyright*' ! -name '*Copyright*' ! -name '*COPYRIGHT*' -exec rm -- {} + || true
+find "${TOOLCHAIN_DIR:?}"/share/doc -empty -exec rmdir -- {} + || true
+rm -rf -- "${TOOLCHAIN_DIR:?}"/share/{groff,i18n,info,linda,lintian,locale,man}
+
 case "${RUST_TARGET}" in
   csky-*) rm -f -- "${TOOLCHAIN_DIR:?}"/bin/qemu-{,system-}{arm,aarch64,riscv*} ;;
   *) rm -f -- "${TOOLCHAIN_DIR:?}"/bin/qemu-* ;;

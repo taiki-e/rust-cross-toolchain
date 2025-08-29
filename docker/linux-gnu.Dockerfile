@@ -14,12 +14,14 @@ RUN mkdir -p -- "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 
 RUN --mount=type=bind,target=/docker \
     /docker/linux-gnu.sh
-# fd -t d '\b(doc|i18n|lintian|locale|man)\b'
 RUN <<EOF
 apt_target=$(</APT_TARGET)
 for dir in "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr "${TOOLCHAIN_DIR}"/sysroot/usr "${TOOLCHAIN_DIR}"/target/usr; do
     if [[ -d "${dir}"/share ]]; then
-        rm -rf -- "${dir}"/share/{doc,i18n,lintian,locale,man}
+        # https://wiki.ubuntu.com/ReducingDiskFootprint#Documentation
+        find "${dir}"/share/doc -depth -type f ! -name '*copyright*' ! -name '*Copyright*' ! -name '*COPYRIGHT*' -exec rm -- {} + || true
+        find "${dir}"/share/doc -empty -exec rmdir -- {} + || true
+        rm -rf -- "${dir}"/share/{groff,i18n,info,linda,lintian,locale,man}
     fi
 done
 # shellcheck disable=SC2046

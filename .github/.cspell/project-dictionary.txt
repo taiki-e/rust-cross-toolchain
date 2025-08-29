@@ -30,6 +30,7 @@ funwind
 fvisibility
 gfortran
 gnusrc
+groff
 HWCAPS
 Icelake
 INLINES
