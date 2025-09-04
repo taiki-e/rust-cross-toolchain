@@ -383,15 +383,15 @@ vita_targets=(
 )
 # VxWorks
 vxworks_targets=(
-  # aarch64-wrs-vxworks # tier3
+  aarch64-wrs-vxworks # tier3
   # armv7-wrs-vxworks-eabihf # tier3
   # i686-wrs-vxworks # tier3
   # powerpc-wrs-vxworks # tier3
   # powerpc-wrs-vxworks-spe # tier3
   # powerpc64-wrs-vxworks # tier3
   # riscv32-wrs-vxworks # tier3
-  # riscv64-wrs-vxworks # tier3
-  # x86_64-wrs-vxworks # tier3
+  riscv64-wrs-vxworks # tier3
+  x86_64-wrs-vxworks  # tier3
 )
 xous_targets=(
   # riscv32imac-unknown-xous-elf # tier3

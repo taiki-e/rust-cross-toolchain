@@ -16,6 +16,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
   - [Solaris](#solaris)
   - [illumos](#illumos)
   - [Redox](#redox)
+  - [VxWorks](#vxworks)
   - [WASI](#wasi)
   - [Emscripten](#emscripten)
   - [Windows (MinGW)](#windows-mingw)
@@ -284,6 +285,10 @@ https://gitlab.redox-os.org/redox-os/redox/-/releases
 **Supported targets:**
 
 - `x86_64-unknown-redox`
+
+### VxWorks
+
+TODO
 
 ### WASI
 

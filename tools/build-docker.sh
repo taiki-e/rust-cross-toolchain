@@ -63,6 +63,7 @@ if [[ $# -gt 0 ]]; then
       emscripten) targets+=(${emscripten_targets[@]+"${emscripten_targets[@]}"}) ;;
       redox) targets+=(${redox_targets[@]+"${redox_targets[@]}"}) ;;
       fuchsia) targets+=(${fuchsia_targets[@]+"${fuchsia_targets[@]}"}) ;;
+      vxworks) targets+=(${vxworks_targets[@]+"${vxworks_targets[@]}"}) ;;
       none) targets+=(${none_targets[@]+"${none_targets[@]}"}) ;;
       *) targets+=("$1") ;;
     esac
@@ -316,6 +317,7 @@ for target in "${targets[@]}"; do
     *-illumos*) build "illumos" "${target}" ;;
     *-redox*) build "redox" "${target}" ;;
     *-fuchsia*) build "fuchsia" "${target}" ;;
+    *-vxworks*) build "vxworks" "${target}" ;;
     *-wasi*) build "wasi" "${target}" ;;
     *-emscripten*)
       case "${arch}" in
