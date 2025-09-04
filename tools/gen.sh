@@ -55,6 +55,7 @@ known_target_group=(
   hurd
   l4re
   lynxos178
+  managarm
   nto
   nuttx
   psp

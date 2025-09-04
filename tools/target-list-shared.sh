@@ -297,6 +297,11 @@ l4re_targets=(
 lynxos178_targets=(
   # x86_64-lynx-lynxos178 # tier3
 )
+managarm_targets=(
+  # aarch64-unknown-managarm-mlibc # tier3
+  # riscv64gc-unknown-managarm-mlibc # tier3
+  # x86_64-unknown-managarm-mlibc # tier3
+)
 # QNX Neutrino
 nto_targets=(
   # aarch64-unknown-nto-qnx700 # tier3

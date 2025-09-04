@@ -262,6 +262,11 @@ l4re_targets=(
 lynxos178_targets=(
   x86_64-lynx-lynxos178 # tier3
 )
+managarm_targets=(
+  aarch64-unknown-managarm-mlibc # tier3
+  riscv64gc-unknown-managarm-mlibc # tier3
+  x86_64-unknown-managarm-mlibc # tier3
+)
 nto_targets=(
   aarch64-unknown-nto-qnx700 # tier3
   aarch64-unknown-nto-qnx710 # tier3
@@ -437,6 +442,7 @@ targets=(
   ${hurd_targets[@]+"${hurd_targets[@]}"}
   ${l4re_targets[@]+"${l4re_targets[@]}"}
   ${lynxos178_targets[@]+"${lynxos178_targets[@]}"}
+  ${managarm_targets[@]+"${managarm_targets[@]}"}
   ${nto_targets[@]+"${nto_targets[@]}"}
   ${nuttx_targets[@]+"${nuttx_targets[@]}"}
   ${psp_targets[@]+"${psp_targets[@]}"}

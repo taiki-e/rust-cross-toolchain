@@ -19,6 +19,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-unknown-hermit
 - [ ] aarch64-unknown-illumos
 - [ ] aarch64-unknown-linux-gnu_ilp32
+- [ ] aarch64-unknown-managarm-mlibc
 - [x] aarch64-unknown-netbsd
 - [ ] aarch64-unknown-nto-qnx700
 - [ ] aarch64-unknown-nto-qnx710
@@ -150,6 +151,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
+- [ ] riscv64gc-unknown-managarm-mlibc
 - [ ] riscv64gc-unknown-netbsd
 - [ ] riscv64gc-unknown-nuttx-elf
 - [x] riscv64gc-unknown-openbsd
@@ -189,6 +191,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-unknown-hurd-gnu
 - [ ] x86_64-unknown-l4re-uclibc
 - [ ] x86_64-unknown-linux-none
+- [ ] x86_64-unknown-managarm-mlibc
 - [x] x86_64-unknown-openbsd
 - [ ] x86_64-unknown-trusty
 - [ ] x86_64-uwp-windows-gnu
