@@ -49,14 +49,14 @@ esac
 printf '%s\n' "${cc_target}${api_level}" >/CC_TARGET
 EOF
 
-RUN --mount=type=bind,target=/docker \
-    /docker/base/common.sh
+RUN --mount=type=bind,source=./base/common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     e2tools
 ARG RUST_TARGET
@@ -115,8 +115,8 @@ EOF
 ENV ANDROID_DNS_MODE=local
 ENV ANDROID_ROOT=/system
 ENV TMPDIR=/tmp
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 

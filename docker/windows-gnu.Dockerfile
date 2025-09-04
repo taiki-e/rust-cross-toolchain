@@ -31,21 +31,21 @@ done
 EOF
 
 # TODO cannot find -lgcc: No such file or directory
-# RUN --mount=type=bind,target=/docker <<EOF
+# RUN --mount=type=bind,source=./clang-cross.sh,target=/tmp/clang-cross.sh <<EOF
 # gcc_version=$(gcc --version | sed -En '1 s/^.*\) //p')
 # COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" -B\"\${toolchain_dir}\"/${RUST_TARGET}/bin -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L${TOOLCHAIN_DIR}/lib/gcc-cross/${RUST_TARGET}/${gcc_version%%.*}" \
 #     CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
 #     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version%%.*}/${RUST_TARGET}" \
 #     SYSROOT=none \
-#     /docker/clang-cross.sh
+#     /tmp/clang-cross.sh
 # EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 ENV HOME=/tmp/home
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 RUN <<EOF
 dpkg_arch=$(dpkg --print-architecture)
 case "${dpkg_arch##*-}" in
@@ -74,8 +74,8 @@ apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o D
 wine --version
 EOF
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated

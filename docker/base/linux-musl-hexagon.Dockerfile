@@ -31,8 +31,8 @@ cd -- "${TOOLCHAIN_DIR}"
 ln -s -- "target/${RUST_TARGET}" "${RUST_TARGET}"
 EOF
 
-RUN --mount=type=bind,target=/base \
-    /base/common.sh
+RUN --mount=type=bind,source=./common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]

@@ -59,10 +59,10 @@ ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
 # riscv64: ld.lld: error: hello.c:(.text+0x0): relocation R_RISCV_ALIGN requires unimplemented linker relaxation; recompile with -mno-relax
-RUN --mount=type=bind,from=binutils-src,source=/binutils-src,dst=/tmp/binutils-src \
-    --mount=type=bind,target=/docker <<EOF
+RUN --mount=type=bind,from=binutils-src,source=/binutils-src,target=/tmp/binutils-src \
+    --mount=type=bind,source=./base/build-binutils.sh,target=/tmp/build-binutils.sh <<EOF
 case "${RUST_TARGET}" in
-    riscv64*) CC_TARGET="$(</CC_TARGET)" /docker/base/build-binutils.sh ;;
+    riscv64*) CC_TARGET="$(</CC_TARGET)" /tmp/build-binutils.sh ;;
 esac
 EOF
 
@@ -75,15 +75,15 @@ COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 # https://github.com/rust-lang/libc/pull/2581
 RUN mv -- "${SYSROOT_DIR}/bin" "${TOOLCHAIN_DIR}/bin"
 
-RUN --mount=type=bind,target=/docker <<EOF
+RUN --mount=type=bind,source=./clang-cross.sh,target=/tmp/clang-cross.sh <<EOF
 case "${RUST_TARGET}" in
     riscv64*)
         COMMON_FLAGS="--ld-path=\"\${toolchain_dir}\"/bin/$(</CC_TARGET)-ld" \
-            /docker/clang-cross.sh
+            /tmp/clang-cross.sh
         ;;
     *)
         COMMON_FLAGS="-fuse-ld=lld" \
-            /docker/clang-cross.sh
+            /tmp/clang-cross.sh
         ;;
 esac
 EOF
@@ -91,11 +91,11 @@ EOF
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated

@@ -63,15 +63,15 @@ mkdir -p -- "${cc_target}"
 ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
-RUN --mount=type=bind,from=binutils-src,source=/binutils-src,dst=/tmp/binutils-src \
-    --mount=type=bind,target=/base \
-    CC_TARGET="$(</CC_TARGET)" /base/build-binutils.sh
+RUN --mount=type=bind,from=binutils-src,source=/binutils-src,target=/tmp/binutils-src \
+    --mount=type=bind,source=./build-binutils.sh,target=/tmp/build-binutils.sh \
+    CC_TARGET="$(</CC_TARGET)" /tmp/build-binutils.sh
 
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
 ARG GCC_VERSION
 # https://gcc.gnu.org/install/configure.html
-RUN --mount=type=bind,from=gcc-src,source=/gcc-src,dst=/tmp/gcc-src <<EOF
+RUN --mount=type=bind,from=gcc-src,source=/gcc-src,target=/tmp/gcc-src <<EOF
 export CFLAGS="-g0 -O2 -fPIC"
 export CXXFLAGS="-g0 -O2 -fPIC"
 export CFLAGS_FOR_TARGET="-g1 -O2 -fPIC"
@@ -109,8 +109,8 @@ make -p "${TOOLCHAIN_DIR}" &>build.log || (tail <build.log -5000 && exit 1)
 make install &>build.log || (tail <build.log -5000 && exit 1)
 EOF
 
-RUN --mount=type=bind,target=/base \
-    /base/common.sh
+RUN --mount=type=bind,source=./common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]

@@ -12,8 +12,8 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p -- "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}-deb"
 
-RUN --mount=type=bind,target=/docker \
-    /docker/linux-gnu.sh
+RUN --mount=type=bind,source=./linux-gnu.sh,target=/tmp/linux-gnu.sh \
+    /tmp/linux-gnu.sh
 RUN <<EOF
 apt_target=$(</APT_TARGET)
 for dir in "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}/${apt_target}"/libc/usr "${TOOLCHAIN_DIR}"/sysroot/usr "${TOOLCHAIN_DIR}"/target/usr; do
@@ -67,12 +67,12 @@ EOF2
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
 EOF
 
-RUN --mount=type=bind,target=/docker \
-    /docker/base/common.sh
+RUN --mount=type=bind,source=./base/common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 # TODO(sparc-unknown-linux-gnu,clang): clang: error: unknown argument: '-mv8plus'
 # TODO(loongarch64):
-RUN --mount=type=bind,target=/docker <<EOF
+RUN --mount=type=bind,source=./clang-cross.sh,target=/tmp/clang-cross.sh <<EOF
 gcc_version=$(</GCC_VERSION)
 if [[ "${gcc_version}" == "host" ]]; then
     exit 0
@@ -82,13 +82,13 @@ case "${RUST_TARGET}" in
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\"" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/${RUST_TARGET}/libc" \
-            /docker/clang-cross.sh
+            /tmp/clang-cross.sh
         ;;
     riscv32*)
         COMMON_FLAGS="--gcc-toolchain=\"\${toolchain_dir}\" --ld-path=\"\${toolchain_dir}\"/bin/${RUST_TARGET}-ld -I\"\${toolchain_dir}\"/sysroot/usr/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version}/${RUST_TARGET}" \
             SYSROOT="\"\${toolchain_dir}\"/sysroot" \
-            /docker/clang-cross.sh
+            /tmp/clang-cross.sh
         ;;
     sparc-* | loongarch64-*) ;;
     *)
@@ -96,7 +96,7 @@ case "${RUST_TARGET}" in
             CFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include" \
             CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/include -I\"\${toolchain_dir}\"/${RUST_TARGET}/include/c++/${gcc_version%%.*}/${RUST_TARGET}" \
             SYSROOT=none \
-            /docker/clang-cross.sh
+            /tmp/clang-cross.sh
         ;;
 esac
 EOF
@@ -104,12 +104,12 @@ EOF
 FROM ghcr.io/taiki-e/build-base:"${DISTRO}-${DISTRO_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 ARG DISTRO_VERSION
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 COPY --from=ghcr.io/taiki-e/qemu-user /usr/bin/qemu-* /usr/bin/
 

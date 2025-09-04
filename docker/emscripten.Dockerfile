@@ -22,14 +22,14 @@ COPY --from=emsdk /emsdk "${TOOLCHAIN_DIR}"
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 RUN apt-get -o Acquire::Retries=10 -qq update && apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends \
     libxml2 \
     python3
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated

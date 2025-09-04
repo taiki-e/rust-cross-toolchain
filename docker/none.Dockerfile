@@ -125,8 +125,8 @@ ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=toolchain "${TOOLCHAIN_DIR}" "${TOOLCHAIN_DIR}"
 COPY --from=toolchain /CC_TARGET /
 
-RUN --mount=type=bind,target=/docker \
-    /docker/base/common.sh
+RUN --mount=type=bind,source=./base/common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
@@ -148,11 +148,11 @@ mv -- "opensbi-${opensbi_version}-rv-bin/share/opensbi/ilp32/generic/firmware/fw
 mv -- "opensbi-${opensbi_version}-rv-bin/share/opensbi/ilp32/generic/firmware/fw_dynamic.elf" /usr/share/qemu/opensbi-riscv32-generic-fw_dynamic.elf
 rm -rf -- "opensbi-${opensbi_version}-rv-bin"
 EOF
-COPY /test-base.sh /
-RUN /test-base.sh none
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh none
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 # TODO: "qemu-armeb: Error mapping file: Operation not permitted" error in 8.2
 COPY --from=ghcr.io/taiki-e/qemu-user:8.1 /usr/bin/qemu-* /usr/bin/

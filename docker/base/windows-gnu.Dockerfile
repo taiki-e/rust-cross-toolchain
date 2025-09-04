@@ -32,7 +32,7 @@ EOF
 # Ubuntu mingw packages for i686 uses sjlj exceptions, but rust target
 # i686-pc-windows-gnu uses dwarf exceptions. So we build mingw packages
 # that are compatible with rust.
-RUN --mount=type=bind,target=/base <<EOF
+RUN --mount=type=bind,source=./windows-gnu-gcc-mingw-i686.diff,target=/tmp/windows-gnu-gcc-mingw-i686.diff <<EOF
 case "${RUST_TARGET}" in
     x86_64*) exit 0 ;;
     i686-*) ;;
@@ -47,7 +47,7 @@ cd -- gcc-mingw-w64-*
 sed -Ei 's/libgcc_s_sjlj-1/libgcc_s_dw2-1/g' debian/gcc-mingw-w64-i686.install*
 # Apply a patch to disable x86_64 packages, languages other than c/c++/fortran,
 # sjlj exceptions, and enable dwarf2 exceptions.
-patch -p1 </base/windows-gnu-gcc-mingw-i686.diff
+patch -p1 </tmp/windows-gnu-gcc-mingw-i686.diff
 dpkg-buildpackage -B -us -uc -nc -j"$(nproc)" &>build.log || (tail <build.log -5000 && exit 1)
 ls -- ../
 rm -- /tmp/toolchain/g*-mingw-w64-i686*.deb /tmp/toolchain/gcc-mingw-w64-base*.deb
@@ -67,8 +67,8 @@ cc_target="${RUST_TARGET%%-*}-w64-mingw32"
 printf '%s\n' "${cc_target}" >/CC_TARGET
 EOF
 
-RUN --mount=type=bind,target=/base \
-    /base/common.sh
+RUN --mount=type=bind,source=./common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]

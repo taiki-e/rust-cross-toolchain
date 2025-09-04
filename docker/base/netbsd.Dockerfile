@@ -111,13 +111,11 @@ mkdir -p -- "${cc_target}"
 ln -s -- "${cc_target}" "${RUST_TARGET}"
 EOF
 
-# TODO: use --mount=type=bind,from=build-src,source=/build-src,dst=/tmp/build-src
-COPY --from=build-src /build-src /tmp/build-src
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
-WORKDIR /tmp/build-src/usr/src
 # https://www.netbsd.org/docs/guide/en/chap-build.html
-RUN ./build.sh list-arch
-RUN <<EOF
+RUN --mount=type=bind,from=build-src,source=/build-src,target=/tmp/build-src,rw <<EOF
+cd -- /tmp/build-src/usr/src
+./build.sh list-arch
 case "${RUST_TARGET}" in
     aarch64-*) args=(-m evbarm -a aarch64) ;;
     aarch64_be-*) args=(-m evbarm -a aarch64eb) ;;
@@ -138,7 +136,6 @@ MKUNPRIVED=yes TOOLDIR="${TOOLCHAIN_DIR}" \
     ./build.sh -j"$(nproc)" "${args[@]}" tools &>build.log || (tail <build.log -5000 && exit 1)
 EOF
 RUN rm -rf -- "${TOOLCHAIN_DIR}"/man
-WORKDIR /
 
 RUN <<EOF
 case "${RUST_TARGET}" in
@@ -161,8 +158,8 @@ EOF2
 chmod +x "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-gcc" "${TOOLCHAIN_DIR}/bin/${RUST_TARGET}-g++"
 EOF
 
-RUN --mount=type=bind,target=/base \
-    /base/common.sh
+RUN --mount=type=bind,source=./common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 FROM ubuntu:"${UBUNTU_VERSION}" AS final
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]

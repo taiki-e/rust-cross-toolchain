@@ -26,21 +26,21 @@ ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 RUN mkdir -p -- "${SYSROOT_DIR}"
 COPY --from=sysroot /sysroot/. "${SYSROOT_DIR}"
 
-RUN --mount=type=bind,target=/docker <<EOF
+RUN --mount=type=bind,source=./clang-cross.sh,target=/tmp/clang-cross.sh <<EOF
 gcc_version=8.0
 COMMON_FLAGS="-fuse-ld=lld -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${gcc_version/./} -B\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/usr/lib/gcc${gcc_version/./}" \
     CXXFLAGS="-I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/c++/${gcc_version} -I\"\${toolchain_dir}\"/${RUST_TARGET}/usr/include/g++" \
-    /docker/clang-cross.sh
+    /tmp/clang-cross.sh
 EOF
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated

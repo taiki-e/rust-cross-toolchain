@@ -40,19 +40,19 @@ ARG TOOLCHAIN_DIR="/${RUST_TARGET}"
 ARG SYSROOT_DIR="${TOOLCHAIN_DIR}/${RUST_TARGET}"
 COPY --from=wasi-sdk /wasi-sdk "${TOOLCHAIN_DIR}"
 
-RUN --mount=type=bind,target=/docker \
-    /docker/base/common.sh
+RUN --mount=type=bind,source=./base/common.sh,target=/tmp/common.sh \
+    /tmp/common.sh
 
 # Do not use prefixed clang: https://github.com/taiki-e/setup-cross-toolchain-action/commit/fd352f3ffabd00daf2759ab4a3276729e52eeb10
-# RUN --mount=type=bind,target=/docker \
+# RUN --mount=type=bind,source=./clang-cross.sh,target=/tmp/clang-cross.sh \
 #     COMMON_FLAGS="-L\"\${toolchain_dir}\"/lib -L\"\${toolchain_dir}\"/${RUST_TARGET}/lib/${RUST_TARGET}" \
-#     /docker/clang-cross.sh
+#     /tmp/clang-cross.sh
 
 FROM ghcr.io/taiki-e/build-base:ubuntu-"${UBUNTU_VERSION}" AS test-base
 SHELL ["/bin/bash", "-CeEuxo", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
-COPY /test-base.sh /
-RUN /test-base.sh
+RUN --mount=type=bind,source=./test-base.sh,target=/tmp/test-base.sh \
+    /tmp/test-base.sh
 ARG WASMTIME_VERSION
 RUN <<EOF
 dpkg_arch=$(dpkg --print-architecture)
@@ -65,8 +65,8 @@ curl --proto '=https' --tlsv1.2 -fsSL --retry 10 --retry-connrefused "https://gi
     | tar xJf - --strip-components 1 -C /usr/local/bin "wasmtime-v${WASMTIME_VERSION}-${wasmtime_arch}-linux/wasmtime"
 EOF
 ARG RUST_TARGET
-COPY /test-base /test-base
-RUN /test-base/target.sh
+RUN --mount=type=bind,source=./test-base,target=/test-base \
+    /test-base/target.sh
 COPY /test /test
 
 FROM test-base AS test-relocated
