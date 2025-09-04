@@ -97,6 +97,7 @@ See also [setup-cross-toolchain-action](https://github.com/taiki-e/setup-cross-t
 | target | host |
 | ------ | ---- |
 | `aarch64-unknown-linux-musl` | x86_64/aarch64 Linux (any libc) |
+| `aarch64_be-unknown-linux-musl` (tier3) | x86_64/aarch64 Linux (any libc) |
 | `arm-unknown-linux-musleabi` | x86_64/aarch64 Linux (any libc) |
 | `arm-unknown-linux-musleabihf` | x86_64/aarch64 Linux (any libc) |
 | `armv5te-unknown-linux-musleabi` | x86_64/aarch64 Linux (any libc) |

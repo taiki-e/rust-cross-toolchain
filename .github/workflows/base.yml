@@ -33,6 +33,9 @@ jobs:
           - target: aarch64-unknown-linux-musl
           - target: aarch64-unknown-linux-musl
             os: ubuntu-24.04-arm
+          - target: aarch64_be-unknown-linux-musl # tier3
+          - target: aarch64_be-unknown-linux-musl # tier3
+            os: ubuntu-24.04-arm
           - target: arm-unknown-linux-musleabi
           - target: arm-unknown-linux-musleabi
             os: ubuntu-24.04-arm

@@ -344,10 +344,11 @@ if [[ -z "${no_std}" ]]; then
       self_contained="${target_libdir}/self-contained"
       if [[ -f /BUILD_STD ]]; then
         case "${RUST_TARGET}" in
+          # TODO(aarch64_be-unknown-linux-musl)
           # TODO(powerpc-unknown-linux-musl)
           # TODO(riscv32gc-unknown-linux-musl)
           # TODO(s390x,thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-          powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
+          aarch64_be-* | powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
           *)
             rm -rf -- "${target_libdir}"
             mkdir -p -- "${self_contained}"
@@ -453,12 +454,13 @@ EOF
   case "${RUST_TARGET}" in
     *-linux-musl* | riscv64*-android)
       case "${RUST_TARGET}" in
+        # TODO(aarch64_be-unknown-linux-musl)
         # TODO(hexagon): run-fail (segfault)
         # TODO(powerpc-unknown-linux-musl)
         # TODO(riscv32-unknown-linux-musl)
         # TODO(s390x-unknown-linux-musl)
         # TODO(thumbv7neon,mips): libunwind build issue since around 2022-12-16: https://github.com/taiki-e/rust-cross-toolchain/commit/7913d98f9c73ffb83f46ab83019bdc3358503d8a
-        hexagon-* | powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
+        aarch64_be-* | hexagon-* | powerpc-* | riscv32* | s390x-* | thumbv7neon-* | mips*) ;;
         *)
           self_contained=''
           case "${RUST_TARGET}" in
@@ -978,6 +980,7 @@ case "${RUST_TARGET}" in
       *-linux-musl*)
         case "${RUST_TARGET}" in
           aarch64-*) ldso_arch=aarch64 ;;
+          aarch64_be-*) ldso_arch=aarch64_be ;;
           arm*hf | thumb*hf) ldso_arch=armhf ;;
           arm* | thumb*) ldso_arch=arm ;;
           hexagon-*) ldso_arch=hexagon ;;

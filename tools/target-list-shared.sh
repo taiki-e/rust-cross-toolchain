@@ -49,7 +49,7 @@ linux_gnu_targets=(
 # Linux (musl)
 linux_musl_targets=(
   aarch64-unknown-linux-musl
-  # aarch64_be-unknown-linux-musl # tier3, TODO
+  aarch64_be-unknown-linux-musl # tier3
   arm-unknown-linux-musleabi
   arm-unknown-linux-musleabihf
   armv5te-unknown-linux-musleabi

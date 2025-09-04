@@ -130,6 +130,7 @@ RUN --mount=type=bind,source=./common.sh,target=/tmp/common.sh \
 RUN <<EOF
 case "${RUST_TARGET}" in
     aarch64-*) ldso_arch=aarch64 ;;
+    aarch64_be-*) ldso_arch=aarch64_be ;;
     arm*hf | thumb*hf) ldso_arch=armhf ;;
     arm* | thumb*) ldso_arch=arm ;;
     hexagon-*) ldso_arch=hexagon ;;

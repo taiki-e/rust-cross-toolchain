@@ -35,7 +35,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64_be-unknown-hermit
 - [x] aarch64_be-unknown-linux-gnu
 - [ ] aarch64_be-unknown-linux-gnu_ilp32
-- [ ] aarch64_be-unknown-linux-musl
+- [x] aarch64_be-unknown-linux-musl
 - [x] aarch64_be-unknown-netbsd
 - [ ] aarch64_be-unknown-none-softfloat
 - [ ] amdgcn-amd-amdhsa
