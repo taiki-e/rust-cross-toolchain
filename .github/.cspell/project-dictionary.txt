@@ -103,6 +103,7 @@ nostartfiles
 nostdinc
 objcopy
 octeon
+opencontainers
 opensbi
 PCREL
 powerpcspe

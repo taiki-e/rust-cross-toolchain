@@ -76,6 +76,7 @@ build() {
 
   local dockerfile="docker/base/${base}.Dockerfile"
   local build_args=(
+    --label "org.opencontainers.image.source=https://github.com/taiki-e/rust-cross-toolchain"
     --file "${dockerfile}" docker/base
     --platform "${platform}"
     --build-arg "RUST_TARGET=${target}"
