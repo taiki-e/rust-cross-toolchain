@@ -16,7 +16,6 @@ cskyv
 CURDIR
 CXXSTDLIB
 dilos
-distro
 earmv
 EHABI
 elfv
