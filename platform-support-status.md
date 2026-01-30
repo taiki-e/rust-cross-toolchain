@@ -27,8 +27,6 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] arm-unknown-linux-musleabi
 - [x] arm-unknown-linux-musleabihf
 - [ ] arm64ec-pc-windows-msvc
-- [x] armebv7r-none-eabi
-- [x] armebv7r-none-eabihf
 - [x] armv5te-unknown-linux-gnueabi
 - [x] armv5te-unknown-linux-musleabi
 - [x] armv7-linux-androideabi
@@ -38,8 +36,10 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] armv7-unknown-linux-musleabihf
 - [ ] armv7-unknown-linux-ohos
 - [x] armv7a-none-eabi
+- [x] armv7a-none-eabihf
 - [x] armv7r-none-eabi
 - [x] armv7r-none-eabihf
+- [ ] armv8r-none-eabihf
 - [x] i586-unknown-linux-gnu
 - [x] i586-unknown-linux-musl
 - [x] i686-linux-android
@@ -57,6 +57,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] nvptx64-nvidia-cuda
 - [x] powerpc-unknown-linux-gnu
 - [x] powerpc64-unknown-linux-gnu
+- [ ] powerpc64-unknown-linux-musl
 - [x] powerpc64le-unknown-linux-gnu
 - [x] powerpc64le-unknown-linux-musl
 - [x] riscv32i-unknown-none-elf
@@ -64,6 +65,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [x] riscv32imac-unknown-none-elf
 - [ ] riscv32imafc-unknown-none-elf
 - [x] riscv32imc-unknown-none-elf
+- [ ] riscv64a23-unknown-linux-gnu
 - [x] riscv64gc-unknown-linux-gnu
 - [x] riscv64gc-unknown-linux-musl
 - [x] riscv64gc-unknown-none-elf
@@ -99,6 +101,7 @@ See [platform-support-status-tier3.md](platform-support-status-tier3.md) for Tie
 - [ ] x86_64-unknown-fuchsia
 - [x] x86_64-unknown-illumos
 - [x] x86_64-unknown-linux-gnu
+- [ ] x86_64-unknown-linux-gnuasan
 - [x] x86_64-unknown-linux-gnux32
 - [x] x86_64-unknown-linux-musl
 - [ ] x86_64-unknown-linux-ohos

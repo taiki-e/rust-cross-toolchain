@@ -16,6 +16,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] aarch64-kmc-solid_asp3
 - [ ] aarch64-nintendo-switch-freestanding
 - [x] aarch64-unknown-freebsd
+- [ ] aarch64-unknown-helenos
 - [ ] aarch64-unknown-hermit
 - [ ] aarch64-unknown-illumos
 - [ ] aarch64-unknown-linux-gnu_ilp32
@@ -38,16 +39,22 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] aarch64_be-unknown-linux-musl
 - [x] aarch64_be-unknown-netbsd
 - [ ] aarch64_be-unknown-none-softfloat
+- [ ] aarch64v8r-unknown-none
+- [ ] aarch64v8r-unknown-none-softfloat
 - [ ] amdgcn-amd-amdhsa
 - [ ] arm64_32-apple-watchos
 - [ ] arm64e-apple-darwin
 - [ ] arm64e-apple-ios
 - [ ] arm64e-apple-tvos
 - [x] armeb-unknown-linux-gnueabi
+- [x] armebv7r-none-eabi
+- [x] armebv7r-none-eabihf
 - [ ] armv4t-none-eabi
 - [ ] armv4t-unknown-linux-gnueabi
 - [x] armv5te-none-eabi
 - [x] armv5te-unknown-linux-uclibceabi
+- [ ] armv6-none-eabi
+- [ ] armv6-none-eabihf
 - [ ] armv6-unknown-freebsd
 - [x] armv6-unknown-netbsd-eabihf
 - [ ] armv6k-nintendo-3ds
@@ -61,13 +68,11 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] armv7-wrs-vxworks-eabihf
 - [ ] armv7a-kmc-solid_asp3-eabi
 - [ ] armv7a-kmc-solid_asp3-eabihf
-- [x] armv7a-none-eabihf
 - [ ] armv7a-nuttx-eabi
 - [ ] armv7a-nuttx-eabihf
 - [ ] armv7a-vex-v5
 - [ ] armv7k-apple-watchos
 - [ ] armv7s-apple-ios
-- [ ] armv8r-none-eabihf
 - [ ] avr-none
 - [ ] bpfeb-unknown-none
 - [ ] bpfel-unknown-none
@@ -75,12 +80,14 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] csky-unknown-linux-gnuabiv2hf
 - [x] hexagon-unknown-linux-musl
 - [ ] hexagon-unknown-none-elf
+- [ ] hexagon-unknown-qurt
 - [ ] i386-apple-ios
 - [x] i586-unknown-netbsd
 - [ ] i586-unknown-redox
 - [ ] i686-apple-darwin
 - [ ] i686-pc-nto-qnx700
 - [ ] i686-unknown-haiku
+- [ ] i686-unknown-helenos
 - [ ] i686-unknown-hurd-gnu
 - [x] i686-unknown-netbsd
 - [x] i686-unknown-openbsd
@@ -117,6 +124,7 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [x] mipsisa64r6el-unknown-linux-gnuabi64
 - [ ] msp430-none-elf
 - [x] powerpc-unknown-freebsd
+- [ ] powerpc-unknown-helenos
 - [x] powerpc-unknown-linux-gnuspe
 - [x] powerpc-unknown-linux-musl
 - [x] powerpc-unknown-linux-muslspe
@@ -126,7 +134,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] powerpc-wrs-vxworks-spe
 - [ ] powerpc64-ibm-aix
 - [x] powerpc64-unknown-freebsd
-- [ ] powerpc64-unknown-linux-musl
 - [x] powerpc64-unknown-openbsd
 - [ ] powerpc64-wrs-vxworks
 - [x] powerpc64le-unknown-freebsd
@@ -147,7 +154,6 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv32imc-unknown-nuttx-elf
 - [x] riscv64-linux-android
 - [ ] riscv64-wrs-vxworks
-- [ ] riscv64a23-unknown-linux-gnu
 - [x] riscv64gc-unknown-freebsd
 - [ ] riscv64gc-unknown-fuchsia
 - [ ] riscv64gc-unknown-hermit
@@ -155,15 +161,21 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] riscv64gc-unknown-netbsd
 - [ ] riscv64gc-unknown-nuttx-elf
 - [x] riscv64gc-unknown-openbsd
+- [ ] riscv64gc-unknown-redox
+- [ ] riscv64im-unknown-none-elf
 - [ ] riscv64imac-unknown-nuttx-elf
 - [x] s390x-unknown-linux-musl
 - [ ] sparc-unknown-linux-gnu
 - [ ] sparc-unknown-none-elf
+- [ ] sparc64-unknown-helenos
 - [x] sparc64-unknown-netbsd
 - [x] sparc64-unknown-openbsd
 - [ ] thumbv4t-none-eabi
 - [x] thumbv5te-none-eabi
+- [ ] thumbv6-none-eabi
 - [ ] thumbv6m-nuttx-eabi
+- [ ] thumbv7a-none-eabi
+- [ ] thumbv7a-none-eabihf
 - [ ] thumbv7a-nuttx-eabi
 - [ ] thumbv7a-nuttx-eabihf
 - [ ] thumbv7a-pc-windows-msvc
@@ -172,10 +184,14 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] thumbv7em-nuttx-eabihf
 - [ ] thumbv7m-nuttx-eabi
 - [x] thumbv7neon-unknown-linux-musleabihf
+- [ ] thumbv7r-none-eabi
+- [ ] thumbv7r-none-eabihf
 - [ ] thumbv8m.base-nuttx-eabi
 - [ ] thumbv8m.main-nuttx-eabi
 - [ ] thumbv8m.main-nuttx-eabihf
+- [ ] thumbv8r-none-eabihf
 - [ ] wasm32-wali-linux-musl
+- [ ] wasm32-wasip3
 - [ ] wasm64-unknown-unknown
 - [ ] x86_64-apple-tvos
 - [ ] x86_64-apple-watchos-sim
@@ -187,11 +203,13 @@ See [platform-support-status.md](platform-support-status.md) for Tier 1 & Tier 2
 - [ ] x86_64-unikraft-linux-musl
 - [x] x86_64-unknown-dragonfly
 - [ ] x86_64-unknown-haiku
+- [ ] x86_64-unknown-helenos
 - [ ] x86_64-unknown-hermit
 - [ ] x86_64-unknown-hurd-gnu
 - [ ] x86_64-unknown-l4re-uclibc
 - [ ] x86_64-unknown-linux-none
 - [ ] x86_64-unknown-managarm-mlibc
+- [ ] x86_64-unknown-motor
 - [x] x86_64-unknown-openbsd
 - [ ] x86_64-unknown-trusty
 - [ ] x86_64-uwp-windows-gnu
