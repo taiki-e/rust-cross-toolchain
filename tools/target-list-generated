@@ -36,13 +36,14 @@ linux_gnu_targets=(
   powerpc64-unknown-linux-gnu
   powerpc64le-unknown-linux-gnu
   riscv32gc-unknown-linux-gnu # tier3
-  riscv64a23-unknown-linux-gnu # tier3
+  riscv64a23-unknown-linux-gnu
   riscv64gc-unknown-linux-gnu
   s390x-unknown-linux-gnu
   sparc-unknown-linux-gnu # tier3
   sparc64-unknown-linux-gnu
   thumbv7neon-unknown-linux-gnueabihf
   x86_64-unknown-linux-gnu
+  x86_64-unknown-linux-gnuasan
   x86_64-unknown-linux-gnux32
 )
 linux_musl_targets=(
@@ -64,7 +65,7 @@ linux_musl_targets=(
   mipsel-unknown-linux-musl # tier3
   powerpc-unknown-linux-musl # tier3
   powerpc-unknown-linux-muslspe # tier3
-  powerpc64-unknown-linux-musl # tier3
+  powerpc64-unknown-linux-musl
   powerpc64le-unknown-linux-musl
   riscv32gc-unknown-linux-musl # tier3
   riscv64gc-unknown-linux-musl
@@ -205,6 +206,7 @@ wasi_targets=(
   wasm32-wasip1
   wasm32-wasip1-threads
   wasm32-wasip2
+  wasm32-wasip3 # tier3
 )
 emscripten_targets=(
   wasm32-unknown-emscripten
@@ -305,6 +307,7 @@ psx_targets=(
 redox_targets=(
   aarch64-unknown-redox # tier3
   i586-unknown-redox # tier3
+  riscv64gc-unknown-redox # tier3
   x86_64-unknown-redox
 )
 rtems_targets=(
@@ -358,15 +361,19 @@ none_targets=(
   aarch64-unknown-none
   aarch64-unknown-none-softfloat
   aarch64_be-unknown-none-softfloat # tier3
-  armebv7r-none-eabi
-  armebv7r-none-eabihf
+  aarch64v8r-unknown-none # tier3
+  aarch64v8r-unknown-none-softfloat # tier3
+  armebv7r-none-eabi # tier3
+  armebv7r-none-eabihf # tier3
   armv4t-none-eabi # tier3
   armv5te-none-eabi # tier3
+  armv6-none-eabi # tier3
+  armv6-none-eabihf # tier3
   armv7a-none-eabi
-  armv7a-none-eabihf # tier3
+  armv7a-none-eabihf
   armv7r-none-eabi
   armv7r-none-eabihf
-  armv8r-none-eabihf # tier3
+  armv8r-none-eabihf
   avr-none # tier3
   bpfeb-unknown-none # tier3
   bpfel-unknown-none # tier3
@@ -390,22 +397,42 @@ none_targets=(
   riscv32imafc-unknown-none-elf
   riscv32imc-unknown-none-elf
   riscv64gc-unknown-none-elf
+  riscv64im-unknown-none-elf # tier3
   riscv64imac-unknown-none-elf
   sparc-unknown-none-elf # tier3
   thumbv4t-none-eabi # tier3
   thumbv5te-none-eabi # tier3
+  thumbv6-none-eabi # tier3
   thumbv6m-none-eabi
+  thumbv7a-none-eabi # tier3
+  thumbv7a-none-eabihf # tier3
   thumbv7em-none-eabi
   thumbv7em-none-eabihf
   thumbv7m-none-eabi
+  thumbv7r-none-eabi # tier3
+  thumbv7r-none-eabihf # tier3
   thumbv8m.base-none-eabi
   thumbv8m.main-none-eabi
   thumbv8m.main-none-eabihf
+  thumbv8r-none-eabihf # tier3
   wasm32v1-none
   x86_64-unknown-none
   xtensa-esp32-none-elf # tier3
   xtensa-esp32s2-none-elf # tier3
   xtensa-esp32s3-none-elf # tier3
+)
+helenos_targets=(
+  aarch64-unknown-helenos # tier3
+  i686-unknown-helenos # tier3
+  powerpc-unknown-helenos # tier3
+  sparc64-unknown-helenos # tier3
+  x86_64-unknown-helenos # tier3
+)
+motor_targets=(
+  x86_64-unknown-motor # tier3
+)
+qurt_targets=(
+  hexagon-unknown-qurt # tier3
 )
 targets=(
   ${linux_gnu_targets[@]+"${linux_gnu_targets[@]}"}
@@ -460,4 +487,7 @@ targets=(
   ${xous_targets[@]+"${xous_targets[@]}"}
   ${zkvm_targets[@]+"${zkvm_targets[@]}"}
   ${none_targets[@]+"${none_targets[@]}"}
+  ${helenos_targets[@]+"${helenos_targets[@]}"}
+  ${motor_targets[@]+"${motor_targets[@]}"}
+  ${qurt_targets[@]+"${qurt_targets[@]}"}
 )
